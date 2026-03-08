@@ -96,6 +96,7 @@ const ENTIDADES_FINANCIERAS = [
   'BBVA',
   'BNA',
   'Brubank',
+  'Comunidad',
   'Galicia',
   'HSBC',
   'ICBC',
