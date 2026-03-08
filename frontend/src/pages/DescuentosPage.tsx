@@ -642,16 +642,17 @@ function AddDiscountModal({ open, onOpenChange, espacioTrabajoId }: AddDiscountM
               </div>
             </ResponsiveModalScrollArea>
 
-            <ResponsiveModalFooter>
+            <ResponsiveModalFooter className="mt-3 sm:mt-4 flex-row gap-2">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => handleOpenChange(false)}
                 disabled={createDescuentoMutation.isPending}
+                className="flex-1"
               >
                 Cancelar
               </Button>
-              <Button type="submit" disabled={createDescuentoMutation.isPending}>
+              <Button type="submit" disabled={createDescuentoMutation.isPending} className="flex-1">
                 {createDescuentoMutation.isPending ? 'Registrando...' : 'Registrar'}
               </Button>
             </ResponsiveModalFooter>
