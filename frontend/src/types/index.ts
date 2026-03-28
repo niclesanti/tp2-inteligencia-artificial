@@ -176,6 +176,16 @@ export interface CompraCreditoDTORequest {
   tarjetaId: number
 }
 
+export interface CompraCreditoBusquedaDTO {
+  mes?: number | null
+  anio?: number | null
+  motivo?: string | null
+  contacto?: string | null
+  idEspacioTrabajo: string
+  page?: number
+  size?: number
+}
+
 // Aliases para compatibilidad
 export type Motivo = MotivoTransaccion
 export type MotivoDTORequest = MotivoTransaccionDTORequest

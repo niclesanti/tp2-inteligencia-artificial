@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.campito.backend.dto.CompraCreditoDTORequest;
+import com.campito.backend.dto.CompraCreditoBusquedaDTO;
 import com.campito.backend.dto.CompraCreditoDTOResponse;
 import com.campito.backend.dto.CuotaCreditoDTOResponse;
 import com.campito.backend.dto.PaginatedResponse;
@@ -130,6 +131,25 @@ public class ComprasCreditoController {
         
         securityService.validateWorkspaceAccess(idEspacioTrabajo);
         List<CompraCreditoDTOResponse> compras = comprasCreditoService.BuscarComprasCredito(idEspacioTrabajo);
+        return new ResponseEntity<>(compras, HttpStatus.OK);
+    }
+
+    @Operation(summary = "Buscar compras a crédito",
+                description = "Permite buscar compras a crédito según criterios específicos con soporte de paginación.",
+                responses = {
+                    @ApiResponse(responseCode = "200", description = "Compras a crédito encontradas"),
+                    @ApiResponse(responseCode = "400", description = "Error en los criterios de búsqueda"),
+                    @ApiResponse(responseCode = "403", description = "No tienes acceso a este espacio de trabajo"),
+                    @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+                })
+    @PostMapping("/buscar")
+    public ResponseEntity<PaginatedResponse<CompraCreditoDTOResponse>> buscarComprasCreditoPaginadas(
+        @Valid
+        @NotNull(message = "Los criterios de búsqueda son obligatorios")
+        @RequestBody CompraCreditoBusquedaDTO datosBusqueda) {
+
+        securityService.validateWorkspaceAccess(datosBusqueda.idEspacioTrabajo());
+        PaginatedResponse<CompraCreditoDTOResponse> compras = comprasCreditoService.buscarComprasCredito(datosBusqueda);
         return new ResponseEntity<>(compras, HttpStatus.OK);
     }
 
