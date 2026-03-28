@@ -14,6 +14,7 @@ import type {
   TarjetaDTORequest,
   TransaccionDTORequest,
   CompraCreditoDTORequest,
+  CompraCreditoBusquedaDTO,
   TransaccionBusquedaDTO,
   DescuentoDTORequest
 } from '@/types'
@@ -259,6 +260,13 @@ export const useCreateCompraCredito = () => {
       queryClient.invalidateQueries({ queryKey: ['compras'] })
       queryClient.invalidateQueries({ queryKey: ['cuotas'] })
     },
+  })
+}
+
+export const useBuscarComprasCredito = () => {
+  return useMutation({
+    mutationFn: (busqueda: CompraCreditoBusquedaDTO) =>
+      compraCreditoService.buscarComprasCredito(busqueda),
   })
 }
 

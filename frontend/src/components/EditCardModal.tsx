@@ -214,22 +214,22 @@ export function EditCardModal({ espacioTrabajoId }: EditCardModalProps) {
               </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 pt-2">
+            <div className="flex flex-row justify-end gap-2 sm:gap-3 pt-2">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => setOpen(false)}
                 disabled={form.formState.isSubmitting}
-                className="w-full sm:w-auto"
+                className="flex-1 sm:flex-none"
               >
                 Cancelar
               </Button>
               <Button 
                 type="submit" 
                 disabled={form.formState.isSubmitting || updateTarjetaMutation.isPending}
-                className="w-full sm:w-auto"
+                className="flex-1 sm:flex-none"
               >
-                {updateTarjetaMutation.isPending ? 'Modificando...' : 'Modificar tarjeta'}
+                {updateTarjetaMutation.isPending ? 'Modificando...' : 'Registrar'}
               </Button>
             </div>
           </form>

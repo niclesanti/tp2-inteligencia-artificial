@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +31,7 @@ import com.campito.backend.dao.ResumenRepository;
 import com.campito.backend.dao.TarjetaRepository;
 import com.campito.backend.dao.TransaccionRepository;
 import com.campito.backend.dto.CompraCreditoDTORequest;
+import com.campito.backend.dto.CompraCreditoBusquedaDTO;
 import com.campito.backend.dto.CompraCreditoDTOResponse;
 import com.campito.backend.dto.CuotaCreditoDTOResponse;
 import com.campito.backend.dto.CuotaResumenDTO;
@@ -347,6 +349,64 @@ public class CompraCreditoServiceImpl implements CompraCreditoService {
             comprasCreditoResponse.size(), idEspacioTrabajo);
         
         return comprasCreditoResponse;
+    }
+
+    /**
+     * Busca compras a crédito aplicando filtros opcionales con soporte de paginación.
+     *
+     * @param datosBusqueda Criterios de búsqueda (espacio de trabajo, año, mes, motivo, contacto, página, tamaño).
+     * @return Respuesta paginada con las compras a crédito que cumplen los criterios.
+     * @throws IllegalArgumentException si los datos de búsqueda son nulos o si se especifica mes sin año.
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public PaginatedResponse<CompraCreditoDTOResponse> buscarComprasCredito(CompraCreditoBusquedaDTO datosBusqueda) {
+
+        if (datosBusqueda == null) {
+            logger.warn("Intento de buscar compras crédito con DTO de busqueda nulo.");
+            throw new IllegalArgumentException("Los datos de búsqueda no pueden ser nulos");
+        }
+        logger.info("Iniciando busqueda de compras crédito para espacio ID {} con criterios: {}",
+            datosBusqueda.idEspacioTrabajo(), datosBusqueda);
+
+        int page = datosBusqueda.page() != null ? datosBusqueda.page() : 0;
+        int size = datosBusqueda.size() != null ? datosBusqueda.size() : 10;
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "fechaCompra"));
+
+        Specification<CompraCredito> spec = (root, query, cb) ->
+            cb.equal(root.get("espacioTrabajo").get("id"), datosBusqueda.idEspacioTrabajo());
+
+        if (datosBusqueda.anio() != null) {
+            int anio = datosBusqueda.anio();
+            int mes = datosBusqueda.mes() != null ? datosBusqueda.mes() : 1;
+            LocalDate desde = LocalDate.of(anio, mes, 1);
+            LocalDate hasta = datosBusqueda.mes() != null
+                ? desde.withDayOfMonth(desde.lengthOfMonth())
+                : LocalDate.of(anio, 12, 31);
+            spec = spec.and((root, query, cb) -> cb.between(root.get("fechaCompra"), desde, hasta));
+        } else if (datosBusqueda.mes() != null) {
+            logger.warn("Se especifico mes sin anio en la busqueda de compras crédito para espacio ID {}.",
+                datosBusqueda.idEspacioTrabajo());
+            throw new IllegalArgumentException("Si no se especifica el año, no se puede especificar el mes");
+        }
+
+        if (datosBusqueda.motivo() != null && !datosBusqueda.motivo().isEmpty()) {
+            spec = spec.and((root, query, cb) ->
+                cb.like(cb.lower(root.get("motivo").get("motivo")), "%" + datosBusqueda.motivo().toLowerCase() + "%"));
+        }
+        if (datosBusqueda.contacto() != null && !datosBusqueda.contacto().isEmpty()) {
+            spec = spec.and((root, query, cb) ->
+                cb.like(cb.lower(root.get("comercio").get("nombre")), "%" + datosBusqueda.contacto().toLowerCase() + "%"));
+        }
+
+        var comprasPage = compraCreditoRepository.findAll(spec, pageable);
+        logger.info(
+            "Busqueda de compras crédito para espacio ID {} finalizada. Se encontraron {} resultados en la página {} de {}.",
+            datosBusqueda.idEspacioTrabajo(), comprasPage.getTotalElements(), page, comprasPage.getTotalPages());
+
+        var comprasDTO = comprasPage.map(compraCreditoMapper::toResponse);
+        return new PaginatedResponse<>(comprasDTO);
     }
 
     /**
