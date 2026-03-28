@@ -1,5 +1,12 @@
 import { apiClient } from '@/lib/api-client'
-import type { CompraCreditoDTORequest, CompraCredito, CompraCreditoDTOResponse, ResumenTarjetaDTOResponse, PaginatedResponse } from '@/types'
+import type {
+  CompraCreditoDTORequest,
+  CompraCredito,
+  CompraCreditoDTOResponse,
+  ResumenTarjetaDTOResponse,
+  PaginatedResponse,
+  CompraCreditoBusquedaDTO,
+} from '@/types'
 
 export const compraCreditoService = {
   async registrarCompraCredito(compra: CompraCreditoDTORequest): Promise<CompraCredito> {
@@ -14,6 +21,11 @@ export const compraCreditoService = {
     
     const url = `/comprascredito/pendientes/${idEspacioTrabajo}${params.toString() ? `?${params.toString()}` : ''}`
     const { data } = await apiClient.get<PaginatedResponse<CompraCreditoDTOResponse>>(url)
+    return data
+  },
+
+  async buscarComprasCredito(busqueda: CompraCreditoBusquedaDTO): Promise<PaginatedResponse<CompraCreditoDTOResponse>> {
+    const { data } = await apiClient.post<PaginatedResponse<CompraCreditoDTOResponse>>('/comprascredito/buscar', busqueda)
     return data
   },
 

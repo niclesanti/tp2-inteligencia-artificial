@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import { useAppStore } from '@/store/app-store'
-import { useBuscarTransacciones, useMotivosTransaccion, useContactosTransaccion, useRemoverTransaccion } from '@/features/selectors/api/selector-queries'
+import { useBuscarComprasCredito, useBuscarTransacciones, useMotivosTransaccion, useContactosTransaccion, useRemoverTransaccion } from '@/features/selectors/api/selector-queries'
 import {
   Select,
   SelectContent,
@@ -92,6 +92,7 @@ import { Button } from '@/components/ui/button'
 import { toast } from '@/hooks/useToast'
 import { useQueryClient } from '@tanstack/react-query'
 import { TransactionDetailsModal } from '@/components/TransactionDetailsModal'
+import { CreditPurchaseDetailsModal } from '@/components/CreditPurchaseDetailsModal'
 import { DeleteConfirmDialog } from '@/components/DeleteConfirmDialog'
 import { formatCurrency } from '@/lib/utils'
 
@@ -107,6 +108,24 @@ interface Transaction {
   nombreEspacioTrabajo: string
   nombreCompletoAuditoria: string
   fechaCreacion: string
+  isCreditPurchase?: boolean
+}
+
+interface CreditPurchaseDetails {
+  id: string
+  fechaCompra: string
+  montoTotal: MoneyDecimal
+  cantidadCuotas: number
+  cuotasPagadas: number
+  descripcion?: string
+  nombreCompletoAuditoria: string
+  fechaCreacion: string
+  nombreEspacioTrabajo: string
+  nombreMotivo: string
+  nombreComercio?: string
+  numeroTarjeta?: string
+  entidadFinanciera?: string
+  redDePago?: string
 }
 
 function SortableRow({ row }: any) {
@@ -170,11 +189,13 @@ export function MovimientosPage() {
 
   // Hooks de TanStack Query
   const buscarTransaccionesMutation = useBuscarTransacciones()
+  const buscarComprasCreditoMutation = useBuscarComprasCredito()
   const removerTransaccionMutation = useRemoverTransaccion()
   const { data: motivosData = [] } = useMotivosTransaccion(espacioActual?.id)
   const { data: contactosData = [] } = useContactosTransaccion(espacioActual?.id)
   
   const [transactions, setTransactions] = useState<Transaction[]>([])
+  const [tipoBusqueda, setTipoBusqueda] = useState<'transacciones' | 'comprasCredito'>('transacciones')
   const [hasSearched, setHasSearched] = useState(false)
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   
@@ -187,6 +208,8 @@ export function MovimientosPage() {
   // Estado para el modal de detalles
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null)
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
+  const [selectedCreditPurchase, setSelectedCreditPurchase] = useState<CreditPurchaseDetails | null>(null)
+  const [isCreditDetailsModalOpen, setIsCreditDetailsModalOpen] = useState(false)
   
   // Estado para el diálogo de confirmación de eliminación
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
@@ -235,36 +258,74 @@ export function MovimientosPage() {
       size: pageSize,
     }
 
-    buscarTransaccionesMutation.mutate(busquedaDTO, {
+    if (tipoBusqueda === 'transacciones') {
+      buscarTransaccionesMutation.mutate(busquedaDTO, {
+        onSuccess: (response) => {
+          const transaccionesTransformadas = response.content.map(t => ({
+            id: t.id.toString(),
+            tipo: t.tipo === 'INGRESO' ? 'Ingreso' as const : 'Gasto' as const,
+            fecha: t.fecha,
+            motivo: t.nombreMotivo || 'Sin motivo',
+            contacto: t.nombreContacto || 'Sin contacto',
+            cuenta: t.nombreCuentaBancaria || 'Sin cuenta',
+            monto: t.monto,
+            descripcion: t.descripcion,
+            nombreEspacioTrabajo: t.nombreEspacioTrabajo,
+            nombreCompletoAuditoria: t.nombreCompletoAuditoria,
+            fechaCreacion: t.fechaCreacion,
+            isCreditPurchase: false,
+          }))
+
+          setTransactions(transaccionesTransformadas)
+          setCurrentPage(response.currentPage)
+          setTotalElements(response.totalElements)
+          setTotalPages(response.totalPages)
+          setHasSearched(true)
+
+          toast.success('Búsqueda completada', {
+            description: `Se encontraron ${response.totalElements} transacciones.`,
+          })
+        },
+        onError: (error: any) => {
+          console.error('Error al buscar transacciones:', error)
+          toast.error('Error al buscar transacciones', {
+            description: error?.message || 'Intenta nuevamente o contacta al soporte.',
+          })
+        },
+      })
+      return
+    }
+
+    buscarComprasCreditoMutation.mutate(busquedaDTO, {
       onSuccess: (response) => {
-        // Transformar los datos de la API al formato de la UI
-        const transaccionesTransformadas = response.content.map(t => ({
-          id: t.id.toString(),
-          tipo: t.tipo === 'INGRESO' ? 'Ingreso' as const : 'Gasto' as const,
-          fecha: t.fecha,
-          motivo: t.nombreMotivo || 'Sin motivo',
-          contacto: t.nombreContacto || 'Sin contacto',
-          cuenta: t.nombreCuentaBancaria || 'Sin cuenta',
-          monto: t.monto,
-          descripcion: t.descripcion,
-          nombreEspacioTrabajo: t.nombreEspacioTrabajo,
-          nombreCompletoAuditoria: t.nombreCompletoAuditoria,
-          fechaCreacion: t.fechaCreacion,
+        const comprasTransformadas = response.content.map(c => ({
+          id: c.id.toString(),
+          tipo: 'Gasto' as const,
+          fecha: c.fechaCompra,
+          motivo: c.nombreMotivo || 'Sin motivo',
+          contacto: c.nombreComercio || 'Sin contacto',
+          cuenta: `${c.entidadFinanciera} - ${c.redDePago}`,
+          monto: c.montoTotal,
+          descripcion: c.descripcion,
+          nombreEspacioTrabajo: c.nombreEspacioTrabajo,
+          nombreCompletoAuditoria: c.nombreCompletoAuditoria,
+          fechaCreacion: c.fechaCreacion,
+          isCreditPurchase: true,
         }))
-        
-        setTransactions(transaccionesTransformadas)
+
+        setTransactions(comprasTransformadas)
         setCurrentPage(response.currentPage)
         setTotalElements(response.totalElements)
         setTotalPages(response.totalPages)
         setHasSearched(true)
-        
+
         toast.success('Búsqueda completada', {
-          description: `Se encontraron ${response.totalElements} transacciones.`,
+          description: `Se encontraron ${response.totalElements} compras con crédito.`,
         })
       },
       onError: (error: any) => {
-        console.error('Error al buscar transacciones:', error)
-        toast.error('Error al buscar transacciones', {
+        console.error('Error al buscar compras con crédito:', error)
+        toast.error('Error al buscar compras con crédito', {
           description: error?.message || 'Intenta nuevamente o contacta al soporte.',
         })
       },
@@ -341,6 +402,33 @@ export function MovimientosPage() {
 
   // Handler para abrir el modal de detalles
   const handleViewDetails = (transaction: Transaction) => {
+    if (transaction.isCreditPurchase) {
+      const creditPurchase = buscarComprasCreditoMutation.data?.content.find(
+        (purchase) => purchase.id.toString() === transaction.id
+      )
+
+      if (creditPurchase) {
+        setSelectedCreditPurchase({
+          id: creditPurchase.id.toString(),
+          fechaCompra: creditPurchase.fechaCompra,
+          montoTotal: creditPurchase.montoTotal,
+          cantidadCuotas: creditPurchase.cantidadCuotas,
+          cuotasPagadas: creditPurchase.cuotasPagadas,
+          descripcion: creditPurchase.descripcion,
+          nombreCompletoAuditoria: creditPurchase.nombreCompletoAuditoria,
+          fechaCreacion: creditPurchase.fechaCreacion,
+          nombreEspacioTrabajo: creditPurchase.nombreEspacioTrabajo,
+          nombreMotivo: creditPurchase.nombreMotivo,
+          nombreComercio: creditPurchase.nombreComercio,
+          numeroTarjeta: creditPurchase.numeroTarjeta,
+          entidadFinanciera: creditPurchase.entidadFinanciera,
+          redDePago: creditPurchase.redDePago,
+        })
+        setIsCreditDetailsModalOpen(true)
+      }
+      return
+    }
+
     setSelectedTransaction(transaction)
     setIsDetailsModalOpen(true)
   }
@@ -478,14 +566,16 @@ export function MovimientosPage() {
                 <Eye className="mr-2 h-4 w-4" />
                 Ver detalles
               </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={() => handleDeleteClick(row.original)}
-                className="text-destructive focus:text-destructive"
-                disabled={removerTransaccionMutation.isPending}
-              >
-                <Trash2 className="mr-2 h-4 w-4" />
-                {removerTransaccionMutation.isPending ? 'Eliminando...' : 'Eliminar'}
-              </DropdownMenuItem>
+              {tipoBusqueda === 'transacciones' && (
+                <DropdownMenuItem
+                  onClick={() => handleDeleteClick(row.original)}
+                  className="text-destructive focus:text-destructive"
+                  disabled={removerTransaccionMutation.isPending}
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  {removerTransaccionMutation.isPending ? 'Eliminando...' : 'Eliminar'}
+                </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         )
@@ -520,7 +610,7 @@ export function MovimientosPage() {
                 Selecciona un espacio de trabajo
               </h3>
               <p className="text-muted-foreground max-w-md">
-                Para explorar tu historial de transacciones, primero elige un espacio en el menú lateral o crea uno nuevo.
+                Para explorar tu historial de movimientos, primero elige un espacio en el menú lateral o crea uno nuevo.
               </p>
             </div>
 
@@ -569,6 +659,20 @@ export function MovimientosPage() {
 
       {/* Smart Toolbar - Filtros */}
       <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-2 rounded-lg border bg-card p-3 sm:p-4">
+        {/* Selector de tipo de búsqueda */}
+        <Select
+          value={tipoBusqueda}
+          onValueChange={(value: 'transacciones' | 'comprasCredito') => setTipoBusqueda(value)}
+        >
+          <SelectTrigger className="w-full sm:w-[240px]">
+            <SelectValue placeholder="Buscar en..." />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="transacciones">Transacciones</SelectItem>
+            <SelectItem value="comprasCredito">Compras con crédito</SelectItem>
+          </SelectContent>
+        </Select>
+
         {/* Selector de Mes */}
         <Select value={mesSeleccionado} onValueChange={setMesSeleccionado} disabled={anoSeleccionado === 'todos'}>
           <SelectTrigger className="w-full sm:w-[180px]">
@@ -708,12 +812,12 @@ export function MovimientosPage() {
         {/* Botón Buscar */}
         <Button
           onClick={() => handleBuscar(0)}
-          disabled={buscarTransaccionesMutation.isPending || !espacioActual}
+          disabled={buscarTransaccionesMutation.isPending || buscarComprasCreditoMutation.isPending || !espacioActual}
           size="sm"
           className="w-full sm:w-auto"
         >
           <Search className="mr-2 h-4 w-4" />
-          {buscarTransaccionesMutation.isPending ? 'Buscando...' : 'Buscar'}
+          {(buscarTransaccionesMutation.isPending || buscarComprasCreditoMutation.isPending) ? 'Buscando...' : 'Buscar'}
         </Button>
 
         {/* Botón Limpiar Filtros */}
@@ -732,7 +836,9 @@ export function MovimientosPage() {
       {/* Data Table */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold">Transacciones</h3>
+          <h3 className="text-lg font-semibold">
+            {tipoBusqueda === 'transacciones' ? 'Transacciones' : 'Compras con crédito'}
+          </h3>
           <div className="flex items-center gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -826,14 +932,14 @@ export function MovimientosPage() {
                                 Realiza una búsqueda
                               </p>
                               <p className="text-sm text-muted-foreground">
-                                Selecciona los filtros y presiona "Buscar" para ver tus transacciones
+                                Selecciona los filtros y presiona "Buscar" para ver tus {tipoBusqueda === 'transacciones' ? 'transacciones' : 'compras con crédito'}
                               </p>
                             </>
                           ) : (
                             <>
                               <X className="h-12 w-12 text-muted-foreground/50" />
                               <p className="text-lg font-semibold text-muted-foreground">
-                                No se encontraron transacciones
+                                No se encontraron {tipoBusqueda === 'transacciones' ? 'transacciones' : 'compras con crédito'}
                               </p>
                               <p className="text-sm text-muted-foreground">
                                 Intenta ajustar los filtros de búsqueda
@@ -913,14 +1019,22 @@ export function MovimientosPage() {
         onOpenChange={setIsDetailsModalOpen}
       />
 
-      <DeleteConfirmDialog
-        open={deleteConfirmOpen}
-        onOpenChange={setDeleteConfirmOpen}
-        onConfirm={handleDeleteConfirm}
-        title="¿Eliminar transacción?"
-        description="Esta acción no se puede deshacer. La transacción será eliminada permanentemente del sistema."
-        isLoading={removerTransaccionMutation.isPending}
+      <CreditPurchaseDetailsModal
+        purchase={selectedCreditPurchase}
+        open={isCreditDetailsModalOpen}
+        onOpenChange={setIsCreditDetailsModalOpen}
       />
+
+      {tipoBusqueda === 'transacciones' && (
+        <DeleteConfirmDialog
+          open={deleteConfirmOpen}
+          onOpenChange={setDeleteConfirmOpen}
+          onConfirm={handleDeleteConfirm}
+          title="¿Eliminar transacción?"
+          description="Esta acción no se puede deshacer. La transacción será eliminada permanentemente del sistema."
+          isLoading={removerTransaccionMutation.isPending}
+        />
+      )}
     </div>
   )
 }

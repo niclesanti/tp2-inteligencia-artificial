@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.campito.backend.dto.CompraCreditoDTORequest;
+import com.campito.backend.dto.CompraCreditoBusquedaDTO;
 import com.campito.backend.dto.CompraCreditoDTOResponse;
 import com.campito.backend.dto.CuotaCreditoDTOResponse;
 import com.campito.backend.dto.PaginatedResponse;
@@ -17,6 +18,7 @@ public interface CompraCreditoService {
     public void removerCompraCredito(Long id);
     public PaginatedResponse<CompraCreditoDTOResponse> listarComprasCreditoDebeCuotas(UUID idEspacioTrabajo, Integer page, Integer size);
     public List<CompraCreditoDTOResponse> BuscarComprasCredito(UUID idEspacioTrabajo);
+    public PaginatedResponse<CompraCreditoDTOResponse> buscarComprasCredito(CompraCreditoBusquedaDTO datosBusqueda);
     public TarjetaDTOResponse registrarTarjeta(TarjetaDTORequest tarjetaDTO);
     public void removerTarjeta(Long id);
     public List<TarjetaDTOResponse> listarTarjetas(UUID idEspacioTrabajo);
