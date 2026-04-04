@@ -98,15 +98,6 @@ public class CuentaBancariaServiceTest {
 
     // Tests para crearCuentaBancaria
     @Test
-    void testCrearCuentaBancaria_cuandoDTOEsNulo_lanzaExcepcion() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            cuentaBancariaService.crearCuentaBancaria(null);
-        });
-        verify(espacioTrabajoRepository, never()).findById(any());
-        verify(cuentaBancariaRepository, never()).save(any());
-    }
-
-    @Test
     void testCrearCuentaBancaria_cuandoIdEspacioTrabajoEsNulo_lanzaEntityNotFound() {
         CuentaBancariaDTORequest dtoSinEspacio = new CuentaBancariaDTORequest("Nombre", "Entidad", null, BigDecimal.ZERO);
         assertThrows(EntityNotFoundException.class, () -> {
@@ -153,27 +144,6 @@ public class CuentaBancariaServiceTest {
     }
 
     // Tests para actualizarCuentaBancaria
-    @Test
-    void testActualizarCuentaBancaria_conIdNulo_lanzaExcepcion() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            cuentaBancariaService.actualizarCuentaBancaria(null, TipoTransaccion.INGRESO, new BigDecimal("100.00"));
-        });
-    }
-
-    @Test
-    void testActualizarCuentaBancaria_conTipoNulo_lanzaExcepcion() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            cuentaBancariaService.actualizarCuentaBancaria(1L, null, new BigDecimal("100.00"));
-        });
-    }
-
-    @Test
-    void testActualizarCuentaBancaria_conMontoNulo_lanzaExcepcion() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            cuentaBancariaService.actualizarCuentaBancaria(1L, TipoTransaccion.INGRESO, null);
-        });
-    }
-
     @Test
     void testActualizarCuentaBancaria_conGastoIgualASaldo_actualizaASaldoCero() {
         // Crear cuenta con saldo para este test
@@ -248,13 +218,6 @@ public class CuentaBancariaServiceTest {
 
     // Tests para listarCuentasBancarias
     @Test
-    void testListarCuentasBancarias_conIdEspacioTrabajoNulo_lanzaExcepcion() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            cuentaBancariaService.listarCuentasBancarias(null);
-        });
-    }
-
-    @Test
     void testListarCuentasBancarias_cuandoNoExistenCuentas_retornaListaVacia() {
         when(cuentaBancariaRepository.findByEspacioTrabajo_IdOrderByFechaModificacionDesc(espacioTrabajo.getId())).thenReturn(Collections.emptyList());
         List<CuentaBancariaDTOResponse> resultado = cuentaBancariaService.listarCuentasBancarias(espacioTrabajo.getId());
@@ -272,27 +235,6 @@ public class CuentaBancariaServiceTest {
     }
 
     // Tests para transaccionEntreCuentas
-    @Test
-    void testTransaccionEntreCuentas_conIdOrigenNulo_lanzaExcepcion() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            cuentaBancariaService.transaccionEntreCuentas(null, 2L, new BigDecimal("100.00"));
-        });
-    }
-
-    @Test
-    void testTransaccionEntreCuentas_conIdDestinoNulo_lanzaExcepcion() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            cuentaBancariaService.transaccionEntreCuentas(1L, null, new BigDecimal("100.00"));
-        });
-    }
-
-    @Test
-    void testTransaccionEntreCuentas_conMontoNulo_lanzaExcepcion() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            cuentaBancariaService.transaccionEntreCuentas(1L, 2L, null);
-        });
-    }
-
     @Test
     void testTransaccionEntreCuentas_cuandoCuentaOrigenNoExiste_lanzaExcepcion() {
         when(cuentaBancariaRepository.findById(1L)).thenReturn(Optional.empty());

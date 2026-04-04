@@ -184,17 +184,6 @@ public class TransaccionServiceTest {
     // Tests para registrarTransaccion
 
     @Test
-    void registrarTransaccion_cuandoTransaccionDTONulo_entoncesLanzaExcepcion() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            transaccionService.registrarTransaccion(null);
-        });
-        assertEquals("La transaccion no puede ser nula", exception.getMessage());
-        verify(transaccionRepository, never()).save(any(Transaccion.class));
-    }
-
-
-
-    @Test
     void registrarTransaccion_cuandoEspacioTrabajoNoExiste_entoncesLanzaExcepcion() {
         TransaccionDTORequest dto = new TransaccionDTORequest(LocalDate.now(), new BigDecimal("100.00"), TipoTransaccion.INGRESO, "Desc", "Auditor", UUID.fromString("00000000-0000-0000-0000-000000000099"), 1L, null, null);
         when(espacioRepository.findById(UUID.fromString("00000000-0000-0000-0000-000000000099"))).thenReturn(Optional.empty());
@@ -379,15 +368,6 @@ public class TransaccionServiceTest {
     // Tests para removerTransaccion
 
     @Test
-    void removerTransaccion_cuandoIdNulo_entoncesLanzaExcepcion() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            transaccionService.removerTransaccion(null);
-        });
-        assertEquals("El ID de la transacción no puede ser nulo", exception.getMessage());
-        verify(transaccionRepository, never()).delete(any(Transaccion.class));
-    }
-
-    @Test
     void removerTransaccion_cuandoTransaccionNoExiste_entoncesLanzaExcepcion() {
         when(transaccionRepository.findById(99L)).thenReturn(Optional.empty());
 
@@ -555,16 +535,6 @@ public class TransaccionServiceTest {
     // Tests para buscarTransaccion
 
     @Test
-    void buscarTransaccion_cuandoDatosBusquedaNulo_entoncesLanzaExcepcion() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            transaccionService.buscarTransaccion(null);
-        });
-        assertEquals("Los datos de búsqueda no pueden ser nulos", exception.getMessage());
-        verify(transaccionRepository, never()).findAll(any(Specification.class));
-    }
-
-
-    @Test
     void buscarTransaccion_cuandoAnioNuloYMesNoNulo_entoncesLanzaExcepcion() {
         TransaccionBusquedaDTO dto = new TransaccionBusquedaDTO(1, null, null, null, espacioId, null, null);
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
@@ -710,17 +680,6 @@ public class TransaccionServiceTest {
     // Tests para registrarContactoTransferencia
 
     @Test
-    void registrarContactoTransferencia_cuandoContactoDTONulo_entoncesLanzaExcepcion() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            transaccionService.registrarContactoTransferencia(null);
-        });
-        assertEquals("El contacto no puede ser nulo", exception.getMessage());
-        verify(contactoRepository, never()).save(any(ContactoTransferencia.class));
-    }
-
-
-
-    @Test
     void registrarContactoTransferencia_cuandoEspacioTrabajoNoExiste_entoncesLanzaExcepcion() {
         ContactoDTORequest dto = new ContactoDTORequest("Nombre Contacto", UUID.fromString("00000000-0000-0000-0000-000000000099"));
         when(espacioRepository.findById(UUID.fromString("00000000-0000-0000-0000-000000000099"))).thenReturn(Optional.empty());
@@ -772,15 +731,6 @@ public class TransaccionServiceTest {
     }
 
     // Tests para nuevoMotivoTransaccion
-
-    @Test
-    void nuevoMotivoTransaccion_cuandoMotivoDTONulo_entoncesLanzaExcepcion() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            transaccionService.nuevoMotivoTransaccion(null);
-        });
-        assertEquals("El motivo no puede ser nulo", exception.getMessage());
-        verify(motivoRepository, never()).save(any(MotivoTransaccion.class));
-    }
 
 
 
@@ -838,15 +788,6 @@ public class TransaccionServiceTest {
     // Tests para listarContactos
 
     @Test
-    void listarContactos_cuandoIdEspacioTrabajoNulo_entoncesLanzaExcepcion() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            transaccionService.listarContactos(null);
-        });
-        assertEquals("El id del espacio de trabajo no puede ser nulo", exception.getMessage());
-        verify(contactoRepository, never()).findByEspacioTrabajo_Id(any(UUID.class));
-    }
-
-    @Test
     void listarContactos_cuandoNoExistenContactos_entoncesRetornaListaVacia() {
         when(contactoRepository.findByEspacioTrabajo_IdOrderByFechaModificacionDesc(espacioId)).thenReturn(Collections.emptyList());
 
@@ -876,15 +817,6 @@ public class TransaccionServiceTest {
     // Tests para listarMotivos
 
     @Test
-    void listarMotivos_cuandoIdEspacioTrabajoNulo_entoncesLanzaExcepcion() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            transaccionService.listarMotivos(null);
-        });
-        assertEquals("El id del espacio de trabajo no puede ser nulo", exception.getMessage());
-        verify(motivoRepository, never()).findByEspacioTrabajo_Id(any(UUID.class));
-    }
-
-    @Test
     void listarMotivos_cuandoNoExistenMotivos_entoncesRetornaListaVacia() {
         when(motivoRepository.findByEspacioTrabajo_IdOrderByFechaModificacionDesc(espacioId)).thenReturn(Collections.emptyList());
 
@@ -912,15 +844,6 @@ public class TransaccionServiceTest {
     }
 
     // Tests para buscarTransaccionesRecientes
-
-    @Test
-    void buscarTransaccionesRecientes_cuandoIdEspacioTrabajoNulo_entoncesLanzaExcepcion() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            transaccionService.buscarTransaccionesRecientes(null);
-        });
-        assertEquals("El id del espacio de trabajo no puede ser nulo", exception.getMessage());
-        verify(transaccionRepository, never()).findAll(any(Specification.class), any(Pageable.class));
-    }
 
     @Test
     void buscarTransaccionesRecientes_cuandoNoExistenTransacciones_entoncesRetornaListaVacia() {

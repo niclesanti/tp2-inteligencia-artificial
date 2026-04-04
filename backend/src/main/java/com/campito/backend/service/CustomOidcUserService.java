@@ -1,11 +1,10 @@
 package com.campito.backend.service;
 
+import lombok.extern.slf4j.Slf4j;
 import com.campito.backend.dao.UsuarioRepository;
 import com.campito.backend.model.CustomOAuth2User;
 import com.campito.backend.model.ProveedorAutenticacion;
 import com.campito.backend.model.Usuario;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
@@ -18,9 +17,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 @Service
+@Slf4j
 public class CustomOidcUserService extends OidcUserService {
-
-    private static final Logger logger = LoggerFactory.getLogger(CustomOidcUserService.class);
 
     @Autowired
     private UsuarioRepository usuarioRepository;
@@ -30,7 +28,7 @@ public class CustomOidcUserService extends OidcUserService {
     public OidcUser loadUser(OidcUserRequest userRequest) throws OAuth2AuthenticationException {
         OidcUser oidcUser = super.loadUser(userRequest);
         String email = oidcUser.getEmail();
-        logger.info("Iniciando procesamiento de autenticacion para el email: {}", email);
+        log.info("Iniciando procesamiento de autenticacion para el email: {}", email);
 
         try {
             Usuario usuario = usuarioRepository.findByEmailAndProveedor(email, ProveedorAutenticacion.GOOGLE)
@@ -55,11 +53,11 @@ public class CustomOidcUserService extends OidcUserService {
             // Devolvemos un principal personalizado que contiene nuestro objeto Usuario
             CustomOAuth2User customUser = new CustomOAuth2User(oidcUser, usuarioGuardado);
 
-            logger.info("Finalizado exitosamente el procesamiento para el email: {}. ID de usuario: {}", email, usuarioGuardado.getId());
+            log.info("Finalizado exitosamente el procesamiento para el email: {}. ID de usuario: {}", email, usuarioGuardado.getId());
             return customUser;
 
         } catch (Exception e) {
-            logger.error("Error critico durante la autenticacion para el email: {}. Causa: {}", email, e.getMessage(), e);
+            log.error("Error critico durante la autenticacion para el email: {}. Causa: {}", email, e.getMessage(), e);
             throw e;
         }
     }

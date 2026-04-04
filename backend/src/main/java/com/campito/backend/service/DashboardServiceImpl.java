@@ -1,5 +1,6 @@
 package com.campito.backend.service;
 
+import lombok.extern.slf4j.Slf4j;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -13,8 +14,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.campito.backend.dao.CuotaCreditoRepository;
@@ -44,9 +43,8 @@ import lombok.RequiredArgsConstructor;
  */
 @Service
 @RequiredArgsConstructor  // Genera constructor con todos los campos final para inyección de dependencias
+@Slf4j
 public class DashboardServiceImpl implements DashboardService {
-
-    private static final Logger logger = LoggerFactory.getLogger(DashboardServiceImpl.class);
 
     private final EspacioTrabajoRepository espacioRepository;
     private final DashboardRepository dashboardRepository;
@@ -65,18 +63,10 @@ public class DashboardServiceImpl implements DashboardService {
     @Override
     public DashboardStatsDTO obtenerDashboardStats(UUID idEspacio) {
 
-        if (idEspacio == null) {
-            logger.warn("Intento de obtener estadísticas del dashboard con ID de espacio nulo.");
-            throw new IllegalArgumentException("El ID del espacio de trabajo no puede ser nulo");
-        }
-        logger.info("Obteniendo estadisticas consolidadas del dashboard para el espacio ID: {}", idEspacio);
+        log.info("Obteniendo estadisticas consolidadas del dashboard para el espacio ID: {}", idEspacio);
 
         // 1. Balance total del espacio
-        EspacioTrabajo espacio = espacioRepository.findById(idEspacio).orElseThrow(() -> {
-            String msg = "Espacio de trabajo con ID " + idEspacio + " no encontrado";
-            logger.warn(msg);
-            return new EntityNotFoundException(msg);
-        });
+        EspacioTrabajo espacio = buscarEspacioTrabajoPorId(idEspacio);
         BigDecimal balanceTotal = espacio.getSaldo();
 
         // 2. Gastos del mes actual
@@ -143,7 +133,7 @@ public class DashboardServiceImpl implements DashboardService {
             }
         }
         
-        logger.debug("Flujo mensual calculado con {} registros encontrados de {} meses solicitados", 
+        log.debug("Flujo mensual calculado con {} registros encontrados de {} meses solicitados", 
             registrosMensuales.size(), ultimosMeses.size());
 
         // 5. Distribución de gastos por motivo (último mes)
@@ -207,7 +197,7 @@ public class DashboardServiceImpl implements DashboardService {
             distribucionComprasCredito
         );
 
-        logger.info("Estadisticas del dashboard para el espacio ID {} generadas exitosamente.", idEspacio);
+        log.info("Estadisticas del dashboard para el espacio ID {} generadas exitosamente.", idEspacio);
         return stats;
     }
 
@@ -216,6 +206,17 @@ public class DashboardServiceImpl implements DashboardService {
         MÉTODOS AUXILIARES PRIVADOS
     ===========================================================================
     */
+
+    /**
+     * Calcula la fecha de vencimiento del pago del resumen (misma lógica del scheduler)
+     */
+    private EspacioTrabajo buscarEspacioTrabajoPorId(UUID idEspacio) {
+        return espacioRepository.findById(idEspacio).orElseThrow(() -> {
+            String msg = "Espacio de trabajo con ID " + idEspacio + " no encontrado";
+            log.warn(msg);
+            return new EntityNotFoundException(msg);
+        });
+    }
 
     /**
      * Calcula la fecha de vencimiento del pago del resumen (misma lógica del scheduler)

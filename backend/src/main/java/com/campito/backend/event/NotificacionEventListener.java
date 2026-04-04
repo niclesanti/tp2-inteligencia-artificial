@@ -1,5 +1,6 @@
 package com.campito.backend.event;
 
+import lombok.extern.slf4j.Slf4j;
 import com.campito.backend.dao.NotificacionRepository;
 import com.campito.backend.dao.UsuarioRepository;
 import com.campito.backend.model.Notificacion;
@@ -8,8 +9,6 @@ import com.campito.backend.service.SseEmitterService;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -32,9 +31,8 @@ import com.campito.backend.config.MetricsConfig;
  */
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class NotificacionEventListener {
-    
-    private static final Logger logger = LoggerFactory.getLogger(NotificacionEventListener.class);
     
     private final NotificacionRepository notificacionRepository;
     private final UsuarioRepository usuarioRepository;
@@ -51,13 +49,13 @@ public class NotificacionEventListener {
     @Transactional
     public void handleNotificacionEvent(NotificacionEvent event) {
         try {
-            logger.info("Procesando notificación: tipo={}, usuario={}", 
+            log.info("Procesando notificación: tipo={}, usuario={}", 
                        event.getTipo(), event.getIdUsuario());
             
             // 1. Buscar usuario
             Usuario usuario = usuarioRepository.findById(event.getIdUsuario()).orElseThrow(() -> {
                 String mensaje = "Usuario con ID " + event.getIdUsuario() + " no encontrado";
-                logger.warn(mensaje);
+                log.warn(mensaje);
                 return new EntityNotFoundException(mensaje);
             });
             
@@ -80,10 +78,10 @@ public class NotificacionEventListener {
                     .register(meterRegistry)
                     .increment();
             
-            logger.info("Notificación procesada exitosamente: id={}", notificacion.getId());
+            log.info("Notificación procesada exitosamente: id={}", notificacion.getId());
             
         } catch (Exception e) {
-            logger.error("Error al procesar notificación: {}", e.getMessage(), e);
+            log.error("Error al procesar notificación: {}", e.getMessage(), e);
             // No se propaga la excepción para evitar que un error en notificaciones
             // afecte la operación principal que publicó el evento
         }

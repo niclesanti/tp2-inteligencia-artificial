@@ -1,5 +1,6 @@
 package com.campito.backend.service;
 
+import lombok.extern.slf4j.Slf4j;
 import com.campito.backend.dao.NotificacionRepository;
 import com.campito.backend.dto.NotificacionDTOResponse;
 import com.campito.backend.event.NotificacionEvent;
@@ -9,8 +10,6 @@ import com.campito.backend.model.TipoNotificacion;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,9 +30,8 @@ import java.util.UUID;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class NotificacionServiceImpl implements NotificacionService {
-    
-    private static final Logger logger = LoggerFactory.getLogger(NotificacionServiceImpl.class);
     
     private final NotificacionRepository notificacionRepository;
     private final NotificacionMapper notificacionMapper;
@@ -49,7 +47,7 @@ public class NotificacionServiceImpl implements NotificacionService {
     @Override
     @Transactional(readOnly = true)
     public List<NotificacionDTOResponse> obtenerNotificacionesUsuario(UUID idUsuario) {
-        logger.info("Obteniendo notificaciones para usuario: {}", idUsuario);
+        log.info("Obteniendo notificaciones para usuario: {}", idUsuario);
         List<Notificacion> notificaciones = notificacionRepository
                 .findTop50ByUsuarioIdOrderByFechaCreacionDesc(idUsuario);
         return notificacionMapper.toResponseList(notificaciones);
@@ -64,7 +62,7 @@ public class NotificacionServiceImpl implements NotificacionService {
     @Override
     @Transactional(readOnly = true)
     public Long contarNoLeidas(UUID idUsuario) {
-        logger.info("Contando notificaciones no leídas para usuario: {}", idUsuario);
+        log.info("Contando notificaciones no leídas para usuario: {}", idUsuario);
         return notificacionRepository.countByUsuarioIdAndLeidaFalse(idUsuario);
     }
     
@@ -77,20 +75,15 @@ public class NotificacionServiceImpl implements NotificacionService {
     @Override
     @Transactional
     public void marcarComoLeida(Long idNotificacion) {
-        logger.info("Marcando notificación {} como leída.", idNotificacion);
+        log.info("Marcando notificación {} como leída.", idNotificacion);
         
-        Notificacion notificacion = notificacionRepository.findById(idNotificacion)
-                .orElseThrow(() -> {
-                    String msg = "Notificación con ID " + idNotificacion + " no encontrada.";
-                    logger.warn(msg);
-                    return new EntityNotFoundException(msg);
-                });
+        Notificacion notificacion = buscarNotificacionPorId(idNotificacion);
         
         if (!notificacion.getLeida()) {
             notificacion.setLeida(true);
             notificacion.setFechaLeida(LocalDateTime.now());
             notificacionRepository.save(notificacion);
-            logger.info("Notificación {} marcada como leída", idNotificacion);
+            log.info("Notificación {} marcada como leída", idNotificacion);
             
             // 📊 MÉTRICA: Incrementar contador de notificaciones leídas
             Counter.builder(MetricsConfig.MetricNames.NOTIFICACIONES_LEIDAS)
@@ -109,10 +102,10 @@ public class NotificacionServiceImpl implements NotificacionService {
     @Override
     @Transactional
     public void marcarTodasComoLeidas(UUID idUsuario) {
-        logger.info("Marcando todas las notificaciones como leídas para usuario: {}", idUsuario);
+        log.info("Marcando todas las notificaciones como leídas para usuario: {}", idUsuario);
         int actualizadas = notificacionRepository
                 .marcarTodasComoLeidas(idUsuario, LocalDateTime.now());
-        logger.info("Marcadas {} notificaciones como leídas para usuario {}", 
+        log.info("Marcadas {} notificaciones como leídas para usuario {}", 
                    actualizadas, idUsuario);
     }
     
@@ -125,17 +118,12 @@ public class NotificacionServiceImpl implements NotificacionService {
     @Override
     @Transactional
     public void eliminarNotificacion(Long idNotificacion) {
-        logger.info("Eliminando notificación {}", idNotificacion);
+        log.info("Eliminando notificación {}", idNotificacion);
         
-        Notificacion notificacion = notificacionRepository.findById(idNotificacion)
-                .orElseThrow(() -> {
-                    String msg = "Notificación con ID " + idNotificacion + " no encontrada.";
-                    logger.warn(msg);
-                    return new EntityNotFoundException(msg);
-                });
+        Notificacion notificacion = buscarNotificacionPorId(idNotificacion);
         
         notificacionRepository.delete(notificacion);
-        logger.info("Notificación {} eliminada exitosamente", idNotificacion);
+        log.info("Notificación {} eliminada exitosamente", idNotificacion);
     }
     
     /**
@@ -145,11 +133,11 @@ public class NotificacionServiceImpl implements NotificacionService {
     @Override
     @Transactional
     public void limpiarNotificacionesLeidasAntiguas() {
-        logger.info("Iniciando limpieza de notificaciones leídas antiguas");
+        log.info("Iniciando limpieza de notificaciones leídas antiguas");
         // Eliminar notificaciones leídas con más de 3 días
         LocalDateTime fechaLimite = LocalDateTime.now().minusDays(3);
         int eliminadas = notificacionRepository.eliminarNotificacionesLeidasAntiguas(fechaLimite);
-        logger.info("Eliminadas {} notificaciones leídas antiguas (>3 días)", eliminadas);
+        log.info("Eliminadas {} notificaciones leídas antiguas (>3 días)", eliminadas);
     }
     
     /**
@@ -159,11 +147,11 @@ public class NotificacionServiceImpl implements NotificacionService {
     @Override
     @Transactional
     public void limpiarNotificacionesNoLeidasAntiguas() {
-        logger.info("Iniciando limpieza de notificaciones no leídas antiguas");
+        log.info("Iniciando limpieza de notificaciones no leídas antiguas");
         // Eliminar notificaciones no leídas con más de 15 días (probablemente ya no son relevantes)
         LocalDateTime fechaLimite = LocalDateTime.now().minusDays(15);
         int eliminadas = notificacionRepository.eliminarNotificacionesNoLeidasAntiguas(fechaLimite);
-        logger.info("Eliminadas {} notificaciones no leídas antiguas (>15 días)", eliminadas);
+        log.info("Eliminadas {} notificaciones no leídas antiguas (>15 días)", eliminadas);
     }
     
     /**
@@ -175,7 +163,7 @@ public class NotificacionServiceImpl implements NotificacionService {
      */
     @Override
     public void enviarNotificacionPrueba(UUID idUsuario, TipoNotificacion tipo, String mensaje) {
-        logger.info("Enviando notificación de prueba a usuario: {} - Tipo: {}", idUsuario, tipo);
+        log.info("Enviando notificación de prueba a usuario: {} - Tipo: {}", idUsuario, tipo);
         
         String mensajeFinal = mensaje != null && !mensaje.isBlank()
             ? mensaje 
@@ -190,10 +178,25 @@ public class NotificacionServiceImpl implements NotificacionService {
                 mensajeFinal
             ));
             
-            logger.info("Evento de notificación de prueba publicado exitosamente");
+            log.info("Evento de notificación de prueba publicado exitosamente");
         } catch (Exception e) {
-            logger.error("Error al publicar evento de notificación de prueba: {}", e.getMessage(), e);
+            log.error("Error al publicar evento de notificación de prueba: {}", e.getMessage(), e);
             throw new RuntimeException("Error al enviar notificación de prueba", e);
         }
+    }
+
+    /*
+    ===========================================================================
+        MÉTODOS AUXILIARES PRIVADOS
+    ===========================================================================
+    */
+
+    private Notificacion buscarNotificacionPorId(Long idNotificacion) {
+        return notificacionRepository.findById(idNotificacion)
+                .orElseThrow(() -> {
+                    String msg = "Notificación con ID " + idNotificacion + " no encontrada.";
+                    log.warn(msg);
+                    return new EntityNotFoundException(msg);
+                });
     }
 }

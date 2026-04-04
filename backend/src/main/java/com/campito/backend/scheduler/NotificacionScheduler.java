@@ -1,9 +1,8 @@
 package com.campito.backend.scheduler;
 
+import lombok.extern.slf4j.Slf4j;
 import com.campito.backend.service.NotificacionService;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,9 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class NotificacionScheduler {
-
-    private static final Logger logger = LoggerFactory.getLogger(NotificacionScheduler.class);
 
     private final NotificacionService notificacionService;
 
@@ -36,11 +34,11 @@ public class NotificacionScheduler {
     @Scheduled(cron = "0 0 3 * * *", zone = "America/Argentina/Buenos_Aires")
     @Transactional
     public void limpiarNotificacionesLeidasAntiguas() {
-        logger.info("Ejecutando limpieza de notificaciones leídas antiguas");
+        log.info("Ejecutando limpieza de notificaciones leídas antiguas");
         try {
             notificacionService.limpiarNotificacionesLeidasAntiguas();
         } catch (Exception e) {
-            logger.error("Error al limpiar notificaciones leídas antiguas: {}", e.getMessage(), e);
+            log.error("Error al limpiar notificaciones leídas antiguas: {}", e.getMessage(), e);
         }
     }
 
@@ -55,11 +53,11 @@ public class NotificacionScheduler {
     @Scheduled(cron = "0 0 4 1 * *", zone = "America/Argentina/Buenos_Aires")
     @Transactional
     public void limpiarNotificacionesNoLeidasAntiguas() {
-        logger.info("Ejecutando limpieza de notificaciones no leídas antiguas");
+        log.info("Ejecutando limpieza de notificaciones no leídas antiguas");
         try {
             notificacionService.limpiarNotificacionesNoLeidasAntiguas();
         } catch (Exception e) {
-            logger.error("Error al limpiar notificaciones no leídas antiguas: {}", e.getMessage(), e);
+            log.error("Error al limpiar notificaciones no leídas antiguas: {}", e.getMessage(), e);
         }
     }
 }

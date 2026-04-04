@@ -1,5 +1,6 @@
 package com.campito.backend.security;
 
+import lombok.extern.slf4j.Slf4j;
 import com.campito.backend.dao.UsuarioRepository;
 import com.campito.backend.model.CustomOAuth2User;
 import com.campito.backend.model.Usuario;
@@ -8,8 +9,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,9 +27,8 @@ import java.util.UUID;
  */
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-
-    private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String BEARER_PREFIX = "Bearer ";
 
@@ -71,11 +69,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     // Establecer la autenticación en el contexto de seguridad
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                     
-                    logger.debug("Usuario autenticado via JWT: {}", usuario.getEmail());
+                    log.debug("Usuario autenticado via JWT: {}", usuario.getEmail());
                 }
             }
         } catch (Exception ex) {
-            logger.error("No se pudo establecer la autenticación del usuario en el contexto de seguridad", ex);
+            log.error("No se pudo establecer la autenticación del usuario en el contexto de seguridad", ex);
         }
 
         filterChain.doFilter(request, response);
@@ -102,7 +100,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // 2. Si no está en header, buscar en query parameter (para SSE)
         String tokenParam = request.getParameter("token");
         if (StringUtils.hasText(tokenParam)) {
-            logger.debug("Token JWT extraído de query parameter (SSE)");
+            log.debug("Token JWT extraído de query parameter (SSE)");
             return tokenParam;
         }
         

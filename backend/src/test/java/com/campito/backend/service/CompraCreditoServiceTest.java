@@ -214,12 +214,6 @@ public class CompraCreditoServiceTest {
     // ---------------------------------------------------------
 
     @Test
-    void registrarCompraCredito_nullDto_lanzaIllegalArgument() {
-        assertThrows(IllegalArgumentException.class, () -> compraCreditoService.registrarCompraCredito(null));
-        verify(compraCreditoRepository, never()).save(any());
-    }
-
-    @Test
     void registrarCompraCredito_espacioNoExiste_lanzaEntityNotFound() {
         CompraCreditoDTORequest dto = new CompraCreditoDTORequest(LocalDate.now(), new BigDecimal("100.00"), 2, "desc", "Aud", espacio.getId(), 1L, null, 1L);
         when(espacioRepository.findById(espacio.getId())).thenReturn(Optional.empty());
@@ -330,11 +324,6 @@ public class CompraCreditoServiceTest {
     // ---------------------------------------------------------
 
     @Test
-    void registrarTarjeta_nullDto_lanzaIllegalArgument() {
-        assertThrows(IllegalArgumentException.class, () -> compraCreditoService.registrarTarjeta(null));
-    }
-
-    @Test
     void registrarTarjeta_espacioNoExiste_lanzaEntityNotFound() {
         var req = new com.campito.backend.dto.TarjetaDTORequest("1234", "Entidad", "VISA", 1, 5, espacio.getId());
         when(espacioRepository.findById(espacio.getId())).thenReturn(Optional.empty());
@@ -373,13 +362,6 @@ public class CompraCreditoServiceTest {
     // ---------------------------------------------------------
 
     @Test
-    void modificarTarjeta_nullParams_lanzaIllegalArgument() {
-        assertThrows(IllegalArgumentException.class, () -> compraCreditoService.modificarTarjeta(null, 1, 5));
-        assertThrows(IllegalArgumentException.class, () -> compraCreditoService.modificarTarjeta(1L, null, 5));
-        assertThrows(IllegalArgumentException.class, () -> compraCreditoService.modificarTarjeta(1L, 1, null));
-    }
-
-    @Test
     void modificarTarjeta_tarjetaNoExiste_lanzaEntityNotFound() {
         when(tarjetaRepository.findById(20L)).thenReturn(Optional.empty());
         assertThrows(EntityNotFoundException.class, () -> compraCreditoService.modificarTarjeta(20L, 15, 5));
@@ -411,11 +393,6 @@ public class CompraCreditoServiceTest {
     // ---------------------------------------------------------
     // Tests para removerCompraCredito
     // ---------------------------------------------------------
-
-    @Test
-    void removerCompraCredito_idNull_lanzaIllegalArgument() {
-        assertThrows(IllegalArgumentException.class, () -> compraCreditoService.removerCompraCredito(null));
-    }
 
     @Test
     void removerCompraCredito_noExiste_lanzaEntityNotFound() {
@@ -459,11 +436,6 @@ public class CompraCreditoServiceTest {
     // ---------------------------------------------------------
 
     @Test
-    void listarComprasCreditoDebeCuotas_idNull_lanzaIllegalArgument() {
-        assertThrows(IllegalArgumentException.class, () -> compraCreditoService.listarComprasCreditoDebeCuotas(null, null, null));
-    }
-
-    @Test
     void listarComprasCreditoDebeCuotas_retornaDTOs() {
         CompraCredito c = new CompraCredito();
         c.setId(200L);
@@ -472,11 +444,6 @@ public class CompraCreditoServiceTest {
 
         var res = compraCreditoService.listarComprasCreditoDebeCuotas(espacio.getId(), null, null);
         assertEquals(1, res.getContent().size());
-    }
-
-    @Test
-    void buscarComprasCredito_idNull_lanzaIllegalArgument() {
-        assertThrows(IllegalArgumentException.class, () -> compraCreditoService.BuscarComprasCredito(null));
     }
 
     @Test
@@ -493,11 +460,6 @@ public class CompraCreditoServiceTest {
     // ---------------------------------------------------------
     // Tests para listarCuotasPorTarjeta
     // ---------------------------------------------------------
-
-    @Test
-    void listarCuotasPorTarjeta_idNull_lanzaIllegalArgument() {
-        assertThrows(IllegalArgumentException.class, () -> compraCreditoService.listarCuotasPorTarjeta(null));
-    }
 
     @Test
     void listarCuotasPorTarjeta_tarjetaNoExiste_lanzaEntityNotFound() {
@@ -521,11 +483,6 @@ public class CompraCreditoServiceTest {
     // ---------------------------------------------------------
     // Tests para pagarResumenTarjeta
     // ---------------------------------------------------------
-
-    @Test
-    void pagarResumenTarjeta_requestNull_lanzaIllegalArgument() {
-        assertThrows(IllegalArgumentException.class, () -> compraCreditoService.pagarResumenTarjeta(null));
-    }
 
     @Test
     void pagarResumenTarjeta_resumenNoExiste_lanzaEntityNotFound() {
@@ -642,22 +599,12 @@ public class CompraCreditoServiceTest {
     // ---------------------------------------------------------
 
     @Test
-    void listarResumenesPorTarjeta_idNull_lanzaIllegalArgument() {
-        assertThrows(IllegalArgumentException.class, () -> compraCreditoService.listarResumenesPorTarjeta(null));
-    }
-
-    @Test
     void listarResumenesPorTarjeta_retornaLista() {
         Resumen r = new Resumen(); r.setId(1L); r.setTarjeta(tarjeta);
         when(resumenRepository.findByTarjetaIdAndEstadoIn(10L, List.of(EstadoResumen.CERRADO, EstadoResumen.PAGADO_PARCIAL))).thenReturn(List.of(r));
         when(cuotaCreditoRepository.findByResumenAsociado_Id(1L)).thenReturn(List.of());
         var res = compraCreditoService.listarResumenesPorTarjeta(10L);
         assertNotNull(res);
-    }
-
-    @Test
-    void listarResumenesPorEspacioTrabajo_idNull_lanzaIllegalArgument() {
-        assertThrows(IllegalArgumentException.class, () -> compraCreditoService.listarResumenesPorEspacioTrabajo(null));
     }
 
     @Test

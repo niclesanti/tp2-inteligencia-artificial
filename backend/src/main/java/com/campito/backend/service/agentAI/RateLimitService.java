@@ -1,8 +1,8 @@
 package com.campito.backend.service.agentAI;
 
+import lombok.extern.slf4j.Slf4j;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
