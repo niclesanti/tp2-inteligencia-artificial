@@ -65,43 +65,31 @@ public class DashboardServiceImpl implements DashboardService {
 
         log.info("Obteniendo estadisticas consolidadas del dashboard para el espacio ID: {}", idEspacio);
 
-        // 1. Balance total del espacio
         EspacioTrabajo espacio = buscarEspacioTrabajoPorId(idEspacio);
-        BigDecimal balanceTotal = espacio.getSaldo();
-
-        // 2. Gastos del mes actual
         ZoneId buenosAiresZone = ZoneId.of("America/Argentina/Buenos_Aires");
         ZonedDateTime nowInBuenosAires = ZonedDateTime.now(buenosAiresZone);
         Integer anioActual = nowInBuenosAires.getYear();
         Integer mesActual = nowInBuenosAires.getMonthValue();
-
-        Optional<GastosIngresosMensuales> opt = gastosIngresosMensualesRepository.findByEspacioTrabajo_IdAndAnioAndMes(idEspacio, anioActual, mesActual);
-
-        GastosIngresosMensuales registro = opt.orElseGet(() -> {
-            return GastosIngresosMensuales.builder()
-                    .anio(anioActual)
-                    .mes(mesActual)
-                    .gastos(BigDecimal.ZERO)
-                    .ingresos(BigDecimal.ZERO)
-                    .espacioTrabajo(espacio)
-                    .build();
-        });
-
-        BigDecimal gastosMensuales = registro.getGastos();
-
-        // 3. Deuda total pendiente (todas las cuotas impagadas)
-        BigDecimal deudaTotalPendiente = cuotaCreditoRepository.calcularDeudaTotalPendiente(idEspacio);
-
-        // 4. Flujo mensual (últimos 12 meses)
         LocalDate now = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM");
+
+        /* 1. Balance total del espacio */
+        BigDecimal balanceTotal = espacio.getSaldo();
+
+        /* 2. Gastos del mes actual */
+        BigDecimal gastosMensuales = gastosMesActual(espacio, anioActual, mesActual);
+
+        /* 3. Deuda total pendiente (todas las cuotas impagadas) */
+        BigDecimal deudaTotalPendiente = cuotaCreditoRepository.calcularDeudaTotalPendiente(idEspacio);
+
+        /* 4. Flujo mensual (últimos 12 meses) */
         
         // Generar lista de los últimos 12 meses (del más antiguo al más reciente)
         List<String> ultimosMeses = new ArrayList<>();
         for (int i = 11; i >= 0; i--) {
             ultimosMeses.add(now.minusMonths(i).format(formatter));
         }
-        
+
         // Obtener los registros existentes de GastosIngresosMensuales
         List<GastosIngresosMensuales> registrosMensuales = gastosIngresosMensualesRepository
             .findByEspacioTrabajoAndMeses(idEspacio, ultimosMeses);
@@ -112,79 +100,23 @@ public class DashboardServiceImpl implements DashboardService {
             String mesKey = String.format("%d-%02d", reg.getAnio(), reg.getMes());
             mapRegistros.put(mesKey, reg);
         }
-        
-        // Construir la lista completa con todos los meses (rellenar con ceros los faltantes)
-        List<IngresosGastosMesDTO> flujoMensualCompleto = new ArrayList<>();
-        for (String mes : ultimosMeses) {
-            GastosIngresosMensuales reg = mapRegistros.get(mes);
-            if (reg != null) {
-                flujoMensualCompleto.add(new IngresosGastosMesDTOImpl(
-                    mes,
-                    reg.getIngresos(),
-                    reg.getGastos()
-                ));
-            } else {
-                // Mes sin datos: ingresos y gastos en cero
-                flujoMensualCompleto.add(new IngresosGastosMesDTOImpl(
-                    mes,
-                    BigDecimal.ZERO,
-                    BigDecimal.ZERO
-                ));
-            }
-        }
-        
-        log.debug("Flujo mensual calculado con {} registros encontrados de {} meses solicitados", 
-            registrosMensuales.size(), ultimosMeses.size());
 
-        // 5. Distribución de gastos por motivo (último mes)
+        List<IngresosGastosMesDTO> flujoMensualCompleto = FlujoMensual(now, idEspacio, ultimosMeses, mapRegistros);
+        log.debug("Flujo mensual calculado con {} registros encontrados de {} meses solicitados", 
+        registrosMensuales.size(), ultimosMeses.size());
+
+        /* 5. Distribución de gastos por motivo (último mes) */
         LocalDate fechaLimite = now.minusMonths(1);
         List<DistribucionGastoDTO> distribucionGastos = dashboardRepository.findDistribucionGastos(idEspacio, fechaLimite);
 
-        // 7. Flujo de tarjeta mensual (últimos 12 meses) - construido desde registrosMensuales ya cargados
-        List<FlujoCreditoMesDTO> flujoTarjetaMensualCompleto = new ArrayList<>();
-        for (String mes : ultimosMeses) {
-            GastosIngresosMensuales reg = mapRegistros.get(mes);
-            if (reg != null) {
-                flujoTarjetaMensualCompleto.add(new FlujoCreditoMesDTOImpl(
-                    mes,
-                    reg.getComprasCredito() != null ? reg.getComprasCredito() : BigDecimal.ZERO,
-                    reg.getPagoResumen() != null ? reg.getPagoResumen() : BigDecimal.ZERO
-                ));
-            } else {
-                flujoTarjetaMensualCompleto.add(new FlujoCreditoMesDTOImpl(
-                    mes,
-                    BigDecimal.ZERO,
-                    BigDecimal.ZERO
-                ));
-            }
-        }
+        /* 6. Flujo de tarjeta mensual (últimos 12 meses) - construido desde registrosMensuales ya cargados */
+        List<FlujoCreditoMesDTO> flujoTarjetaMensualCompleto = FlujoCreditoMensual(ultimosMeses, mapRegistros);
 
-        // 8. Distribución de compras con crédito por motivo (último mes)
+        /* 7. Distribución de compras con crédito por motivo (último mes) */
         List<DistribucionGastoDTO> distribucionComprasCredito = dashboardRepository.findDistribucionComprasCredito(idEspacio, fechaLimite);
 
-        // 6. Resumen mensual (suma de las cuotas que entrarán en los próximos resúmenes por tarjeta)
-        BigDecimal resumenMensual = BigDecimal.ZERO;
-        List<Tarjeta> tarjetas = tarjetaRepository.findByEspacioTrabajo_Id(idEspacio);
-        for (Tarjeta tarjeta : tarjetas) {
-            int diaCierre = tarjeta.getDiaCierre();
-
-            YearMonth ym = YearMonth.from(now);
-            int diaAjustadoCierre = Math.min(diaCierre, ym.lengthOfMonth());
-            LocalDate fechaCierre = ym.atDay(diaAjustadoCierre);
-            // Queremos el próximo cierre estrictamente en el futuro (si hoy es el día de cierre, tomar el siguiente mes)
-            if (!fechaCierre.isAfter(now)) {
-                YearMonth siguiente = ym.plusMonths(1);
-                diaAjustadoCierre = Math.min(diaCierre, siguiente.lengthOfMonth());
-                fechaCierre = siguiente.atDay(diaAjustadoCierre);
-            }
-
-            LocalDate fechaInicio = fechaCierre.plusDays(1);
-            LocalDate fechaFin = calcularFechaVencimiento(fechaCierre, tarjeta.getDiaVencimientoPago());
-
-            List<CuotaCredito> cuotasPendientes = cuotaCreditoRepository.findByTarjetaSinResumenEnRango(tarjeta.getId(), fechaInicio, fechaFin);
-            BigDecimal monto = MoneyUtils.sum(cuotasPendientes.stream().map(CuotaCredito::getMontoCuota).toList());
-            resumenMensual = resumenMensual.add(monto);
-        }
+        /* 8. Resumen mensual (suma de las cuotas que entrarán en los próximos resúmenes por tarjeta) */
+        BigDecimal resumenMensual = resumenMensual(idEspacio, now);
 
         DashboardStatsDTO stats = new DashboardStatsDTO(
             balanceTotal,
@@ -207,9 +139,6 @@ public class DashboardServiceImpl implements DashboardService {
     ===========================================================================
     */
 
-    /**
-     * Calcula la fecha de vencimiento del pago del resumen (misma lógica del scheduler)
-     */
     private EspacioTrabajo buscarEspacioTrabajoPorId(UUID idEspacio) {
         return espacioRepository.findById(idEspacio).orElseThrow(() -> {
             String msg = "Espacio de trabajo con ID " + idEspacio + " no encontrado";
@@ -226,5 +155,100 @@ public class DashboardServiceImpl implements DashboardService {
         YearMonth mesSiguiente = mesActual.plusMonths(1);
         int diaAjustado = Math.min(diaVencimiento, mesSiguiente.lengthOfMonth());
         return mesSiguiente.atDay(diaAjustado);
+    }
+
+    /**
+     * Calcula el total de gastos del mes actual para el espacio dado.
+     */
+    private BigDecimal gastosMesActual(EspacioTrabajo espacio, Integer anioActual, Integer mesActual) {
+        Optional<GastosIngresosMensuales> opt = gastosIngresosMensualesRepository.findByEspacioTrabajo_IdAndAnioAndMes(espacio.getId(), anioActual, mesActual);
+
+        GastosIngresosMensuales registro = opt.orElseGet(() -> {
+            return GastosIngresosMensuales.builder()
+                    .anio(anioActual)
+                    .mes(mesActual)
+                    .gastos(BigDecimal.ZERO)
+                    .ingresos(BigDecimal.ZERO)
+                    .espacioTrabajo(espacio)
+                    .build();
+        });
+
+        return registro.getGastos();
+    }
+
+        /**
+        * Obtiene el flujo mensual de ingresos y gastos para los últimos 12 meses.
+        * Rellena con ceros los meses que no tengan registros.
+        */
+    private List<IngresosGastosMesDTO> FlujoMensual(LocalDate now, UUID idEspacio, List<String> ultimosMeses, Map<String, GastosIngresosMensuales> mapRegistros) {
+        
+        // Construir la lista completa con todos los meses (rellenar con ceros los faltantes)
+        List<IngresosGastosMesDTO> flujoMensualCompleto = new ArrayList<>();
+        for (String mes : ultimosMeses) {
+            GastosIngresosMensuales reg = mapRegistros.get(mes);
+            if (reg != null) {
+                flujoMensualCompleto.add(new IngresosGastosMesDTOImpl(
+                    mes,
+                    reg.getIngresos(),
+                    reg.getGastos()
+                ));
+            } else {
+                // Mes sin datos: ingresos y gastos en cero
+                flujoMensualCompleto.add(new IngresosGastosMesDTOImpl(
+                    mes,
+                    BigDecimal.ZERO,
+                    BigDecimal.ZERO
+                ));
+            }
+        }
+        return flujoMensualCompleto;
+    }
+
+    /* Obtener el flujo mensual de tarjetas para los últimos 12 meses */
+    private List<FlujoCreditoMesDTO> FlujoCreditoMensual(List<String> ultimosMeses, Map<String, GastosIngresosMensuales> mapRegistros) {
+        List<FlujoCreditoMesDTO> flujoTarjetaMensualCompleto = new ArrayList<>();
+        for (String mes : ultimosMeses) {
+            GastosIngresosMensuales reg = mapRegistros.get(mes);
+            if (reg != null) {
+                flujoTarjetaMensualCompleto.add(new FlujoCreditoMesDTOImpl(
+                    mes,
+                    reg.getComprasCredito() != null ? reg.getComprasCredito() : BigDecimal.ZERO,
+                    reg.getPagoResumen() != null ? reg.getPagoResumen() : BigDecimal.ZERO
+                ));
+            } else {
+                flujoTarjetaMensualCompleto.add(new FlujoCreditoMesDTOImpl(
+                    mes,
+                    BigDecimal.ZERO,
+                    BigDecimal.ZERO
+                ));
+            }
+        }
+        return flujoTarjetaMensualCompleto;
+    }
+
+    private BigDecimal resumenMensual(UUID idEspacio, LocalDate now) {
+        BigDecimal resumenMensual = BigDecimal.ZERO;
+        List<Tarjeta> tarjetas = tarjetaRepository.findByEspacioTrabajo_Id(idEspacio);
+        for (Tarjeta tarjeta : tarjetas) {
+            int diaCierre = tarjeta.getDiaCierre();
+
+            YearMonth ym = YearMonth.from(now);
+            int diaAjustadoCierre = Math.min(diaCierre, ym.lengthOfMonth());
+            LocalDate fechaCierre = ym.atDay(diaAjustadoCierre);
+            // Queremos el próximo cierre estrictamente en el futuro (si hoy es el día de cierre, tomar el siguiente mes)
+            if (!fechaCierre.isAfter(now)) {
+                YearMonth siguiente = ym.plusMonths(1);
+                diaAjustadoCierre = Math.min(diaCierre, siguiente.lengthOfMonth());
+                fechaCierre = siguiente.atDay(diaAjustadoCierre);
+            }
+
+            LocalDate fechaInicio = fechaCierre.plusDays(1);
+            LocalDate fechaFin = calcularFechaVencimiento(fechaCierre, tarjeta.getDiaVencimientoPago());
+
+            List<CuotaCredito> cuotasPendientes = cuotaCreditoRepository.findByTarjetaSinResumenEnRango(tarjeta.getId(), fechaInicio, fechaFin);
+            BigDecimal monto = MoneyUtils.sum(cuotasPendientes.stream().map(CuotaCredito::getMontoCuota).toList());
+            resumenMensual = resumenMensual.add(monto);
+        }
+        return resumenMensual;
     }
 }
