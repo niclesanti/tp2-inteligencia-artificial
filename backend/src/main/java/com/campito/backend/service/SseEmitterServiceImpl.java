@@ -1,11 +1,10 @@
 package com.campito.backend.service;
 
+import lombok.extern.slf4j.Slf4j;
 import com.campito.backend.dto.NotificacionDTOResponse;
 import com.campito.backend.mapper.NotificacionMapper;
 import com.campito.backend.model.Notificacion;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -29,9 +28,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class SseEmitterServiceImpl implements SseEmitterService {
-    
-    private static final Logger logger = LoggerFactory.getLogger(SseEmitterService.class);
     private static final Long TIMEOUT = 60 * 60 * 1000L; // 1 hora
     
     /**
@@ -54,37 +52,37 @@ public class SseEmitterServiceImpl implements SseEmitterService {
         
         // Handler de finalización normal
         emitter.onCompletion(() -> {
-            logger.info("SSE completado para usuario: {}", idUsuario);
+            log.info("SSE completado para usuario: {}", idUsuario);
             emitters.remove(idUsuario);
             sseConexionesActivasGauge.set(emitters.size());  // 📊 MÉTRICA: Actualizar gauge
         });
         
         // Handler de timeout
         emitter.onTimeout(() -> {
-            logger.info("SSE timeout para usuario: {}", idUsuario);
+            log.info("SSE timeout para usuario: {}", idUsuario);
             emitters.remove(idUsuario);
             sseConexionesActivasGauge.set(emitters.size());  // 📊 MÉTRICA: Actualizar gauge
         });
         
         // Handler de error
         emitter.onError((e) -> {
-            logger.error("Error en SSE para usuario {}: {}", idUsuario, e.getMessage());
+            log.error("Error en SSE para usuario {}: {}", idUsuario, e.getMessage());
             emitters.remove(idUsuario);
             sseConexionesActivasGauge.set(emitters.size());  // 📊 MÉTRICA: Actualizar gauge
         });
         
         emitters.put(idUsuario, emitter);
         sseConexionesActivasGauge.set(emitters.size());  // 📊 MÉTRICA: Actualizar gauge
-        logger.info("SSE emitter creado para usuario: {}", idUsuario);
+        log.info("SSE emitter creado para usuario: {}", idUsuario);
         
         // Enviar evento inicial de confirmación de conexión
         try {
             emitter.send(SseEmitter.event()
                     .name("connected")
                     .data("Conexión SSE establecida exitosamente"));
-            logger.info("Evento 'connected' enviado a usuario: {}", idUsuario);
+            log.info("Evento 'connected' enviado a usuario: {}", idUsuario);
         } catch (IOException e) {
-            logger.error("Error al enviar evento 'connected' a usuario {}: {}", idUsuario, e.getMessage());
+            log.error("Error al enviar evento 'connected' a usuario {}: {}", idUsuario, e.getMessage());
             emitters.remove(idUsuario);
             throw new RuntimeException("Error al establecer conexión SSE", e);
         }
@@ -108,13 +106,13 @@ public class SseEmitterServiceImpl implements SseEmitterService {
                 emitter.send(SseEmitter.event()
                         .name("notification")
                         .data(dto));
-                logger.info("Notificación enviada via SSE a usuario: {}", idUsuario);
+                log.info("Notificación enviada via SSE a usuario: {}", idUsuario);
             } catch (IOException e) {
-                logger.error("Error al enviar notificación via SSE: {}", e.getMessage());
+                log.error("Error al enviar notificación via SSE: {}", e.getMessage());
                 emitters.remove(idUsuario);
             }
         } else {
-            logger.debug("Usuario {} no tiene conexión SSE activa", idUsuario);
+            log.debug("Usuario {} no tiene conexión SSE activa", idUsuario);
         }
     }
     

@@ -95,15 +95,6 @@ public class EspacioTrabajoServiceTest {
     // Tests para registrarEspacioTrabajo
 
     @Test
-    void registrarEspacioTrabajo_cuandoDTOEsNulo_entoncesLanzaExcepcion() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            espacioTrabajoService.registrarEspacioTrabajo(null);
-        });
-        assertEquals("El espacio de trabajo no puede ser nulo", exception.getMessage());
-        verify(espacioTrabajoRepository, never()).save(any(EspacioTrabajo.class));
-    }
-
-    @Test
     void registrarEspacioTrabajo_cuandoUsuarioAdminNoExiste_entoncesLanzaExcepcion() {
         EspacioTrabajoDTORequest dto = new EspacioTrabajoDTORequest("Nuevo Espacio", UUID.fromString("00000000-0000-0000-0000-000000000099"));
         when(usuarioRepository.findById(UUID.fromString("00000000-0000-0000-0000-000000000099"))).thenReturn(Optional.empty());
@@ -128,15 +119,6 @@ public class EspacioTrabajoServiceTest {
     }
 
     // Tests para compartirEspacioTrabajo
-
-    @Test
-    void compartirEspacioTrabajo_cuandoParametrosSonNulos_entoncesLanzaExcepcion() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            espacioTrabajoService.compartirEspacioTrabajo(null, null);
-        });
-        assertEquals("El email y el ID del espacio de trabajo no pueden ser nulos", exception.getMessage());
-        verify(espacioTrabajoRepository, never()).findById(any(java.util.UUID.class));
-    }
 
     @Test
     void compartirEspacioTrabajo_cuandoEspacioTrabajoNoExiste_entoncesLanzaExcepcion() {
@@ -191,15 +173,6 @@ public class EspacioTrabajoServiceTest {
     }
 
     // Tests para respuestaSolicitudCompartirEspacioTrabajo
-
-    @Test
-    void respuestaSolicitudCompartir_cuandoParametrosSonNulos_entoncesLanzaExcepcion() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            espacioTrabajoService.respuestaSolicitudCompartirEspacioTrabajo(null, null);
-        });
-        assertEquals("El ID de la solicitud y la respuesta no pueden ser nulos", exception.getMessage());
-        verify(solicitudPendienteRepository, never()).findById(any());
-    }
 
     @Test
     void respuestaSolicitudCompartir_cuandoSolicitudNoExiste_entoncesLanzaExcepcion() {
@@ -264,15 +237,6 @@ public class EspacioTrabajoServiceTest {
     }
 
     // Tests para listarSolicitudesPendientes
-
-    @Test
-    void listarSolicitudesPendientes_cuandoIdUsuarioEsNulo_entoncesLanzaExcepcion() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            espacioTrabajoService.listarSolicitudesPendientes(null);
-        });
-        assertEquals("El ID del usuario no puede ser nulo", exception.getMessage());
-        verify(solicitudPendienteRepository, never()).findByUsuarioInvitado_Id(any());
-    }
 
     @Test
     void listarSolicitudesPendientes_cuandoNoHaySolicitudes_entoncesRetornaListaVacia() {

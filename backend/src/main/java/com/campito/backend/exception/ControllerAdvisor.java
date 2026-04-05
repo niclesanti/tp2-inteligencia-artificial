@@ -1,7 +1,6 @@
 package com.campito.backend.exception;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -12,9 +11,8 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
 @RestControllerAdvice
+@Slf4j
 public class ControllerAdvisor {
-
-    private static final Logger logger = LoggerFactory.getLogger(ControllerAdvisor.class);
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ExceptionInfo> handleIllegalArgumentException(IllegalArgumentException ex, WebRequest request) {
@@ -62,7 +60,7 @@ public class ControllerAdvisor {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ExceptionInfo> handleGeneralException(Exception ex, WebRequest request) {
-        logger.error("Error inesperado: {} - Request: {}", ex.getMessage(), request.getDescription(false), ex);
+        log.error("Error inesperado: {} - Request: {}", ex.getMessage(), request.getDescription(false), ex);
         ExceptionInfo exceptionInfo = new ExceptionInfo(
                 ex.getMessage(),
                 request.getDescription(false),
@@ -133,7 +131,7 @@ public class ControllerAdvisor {
 
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<ExceptionInfo> handleUnauthorizedException(UnauthorizedException ex, WebRequest request) {
-        logger.warn("Intento de acceso no autorizado: {} - Request: {}", ex.getMessage(), request.getDescription(false));
+        log.warn("Intento de acceso no autorizado: {} - Request: {}", ex.getMessage(), request.getDescription(false));
         ExceptionInfo exceptionInfo = new ExceptionInfo(
                 ex.getMessage(),
                 request.getDescription(false),
@@ -145,7 +143,7 @@ public class ControllerAdvisor {
 
     @ExceptionHandler(ForbiddenException.class)
     public ResponseEntity<ExceptionInfo> handleForbiddenException(ForbiddenException ex, WebRequest request) {
-        logger.warn("Acceso denegado por permisos insuficientes: {} - Request: {}", ex.getMessage(), request.getDescription(false));
+        log.warn("Acceso denegado por permisos insuficientes: {} - Request: {}", ex.getMessage(), request.getDescription(false));
         ExceptionInfo exceptionInfo = new ExceptionInfo(
                 ex.getMessage(),
                 request.getDescription(false),
@@ -157,7 +155,7 @@ public class ControllerAdvisor {
 
     @ExceptionHandler(RateLimitExceededException.class)
     public ResponseEntity<ExceptionInfo> handleRateLimitExceededException(RateLimitExceededException ex, WebRequest request) {
-        logger.warn("Rate limit excedido: {} - Request: {}", ex.getMessage(), request.getDescription(false));
+        log.warn("Rate limit excedido: {} - Request: {}", ex.getMessage(), request.getDescription(false));
         ExceptionInfo exceptionInfo = new ExceptionInfo(
                 ex.getMessage(),
                 request.getDescription(false),

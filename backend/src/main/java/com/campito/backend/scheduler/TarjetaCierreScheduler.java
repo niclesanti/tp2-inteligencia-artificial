@@ -1,13 +1,12 @@
 package com.campito.backend.scheduler;
 
+import lombok.extern.slf4j.Slf4j;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -25,9 +24,8 @@ import lombok.RequiredArgsConstructor;
  */
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class TarjetaCierreScheduler {
-
-    private static final Logger logger = LoggerFactory.getLogger(TarjetaCierreScheduler.class);
 
     private final TarjetaRepository tarjetaRepository;
     private final ApplicationEventPublisher eventPublisher;
@@ -45,7 +43,7 @@ public class TarjetaCierreScheduler {
         LocalDate fechaObjetivo = LocalDate.now().plusDays(5);
         int diaACerrar = fechaObjetivo.getDayOfMonth();
 
-        logger.info("Iniciando envío de recordatorios para tarjetas que cierran el día: {}", diaACerrar);
+        log.info("Iniciando envío de recordatorios para tarjetas que cierran el día: {}", diaACerrar);
 
         List<Tarjeta> tarjetasPorCerrar = new ArrayList<>();
         tarjetasPorCerrar.addAll(tarjetaRepository.findByDiaCierre(diaACerrar));
@@ -59,7 +57,7 @@ public class TarjetaCierreScheduler {
             }
         }
 
-        logger.info("Encontradas {} tarjetas para enviar recordatorio", tarjetasPorCerrar.size());
+        log.info("Encontradas {} tarjetas para enviar recordatorio", tarjetasPorCerrar.size());
 
         int recordatoriosEnviados = 0;
         int errores = 0;
@@ -69,12 +67,12 @@ public class TarjetaCierreScheduler {
                 enviarRecordatorio(tarjeta, fechaObjetivo);
                 recordatoriosEnviados++;
             } catch (Exception e) {
-                logger.error("Error al enviar recordatorio de cierre para tarjeta ID: {}", tarjeta.getId(), e);
+                log.error("Error al enviar recordatorio de cierre para tarjeta ID: {}", tarjeta.getId(), e);
                 errores++;
             }
         }
 
-        logger.info("Envío de recordatorios finalizado - Enviados: {} - Errores: {}", recordatoriosEnviados, errores);
+        log.info("Envío de recordatorios finalizado - Enviados: {} - Errores: {}", recordatoriosEnviados, errores);
     }
 
     private void enviarRecordatorio(Tarjeta tarjeta, LocalDate fechaCierre) {
@@ -93,7 +91,7 @@ public class TarjetaCierreScheduler {
                 TipoNotificacion.RECORDATORIO_PROXIMO_CIERRE,
                 mensaje));
 
-        logger.info("Recordatorio enviado al usuario {} por cierre próximo de tarjeta {}",
+        log.info("Recordatorio enviado al usuario {} por cierre próximo de tarjeta {}",
                 idUsuarioAdmin, tarjeta.getId());
     }
 }

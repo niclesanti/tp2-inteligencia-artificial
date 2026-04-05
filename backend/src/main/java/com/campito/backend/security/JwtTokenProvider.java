@@ -1,9 +1,8 @@
 package com.campito.backend.security;
 
+import lombok.extern.slf4j.Slf4j;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -17,9 +16,8 @@ import java.util.UUID;
  * Genera y valida tokens JWT para usuarios autenticados.
  */
 @Component
+@Slf4j
 public class JwtTokenProvider {
-
-    private static final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class);
 
     @Value("${jwt.secret}")
     private String jwtSecret;
@@ -82,15 +80,15 @@ public class JwtTokenProvider {
             parseToken(token);
             return true;
         } catch (SecurityException | MalformedJwtException ex) {
-            logger.error("Token JWT inválido: firma incorrecta");
+            log.error("Token JWT inválido: firma incorrecta");
         } catch (ExpiredJwtException ex) {
-            logger.error("Token JWT expirado");
+            log.error("Token JWT expirado");
         } catch (UnsupportedJwtException ex) {
-            logger.error("Token JWT no soportado");
+            log.error("Token JWT no soportado");
         } catch (IllegalArgumentException ex) {
-            logger.error("Token JWT vacío");
+            log.error("Token JWT vacío");
         } catch (Exception ex) {
-            logger.error("Error al validar token JWT", ex);
+            log.error("Error al validar token JWT", ex);
         }
         return false;
     }

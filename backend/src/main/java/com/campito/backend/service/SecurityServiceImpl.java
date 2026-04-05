@@ -1,9 +1,8 @@
 package com.campito.backend.service;
 
+import lombok.extern.slf4j.Slf4j;
 import java.util.UUID;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -39,9 +38,8 @@ import lombok.RequiredArgsConstructor;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class SecurityServiceImpl implements SecurityService {
-
-    private static final Logger logger = LoggerFactory.getLogger(SecurityServiceImpl.class);
     
     private final EspacioTrabajoRepository espacioTrabajoRepository;
     private final TransaccionRepository transaccionRepository;
@@ -63,14 +61,14 @@ public class SecurityServiceImpl implements SecurityService {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         
         if (auth == null || !auth.isAuthenticated()) {
-            logger.warn("Intento de acceso sin autenticación válida");
+            log.warn("Intento de acceso sin autenticación válida");
             throw new UnauthorizedException("Usuario no autenticado. Por favor, inicia sesión.");
         }
         
         Object principal = auth.getPrincipal();
         
         if (!(principal instanceof CustomOAuth2User)) {
-            logger.error("Principal no es del tipo esperado. Tipo recibido: {}", 
+            log.error("Principal no es del tipo esperado. Tipo recibido: {}", 
                 principal != null ? principal.getClass().getName() : "null");
             throw new UnauthorizedException("Sesión de usuario inválida. Por favor, inicia sesión nuevamente.");
         }
@@ -78,7 +76,7 @@ public class SecurityServiceImpl implements SecurityService {
         CustomOAuth2User oauthUser = (CustomOAuth2User) principal;
         UUID userId = oauthUser.getUsuario().getId();
         
-        logger.debug("Usuario autenticado obtenido: {}", userId);
+        log.debug("Usuario autenticado obtenido: {}", userId);
         return userId;
     }
 
@@ -94,7 +92,7 @@ public class SecurityServiceImpl implements SecurityService {
     @Override
     public void validateWorkspaceAccess(UUID workspaceId) {
         if (workspaceId == null) {
-            logger.warn("Intento de validar acceso con workspaceId nulo");
+            log.warn("Intento de validar acceso con workspaceId nulo");
             throw new IllegalArgumentException("El ID del espacio de trabajo no puede ser nulo");
         }
         
@@ -104,11 +102,11 @@ public class SecurityServiceImpl implements SecurityService {
             .existsByIdAndUsuariosParticipantes_Id(workspaceId, userId);
         
         if (!hasAccess) {
-            logger.warn("Usuario {} intenta acceder al espacio de trabajo {} sin permisos", userId, workspaceId);
+            log.warn("Usuario {} intenta acceder al espacio de trabajo {} sin permisos", userId, workspaceId);
             throw new ForbiddenException("No tienes acceso a este espacio de trabajo");
         }
         
-        logger.debug("Acceso validado: Usuario {} tiene acceso al espacio {}", userId, workspaceId);
+        log.debug("Acceso validado: Usuario {} tiene acceso al espacio {}", userId, workspaceId);
     }
 
     /**
@@ -122,7 +120,7 @@ public class SecurityServiceImpl implements SecurityService {
     @Override
     public void validateWorkspaceAdmin(UUID workspaceId) {
         if (workspaceId == null) {
-            logger.warn("Intento de validar admin con workspaceId nulo");
+            log.warn("Intento de validar admin con workspaceId nulo");
             throw new IllegalArgumentException("El ID del espacio de trabajo no puede ser nulo");
         }
         
@@ -130,17 +128,17 @@ public class SecurityServiceImpl implements SecurityService {
         
         EspacioTrabajo workspace = espacioTrabajoRepository.findById(workspaceId)
             .orElseThrow(() -> {
-                logger.warn("Espacio de trabajo {} no encontrado", workspaceId);
+                log.warn("Espacio de trabajo {} no encontrado", workspaceId);
                 return new EntityNotFoundException("Espacio de trabajo no encontrado");
             });
         
         if (!workspace.getUsuarioAdmin().getId().equals(userId)) {
-            logger.warn("Usuario {} intenta realizar acción de admin en espacio {} sin ser administrador", 
+            log.warn("Usuario {} intenta realizar acción de admin en espacio {} sin ser administrador", 
                 userId, workspaceId);
             throw new ForbiddenException("Solo el administrador del espacio de trabajo puede realizar esta acción");
         }
         
-        logger.debug("Permisos de admin validados: Usuario {} es admin del espacio {}", userId, workspaceId);
+        log.debug("Permisos de admin validados: Usuario {} es admin del espacio {}", userId, workspaceId);
     }
 
     /**
@@ -155,20 +153,20 @@ public class SecurityServiceImpl implements SecurityService {
     @Override
     public void validateTransactionOwnership(Long transactionId) {
         if (transactionId == null) {
-            logger.warn("Intento de validar transacción con ID nulo");
+            log.warn("Intento de validar transacción con ID nulo");
             throw new IllegalArgumentException("El ID de la transacción no puede ser nulo");
         }
         
         Transaccion transaccion = transaccionRepository.findById(transactionId)
             .orElseThrow(() -> {
-                logger.warn("Transacción {} no encontrada", transactionId);
+                log.warn("Transacción {} no encontrada", transactionId);
                 return new EntityNotFoundException("Transacción no encontrada");
             });
         
         UUID workspaceId = transaccion.getEspacioTrabajo().getId();
         validateWorkspaceAccess(workspaceId);
         
-        logger.debug("Ownership validado: Usuario tiene acceso a transacción {}", transactionId);
+        log.debug("Ownership validado: Usuario tiene acceso a transacción {}", transactionId);
     }
 
     /**
@@ -183,20 +181,20 @@ public class SecurityServiceImpl implements SecurityService {
     @Override
     public void validateCompraCreditoOwnership(Long compraCreditoId) {
         if (compraCreditoId == null) {
-            logger.warn("Intento de validar compra a crédito con ID nulo");
+            log.warn("Intento de validar compra a crédito con ID nulo");
             throw new IllegalArgumentException("El ID de la compra a crédito no puede ser nulo");
         }
         
         CompraCredito compra = compraCreditoRepository.findById(compraCreditoId)
             .orElseThrow(() -> {
-                logger.warn("Compra a crédito {} no encontrada", compraCreditoId);
+                log.warn("Compra a crédito {} no encontrada", compraCreditoId);
                 return new EntityNotFoundException("Compra a crédito no encontrada");
             });
         
         UUID workspaceId = compra.getEspacioTrabajo().getId();
         validateWorkspaceAccess(workspaceId);
         
-        logger.debug("Ownership validado: Usuario tiene acceso a compra a crédito {}", compraCreditoId);
+        log.debug("Ownership validado: Usuario tiene acceso a compra a crédito {}", compraCreditoId);
     }
 
     /**
@@ -211,20 +209,20 @@ public class SecurityServiceImpl implements SecurityService {
     @Override
     public void validateCuentaBancariaOwnership(Long cuentaBancariaId) {
         if (cuentaBancariaId == null) {
-            logger.warn("Intento de validar cuenta bancaria con ID nulo");
+            log.warn("Intento de validar cuenta bancaria con ID nulo");
             throw new IllegalArgumentException("El ID de la cuenta bancaria no puede ser nulo");
         }
         
         CuentaBancaria cuenta = cuentaBancariaRepository.findById(cuentaBancariaId)
             .orElseThrow(() -> {
-                logger.warn("Cuenta bancaria {} no encontrada", cuentaBancariaId);
+                log.warn("Cuenta bancaria {} no encontrada", cuentaBancariaId);
                 return new EntityNotFoundException("Cuenta bancaria no encontrada");
             });
         
         UUID workspaceId = cuenta.getEspacioTrabajo().getId();
         validateWorkspaceAccess(workspaceId);
         
-        logger.debug("Ownership validado: Usuario tiene acceso a cuenta bancaria {}", cuentaBancariaId);
+        log.debug("Ownership validado: Usuario tiene acceso a cuenta bancaria {}", cuentaBancariaId);
     }
 
     /**
@@ -239,20 +237,20 @@ public class SecurityServiceImpl implements SecurityService {
     @Override
     public void validateTarjetaOwnership(Long tarjetaId) {
         if (tarjetaId == null) {
-            logger.warn("Intento de validar tarjeta con ID nulo");
+            log.warn("Intento de validar tarjeta con ID nulo");
             throw new IllegalArgumentException("El ID de la tarjeta no puede ser nulo");
         }
         
         Tarjeta tarjeta = tarjetaRepository.findById(tarjetaId)
             .orElseThrow(() -> {
-                logger.warn("Tarjeta {} no encontrada", tarjetaId);
+                log.warn("Tarjeta {} no encontrada", tarjetaId);
                 return new EntityNotFoundException("Tarjeta no encontrada");
             });
         
         UUID workspaceId = tarjeta.getEspacioTrabajo().getId();
         validateWorkspaceAccess(workspaceId);
         
-        logger.debug("Ownership validado: Usuario tiene acceso a tarjeta {}", tarjetaId);
+        log.debug("Ownership validado: Usuario tiene acceso a tarjeta {}", tarjetaId);
     }
 
     /**
@@ -267,7 +265,7 @@ public class SecurityServiceImpl implements SecurityService {
     @Override
     public void validateNotificacionOwnership(Long notificacionId) {
         if (notificacionId == null) {
-            logger.warn("Intento de validar notificación con ID nulo");
+            log.warn("Intento de validar notificación con ID nulo");
             throw new IllegalArgumentException("El ID de la notificación no puede ser nulo");
         }
         
@@ -275,23 +273,23 @@ public class SecurityServiceImpl implements SecurityService {
         
         Notificacion notificacion = notificacionRepository.findById(notificacionId)
             .orElseThrow(() -> {
-                logger.warn("Notificación {} no encontrada", notificacionId);
+                log.warn("Notificación {} no encontrada", notificacionId);
                 return new EntityNotFoundException("Notificación no encontrada");
             });
         
         if (!notificacion.getUsuario().getId().equals(userId)) {
-            logger.warn("Usuario {} intenta acceder a notificación {} que no le pertenece", 
+            log.warn("Usuario {} intenta acceder a notificación {} que no le pertenece", 
                 userId, notificacionId);
             throw new ForbiddenException("No tienes acceso a esta notificación");
         }
         
-        logger.debug("Ownership validado: Usuario {} tiene acceso a notificación {}", userId, notificacionId);
+        log.debug("Ownership validado: Usuario {} tiene acceso a notificación {}", userId, notificacionId);
     }
 
     @Override
     public void validateSolicitudOwnership(Long idSolicitud) {
         if (idSolicitud == null) {
-            logger.warn("Intento de validar solicitud con ID nulo");
+            log.warn("Intento de validar solicitud con ID nulo");
             throw new IllegalArgumentException("El ID de la solicitud no puede ser nulo");
         }
 
@@ -299,23 +297,23 @@ public class SecurityServiceImpl implements SecurityService {
 
         SolicitudPendienteEspacioTrabajo solicitud = solicitudPendienteRepository.findById(idSolicitud)
             .orElseThrow(() -> {
-                logger.warn("Solicitud pendiente {} no encontrada", idSolicitud);
+                log.warn("Solicitud pendiente {} no encontrada", idSolicitud);
                 return new EntityNotFoundException("Solicitud pendiente no encontrada");
             });
         
         if (!solicitud.getUsuarioInvitado().getId().equals(userId)) {
-            logger.warn("Usuario {} intenta acceder a solicitud pendiente {} que no le pertenece", 
+            log.warn("Usuario {} intenta acceder a solicitud pendiente {} que no le pertenece", 
                 userId, idSolicitud);
             throw new ForbiddenException("No tienes acceso a esta solicitud pendiente");
         }
         
-        logger.debug("Ownership validado: Usuario {} tiene acceso a solicitud pendiente {}", userId, idSolicitud);
+        log.debug("Ownership validado: Usuario {} tiene acceso a solicitud pendiente {}", userId, idSolicitud);
     }
 
     @Override
     public void validateDescuentoOwnership(Long idDescuento) {
         if (idDescuento == null) {
-            logger.warn("Intento de validar descuento con ID nulo");
+            log.warn("Intento de validar descuento con ID nulo");
             throw new IllegalArgumentException("El ID del descuento no puede ser nulo");
         }
 
@@ -323,18 +321,18 @@ public class SecurityServiceImpl implements SecurityService {
 
         Descuento descuento = descuentoRepository.findById(idDescuento)
             .orElseThrow(() -> {
-                logger.warn("Descuento {} no encontrado", idDescuento);
+                log.warn("Descuento {} no encontrado", idDescuento);
                 return new EntityNotFoundException("Descuento no encontrado");
             });
 
         if (!descuento.getEspacioTrabajo().getUsuariosParticipantes().stream()
                 .anyMatch(u -> u.getId().equals(userId))) {
-            logger.warn("Usuario {} intenta acceder a descuento {} que no le pertenece", 
+            log.warn("Usuario {} intenta acceder a descuento {} que no le pertenece", 
                 userId, idDescuento);
             throw new ForbiddenException("No tienes acceso a este descuento");
         }
 
-        logger.debug("Ownership validado: Usuario {} tiene acceso a descuento {}", userId, idDescuento);
+        log.debug("Ownership validado: Usuario {} tiene acceso a descuento {}", userId, idDescuento);
     }
 
     /**
@@ -347,7 +345,7 @@ public class SecurityServiceImpl implements SecurityService {
     @Override
     public boolean hasWorkspaceAccess(UUID workspaceId) {
         if (workspaceId == null) {
-            logger.warn("Intento de verificar acceso con workspaceId nulo");
+            log.warn("Intento de verificar acceso con workspaceId nulo");
             throw new IllegalArgumentException("El ID del espacio de trabajo no puede ser nulo");
         }
         
@@ -356,12 +354,12 @@ public class SecurityServiceImpl implements SecurityService {
             boolean hasAccess = espacioTrabajoRepository
                 .existsByIdAndUsuariosParticipantes_Id(workspaceId, userId);
             
-            logger.debug("Verificación de acceso: Usuario {} {} acceso al espacio {}", 
+            log.debug("Verificación de acceso: Usuario {} {} acceso al espacio {}", 
                 userId, hasAccess ? "tiene" : "no tiene", workspaceId);
             
             return hasAccess;
         } catch (UnauthorizedException e) {
-            logger.debug("Usuario no autenticado al verificar acceso al espacio {}", workspaceId);
+            log.debug("Usuario no autenticado al verificar acceso al espacio {}", workspaceId);
             return false;
         }
     }
@@ -376,7 +374,7 @@ public class SecurityServiceImpl implements SecurityService {
     @Override
     public boolean isWorkspaceAdmin(UUID workspaceId) {
         if (workspaceId == null) {
-            logger.warn("Intento de verificar admin con workspaceId nulo");
+            log.warn("Intento de verificar admin con workspaceId nulo");
             throw new IllegalArgumentException("El ID del espacio de trabajo no puede ser nulo");
         }
         
@@ -387,18 +385,18 @@ public class SecurityServiceImpl implements SecurityService {
                 .orElse(null);
             
             if (workspace == null) {
-                logger.debug("Espacio de trabajo {} no encontrado al verificar admin", workspaceId);
+                log.debug("Espacio de trabajo {} no encontrado al verificar admin", workspaceId);
                 return false;
             }
             
             boolean isAdmin = workspace.getUsuarioAdmin().getId().equals(userId);
             
-            logger.debug("Verificación de admin: Usuario {} {} admin del espacio {}", 
+            log.debug("Verificación de admin: Usuario {} {} admin del espacio {}", 
                 userId, isAdmin ? "es" : "no es", workspaceId);
             
             return isAdmin;
         } catch (UnauthorizedException e) {
-            logger.debug("Usuario no autenticado al verificar admin del espacio {}", workspaceId);
+            log.debug("Usuario no autenticado al verificar admin del espacio {}", workspaceId);
             return false;
         }
     }

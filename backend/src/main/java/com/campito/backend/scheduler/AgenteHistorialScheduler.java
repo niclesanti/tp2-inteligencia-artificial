@@ -1,10 +1,9 @@
 package com.campito.backend.scheduler;
 
+import lombok.extern.slf4j.Slf4j;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,9 +29,8 @@ import lombok.RequiredArgsConstructor;
  */
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class AgenteHistorialScheduler {
-
-    private static final Logger logger = LoggerFactory.getLogger(AgenteHistorialScheduler.class);
 
     private final AgenteAuditLogRepository agenteAuditLogRepository;
     private final MeterRegistry meterRegistry;
@@ -53,7 +51,7 @@ public class AgenteHistorialScheduler {
         // Inicio del día actual → se eliminan todos los registros anteriores a este instante
         LocalDateTime inicioDiaActual = LocalDate.now().atStartOfDay();
 
-        logger.info("Iniciando limpieza automática del historial del agente IA. Eliminando registros anteriores a {}",
+        log.info("Iniciando limpieza automática del historial del agente IA. Eliminando registros anteriores a {}",
                 inicioDiaActual);
 
         // 📊 MÉTRICA: Medir tiempo total de ejecución de la limpieza
@@ -65,7 +63,7 @@ public class AgenteHistorialScheduler {
         try {
             registrosEliminados = agenteAuditLogRepository.deleteByTimestampBefore(inicioDiaActual);
 
-            logger.info("Limpieza del historial del agente IA finalizada. Registros eliminados: {}",
+            log.info("Limpieza del historial del agente IA finalizada. Registros eliminados: {}",
                     registrosEliminados);
 
             // 📊 MÉTRICA: Contador de registros eliminados
@@ -78,7 +76,7 @@ public class AgenteHistorialScheduler {
 
         } catch (Exception e) {
             conError = true;
-            logger.error("Error al limpiar el historial del agente IA", e);
+            log.error("Error al limpiar el historial del agente IA", e);
 
             // 📊 MÉTRICA: Contador de errores
             Counter.builder(MetricsConfig.MetricNames.AGENTE_HISTORIAL_ERRORES)
