@@ -1,5 +1,6 @@
 package com.campito.backend.scheduler;
 
+import lombok.extern.slf4j.Slf4j;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -7,8 +8,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import java.util.UUID;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -41,9 +40,8 @@ import com.campito.backend.config.MetricsConfig;
  */
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class ResumenScheduler {
-
-    private static final Logger logger = LoggerFactory.getLogger(ResumenScheduler.class);
 
     private final TarjetaRepository tarjetaRepository;
     private final CuotaCreditoRepository cuotaCreditoRepository;
@@ -66,7 +64,7 @@ public class ResumenScheduler {
         LocalDate ayer = LocalDate.now().minusDays(1);
         int diaACerrar = ayer.getDayOfMonth();
         
-        logger.info("Iniciando cierre automático de resúmenes para tarjetas que cerraron ayer: día {}", diaACerrar);
+        log.info("Iniciando cierre automático de resúmenes para tarjetas que cerraron ayer: día {}", diaACerrar);
         
         // 📊 MÉTRICA: Medir tiempo total de ejecución del cierre de resúmenes
         Timer.Sample timerSample = Timer.start(meterRegistry);
@@ -76,7 +74,7 @@ public class ResumenScheduler {
             .filter(tarjeta -> tarjeta.getDiaCierre().equals(diaACerrar))
             .toList();
         
-        logger.info("Encontradas {} tarjetas con día de cierre {}", tarjetasACerrar.size(), diaACerrar);
+        log.info("Encontradas {} tarjetas con día de cierre {}", tarjetasACerrar.size(), diaACerrar);
         
         // Variables para métricas de negocio
         int resumenesGenerados = 0;
@@ -89,7 +87,7 @@ public class ResumenScheduler {
                     resumenesGenerados++;
                 }
             } catch (Exception e) {
-                logger.error("Error al cerrar resumen de tarjeta ID: {}", tarjeta.getId(), e);
+                log.error("Error al cerrar resumen de tarjeta ID: {}", tarjeta.getId(), e);
                 errores++;
                 
                 // 📊 MÉTRICA: Incrementar contador de errores
@@ -115,7 +113,7 @@ public class ResumenScheduler {
                     .increment(resumenesGenerados);
         }
         
-        logger.info("Cierre automático de resúmenes finalizado - Generados: {} - Errores: {}", resumenesGenerados, errores);
+        log.info("Cierre automático de resúmenes finalizado - Generados: {} - Errores: {}", resumenesGenerados, errores);
     }
 
     /**
@@ -133,7 +131,7 @@ public class ResumenScheduler {
         
         // Verificar si ya existe un resumen para este período
         if (resumenRepository.findByTarjetaAndAnioAndMes(tarjeta.getId(), anio, mes).isPresent()) {
-            logger.warn("Ya existe un resumen para tarjeta ID {} del período {}/{}", 
+            log.warn("Ya existe un resumen para tarjeta ID {} del período {}/{}", 
                 tarjeta.getId(), mes, anio);
             return false;
         }
@@ -143,18 +141,18 @@ public class ResumenScheduler {
         LocalDate fechaInicio = fechaCierre.plusDays(1);
         LocalDate fechaFin = calcularFechaVencimiento(fechaCierre, tarjeta.getDiaVencimientoPago());
         
-        logger.info("Buscando cuotas para tarjeta ID {} con fechaVencimiento ENTRE {} y {}", 
+        log.info("Buscando cuotas para tarjeta ID {} con fechaVencimiento ENTRE {} y {}", 
             tarjeta.getId(), fechaInicio, fechaFin);
         
         // Buscar cuotas sin resumen asociado en el rango de fechas
         List<CuotaCredito> cuotasPendientes = cuotaCreditoRepository
             .findByTarjetaSinResumenEnRango(tarjeta.getId(), fechaInicio, fechaFin);
         
-        logger.info("Encontradas {} cuotas pendientes para tarjeta ID {}", 
+        log.info("Encontradas {} cuotas pendientes para tarjeta ID {}", 
             cuotasPendientes.size(), tarjeta.getId());
         
         if (cuotasPendientes.isEmpty()) {
-            logger.info("No hay cuotas pendientes para cerrar en tarjeta ID {} del período {}/{}", 
+            log.info("No hay cuotas pendientes para cerrar en tarjeta ID {} del período {}/{}", 
                 tarjeta.getId(), mes, anio);
             return false;
         }
@@ -187,7 +185,7 @@ public class ResumenScheduler {
         }
         cuotaCreditoRepository.saveAll(cuotasPendientes);
         
-        logger.info("Resumen cerrado exitosamente para tarjeta ID {} - Período: {}/{} - Monto: ${} - Cuotas: {}",
+        log.info("Resumen cerrado exitosamente para tarjeta ID {} - Período: {}/{} - Monto: ${} - Cuotas: {}",
             tarjeta.getId(), mes, anio, montoTotal, cuotasPendientes.size());
         
         // Emitir evento de notificación al administrador del espacio de trabajo
@@ -206,10 +204,10 @@ public class ResumenScheduler {
                 TipoNotificacion.CIERRE_TARJETA,
                 mensaje
             ));
-            logger.info("Evento de notificación enviado al usuario {} por cierre de resumen de tarjeta {}", 
+            log.info("Evento de notificación enviado al usuario {} por cierre de resumen de tarjeta {}", 
                        idUsuarioAdmin, tarjeta.getId());
         } catch (Exception e) {
-            logger.error("Error al enviar notificación de cierre de resumen para tarjeta ID: {}", tarjeta.getId(), e);
+            log.error("Error al enviar notificación de cierre de resumen para tarjeta ID: {}", tarjeta.getId(), e);
             // No propagamos la excepción para no afectar el cierre del resumen que ya fue guardado exitosamente
         }
         

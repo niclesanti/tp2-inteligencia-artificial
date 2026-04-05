@@ -1,11 +1,10 @@
 package com.campito.backend.security;
 
+import lombok.extern.slf4j.Slf4j;
 import com.campito.backend.model.CustomOAuth2User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -20,9 +19,8 @@ import java.io.IOException;
  */
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
-
-    private static final Logger logger = LoggerFactory.getLogger(OAuth2AuthenticationSuccessHandler.class);
 
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -37,7 +35,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         String targetUrl = determineTargetUrl(request, response, authentication);
 
         if (response.isCommitted()) {
-            logger.debug("Response ya fue committed. No se puede redirigir a {}", targetUrl);
+            log.debug("Response ya fue committed. No se puede redirigir a {}", targetUrl);
             return;
         }
 
@@ -58,7 +56,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             customUser.getUsuario().getEmail()
         );
 
-        logger.info("Token JWT generado exitosamente para el usuario: {}", customUser.getUsuario().getEmail());
+        log.info("Token JWT generado exitosamente para el usuario: {}", customUser.getUsuario().getEmail());
 
         // Redirigir al frontend con el token como parámetro de consulta
         // El frontend lo capturará y lo guardará en localStorage

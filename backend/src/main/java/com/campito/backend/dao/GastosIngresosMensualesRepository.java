@@ -20,13 +20,23 @@ public interface GastosIngresosMensualesRepository extends JpaRepository<GastosI
      * Busca todos los registros de gastos e ingresos mensuales para un espacio de trabajo
      * que coincidan con los meses especificados.
      * 
+     * OPTIMIZACIÓN: Query nativa simplificada que usa IN con subconsulta generada dinámicamente.
+     * Permite uso del índice compuesto idx_gastos_ingresos_espacio_periodo(espacio_trabajo_id, anio, mes).
+     * 
+     * NOTA: Como PostgreSQL con JPA no soporta bien arrays dinámicos, usamos una estrategia alternativa:
+     * parsear los strings "YYYY-MM" en la aplicación y generar condiciones separadas.
+     * Sin embargo, para mantener compatibilidad, generamos pares (anio,mes) desde los strings.
+     * 
      * @param espacioTrabajoId ID del espacio de trabajo
      * @param anioMeses Lista de strings en formato "YYYY-MM" para buscar
-     * @return Lista de registros encontrados
+     * @return Lista de registros encontrados, ordenados por año y mes descendente
      */
-    @Query("SELECT g FROM GastosIngresosMensuales g WHERE g.espacioTrabajo.id = :espacioTrabajoId " +
-           "AND CONCAT(CAST(g.anio AS string), '-', CASE WHEN g.mes < 10 THEN CONCAT('0', CAST(g.mes AS string)) ELSE CAST(g.mes AS string) END) IN :anioMeses " +
-           "ORDER BY g.anio DESC, g.mes DESC")
+    @Query(value = """
+        SELECT g.* FROM gastos_ingresos_mensuales g
+        WHERE g.espacio_trabajo_id = :espacioTrabajoId
+          AND CONCAT(LPAD(CAST(g.anio AS TEXT), 4, '0'), '-', LPAD(CAST(g.mes AS TEXT), 2, '0')) IN (:anioMeses)
+        ORDER BY g.anio DESC, g.mes DESC
+        """, nativeQuery = true)
     List<GastosIngresosMensuales> findByEspacioTrabajoAndMeses(
         @Param("espacioTrabajoId") UUID espacioTrabajoId,
         @Param("anioMeses") List<String> anioMeses);

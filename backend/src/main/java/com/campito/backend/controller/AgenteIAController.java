@@ -1,5 +1,6 @@
 package com.campito.backend.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import com.campito.backend.dto.AgenteChatRequestDTO;
 import com.campito.backend.dto.AgenteChatResponseDTO;
 import com.campito.backend.exception.RateLimitExceededException;
@@ -14,7 +15,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

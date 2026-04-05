@@ -1,5 +1,6 @@
 package com.campito.backend.service.agentAI;
 
+import lombok.extern.slf4j.Slf4j;
 import com.campito.backend.config.MetricsConfig;
 import com.campito.backend.dao.AgenteAuditLogRepository;
 import com.campito.backend.dto.AgenteChatRequestDTO;
@@ -10,7 +11,6 @@ import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.SystemMessage;
