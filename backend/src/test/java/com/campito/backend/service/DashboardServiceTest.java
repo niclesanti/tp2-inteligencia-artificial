@@ -61,12 +61,6 @@ class DashboardServiceTest {
     @Captor
     private ArgumentCaptor<java.util.UUID> uuidCaptor;
 
-    @Captor
-    private ArgumentCaptor<LocalDate> dateCaptorStart;
-
-    @Captor
-    private ArgumentCaptor<LocalDate> dateCaptorEnd;
-
     private EspacioTrabajo espacio;
 
     @BeforeEach
@@ -171,14 +165,44 @@ class DashboardServiceTest {
         tarjeta.setId(20L);
         tarjeta.setDiaCierre(5);
         tarjeta.setDiaVencimientoPago(10);
+        tarjeta.setEspacioTrabajo(espacio);
         when(tarjetaRepository.findByEspacioTrabajo_Id(espacio.getId())).thenReturn(List.of(tarjeta));
+        
+        // Crear compra crédito para asociar las cuotas con la tarjeta
+        var compraCredito = new com.campito.backend.model.CompraCredito();
+        compraCredito.setTarjeta(tarjeta);
+        
+        // Calcular el rango de fechas que el método resumenMensual() utilizará
+        // Esto simula la lógica del método para asegurar que las fechas coincidan
+        YearMonth ym = YearMonth.from(LocalDate.now());
+        int diaAjustadoCierre = Math.min(5, ym.lengthOfMonth());
+        LocalDate fechaCierre = ym.atDay(diaAjustadoCierre);
+        if (!fechaCierre.isAfter(LocalDate.now())) {
+            YearMonth siguiente = ym.plusMonths(1);
+            diaAjustadoCierre = Math.min(5, siguiente.lengthOfMonth());
+            fechaCierre = siguiente.atDay(diaAjustadoCierre);
+        }
+        LocalDate fechaInicio = fechaCierre.plusDays(1);
+        // Calcular fecha vencimiento (mismo cálculo que calcularFechaVencimiento)
+        YearMonth mesActual = YearMonth.from(fechaCierre);
+        YearMonth mesSiguiente = mesActual.plusMonths(1);
+        int diaAjustadoVenc = Math.min(10, mesSiguiente.lengthOfMonth());
+        LocalDate fechaFin = mesSiguiente.atDay(diaAjustadoVenc);
+        
+        // Crear cuotas con fechas que caigan DENTRO del rango calculado
         CuotaCredito cuota1 = new CuotaCredito();
         cuota1.setMontoCuota(new BigDecimal("120.00"));
+        cuota1.setCompraCredito(compraCredito);
+        cuota1.setFechaVencimiento(fechaInicio.plusDays(1)); // Dentro del rango
+        
         CuotaCredito cuota2 = new CuotaCredito();
         cuota2.setMontoCuota(new BigDecimal("80.00"));
+        cuota2.setCompraCredito(compraCredito);
+        cuota2.setFechaVencimiento(fechaInicio.plusDays(5)); // Dentro del rango
 
-        // Capture the date range used for query to assert later
-        when(cuotaCreditoRepository.findByTarjetaSinResumenEnRango(eq(20L), any(LocalDate.class), any(LocalDate.class)))
+        // OPTIMIZACIÓN: Ahora se usa findByEspacioTrabajoSinResumenEnRango (batch query)
+        // en lugar de findByTarjetaSinResumenEnRango (query por tarjeta individual)
+        when(cuotaCreditoRepository.findByEspacioTrabajoSinResumenEnRango(eq(espacio.getId()), any(LocalDate.class), any(LocalDate.class)))
                 .thenReturn(List.of(cuota1, cuota2));
 
         DashboardStatsDTO stats = dashboardService.obtenerDashboardStats(espacio.getId());
@@ -191,15 +215,9 @@ class DashboardServiceTest {
         assertEquals(12, stats.flujoMensual().size());
         assertEquals(1, stats.distribucionGastos().size());
 
-        // Verificar que la consulta de cuotas utilizó los parámetros de fecha calculados
-        verify(cuotaCreditoRepository).findByTarjetaSinResumenEnRango(eq(20L), dateCaptorStart.capture(), dateCaptorEnd.capture());
-        LocalDate start = dateCaptorStart.getValue();
-        LocalDate end = dateCaptorEnd.getValue();
-
-        // start debe ser posterior a la fecha de cierre y end debe ser la fecha de vencimiento calculada
-        // Verificamos solo que start <= end y que ambas están en un rango razonable (próximo mes)
-        assertTrue(!start.isAfter(end));
-        assertTrue(!start.isBefore(LocalDate.now().minusMonths(1)));
+        // Verificar que la consulta batch fue utilizada (no la query individual por tarjeta)
+        verify(cuotaCreditoRepository).findByEspacioTrabajoSinResumenEnRango(eq(espacio.getId()), any(LocalDate.class), any(LocalDate.class));
+        verify(cuotaCreditoRepository, never()).findByTarjetaSinResumenEnRango(anyLong(), any(LocalDate.class), any(LocalDate.class));
     }
 
     @Test

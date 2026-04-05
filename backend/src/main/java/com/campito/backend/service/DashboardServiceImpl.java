@@ -31,7 +31,6 @@ import com.campito.backend.model.CuotaCredito;
 import com.campito.backend.model.EspacioTrabajo;
 import com.campito.backend.model.GastosIngresosMensuales;
 import com.campito.backend.model.Tarjeta;
-import com.campito.backend.util.MoneyUtils;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -226,29 +225,81 @@ public class DashboardServiceImpl implements DashboardService {
         return flujoTarjetaMensualCompleto;
     }
 
+    /**
+     * Calcula el resumen mensual total (suma de cuotas que entrarán en próximos resúmenes).
+     * Optimizado para minimizar queries: trae todas las tarjetas, calcula el rango máximo de 
+     * fechas y luego trae todas las cuotas pendientes en ese rango para filtrar en memoria.
+     */
     private BigDecimal resumenMensual(UUID idEspacio, LocalDate now) {
-        BigDecimal resumenMensual = BigDecimal.ZERO;
+        // 1. Traer todas las tarjetas del espacio (1 query)
         List<Tarjeta> tarjetas = tarjetaRepository.findByEspacioTrabajo_Id(idEspacio);
+        
+        if (tarjetas.isEmpty()) {
+            return BigDecimal.ZERO;
+        }
+
+        // 2. Calcular el rango de fechas más amplio posible para todas las tarjetas
+        //    Esto permite traer todas las cuotas relevantes en una sola query
+        LocalDate fechaInicioMinima = now;
+        LocalDate fechaFinMaxima = now;
+        
+        for (Tarjeta tarjeta : tarjetas) {
+            YearMonth ym = YearMonth.from(now);
+            int diaAjustadoCierre = Math.min(tarjeta.getDiaCierre(), ym.lengthOfMonth());
+            LocalDate fechaCierre = ym.atDay(diaAjustadoCierre);
+            
+            if (!fechaCierre.isAfter(now)) {
+                YearMonth siguiente = ym.plusMonths(1);
+                diaAjustadoCierre = Math.min(tarjeta.getDiaCierre(), siguiente.lengthOfMonth());
+                fechaCierre = siguiente.atDay(diaAjustadoCierre);
+            }
+            
+            LocalDate fechaInicio = fechaCierre.plusDays(1);
+            LocalDate fechaFin = calcularFechaVencimiento(fechaCierre, tarjeta.getDiaVencimientoPago());
+            
+            if (fechaInicio.isBefore(fechaInicioMinima)) {
+                fechaInicioMinima = fechaInicio;
+            }
+            if (fechaFin.isAfter(fechaFinMaxima)) {
+                fechaFinMaxima = fechaFin;
+            }
+        }
+        
+        // 3. Traer TODAS las cuotas pendientes sin resumen en el rango amplio (1 query batch)
+        //    Usamos la nueva query optimizada que trae todo de una vez
+        List<CuotaCredito> todasLasCuotasPendientes = cuotaCreditoRepository
+            .findByEspacioTrabajoSinResumenEnRango(idEspacio, fechaInicioMinima, fechaFinMaxima);
+        
+        // 4. Filtrar y sumar en memoria según el período específico de cada tarjeta
+        BigDecimal resumenMensual = BigDecimal.ZERO;
+        
         for (Tarjeta tarjeta : tarjetas) {
             int diaCierre = tarjeta.getDiaCierre();
-
+            
             YearMonth ym = YearMonth.from(now);
             int diaAjustadoCierre = Math.min(diaCierre, ym.lengthOfMonth());
             LocalDate fechaCierre = ym.atDay(diaAjustadoCierre);
-            // Queremos el próximo cierre estrictamente en el futuro (si hoy es el día de cierre, tomar el siguiente mes)
+            
             if (!fechaCierre.isAfter(now)) {
                 YearMonth siguiente = ym.plusMonths(1);
                 diaAjustadoCierre = Math.min(diaCierre, siguiente.lengthOfMonth());
                 fechaCierre = siguiente.atDay(diaAjustadoCierre);
             }
-
+            
             LocalDate fechaInicio = fechaCierre.plusDays(1);
             LocalDate fechaFin = calcularFechaVencimiento(fechaCierre, tarjeta.getDiaVencimientoPago());
-
-            List<CuotaCredito> cuotasPendientes = cuotaCreditoRepository.findByTarjetaSinResumenEnRango(tarjeta.getId(), fechaInicio, fechaFin);
-            BigDecimal monto = MoneyUtils.sum(cuotasPendientes.stream().map(CuotaCredito::getMontoCuota).toList());
-            resumenMensual = resumenMensual.add(monto);
+            
+            // Filtrar cuotas de esta tarjeta en su período específico
+            BigDecimal montoTarjeta = todasLasCuotasPendientes.stream()
+                .filter(cuota -> cuota.getCompraCredito().getTarjeta().getId().equals(tarjeta.getId()))
+                .filter(cuota -> !cuota.getFechaVencimiento().isBefore(fechaInicio) 
+                              && !cuota.getFechaVencimiento().isAfter(fechaFin))
+                .map(CuotaCredito::getMontoCuota)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+            
+            resumenMensual = resumenMensual.add(montoTarjeta);
         }
+        
         return resumenMensual;
     }
 }
