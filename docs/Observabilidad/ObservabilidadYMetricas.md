@@ -342,7 +342,7 @@ Restart=on-failure
 WantedBy=multi-user.target
 ```
 
-**Iniciar el agente:**
+**Iniciar el servicio:**
 
 ```bash
 sudo systemctl daemon-reload

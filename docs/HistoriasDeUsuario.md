@@ -127,16 +127,6 @@
 * **Descripción**:
     * Como usuario, necesito exportar un listado de transacciones (que puede ser generado por una búsqueda) o reportes en una planilla de cálculo o PDF.
 
-## 13. Implementar IA
-* **Número**: 13
-* **Nombre**: Interactuar con IA
-* **Usuario**: Usuario
-* **Prioridad**: Baja
-* **Iteración**: 2
-* **Descripción**:
-    * Como usuario, me gustaría que alguna IA pueda interactuar con los datos de la app y sea capaz de generarme resultados que le solicite en base a mis datos.
-
-
 ## Características importantes del sistema:
 * Debe poder ser utilizado desde cualquier plataforma: Computadora, celular, Tablet.
 * Debe tener un diseño muy simple (usabilidad) y una estética moderna y minimalista.
