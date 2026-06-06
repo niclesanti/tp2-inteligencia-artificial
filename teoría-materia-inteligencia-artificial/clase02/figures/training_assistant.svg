@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 460" font-family="Inter, system-ui, -apple-system, sans-serif">
+  <defs>
+    <style>
+      .stroke { stroke: #222222; stroke-width: 1.4; fill: none; }
+      .stroke-thin { stroke: #222222; stroke-width: 1; fill: none; }
+      .accent { stroke: #7F77DD; stroke-width: 1.6; fill: none; }
+      .bg-soft { fill: #F4F2FF; }
+      .text { fill: #222222; font-size: 13px; }
+      .text-strong { fill: #222222; font-size: 16px; font-weight: 600; }
+      .text-xs { fill: #666666; font-size: 11px; }
+      .role { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; fill: #7F77DD; }
+      .text-content { fill: #222222; font-size: 12px; }
+    </style>
+  </defs>
+
+  <text x="480" y="36" text-anchor="middle" class="text-strong" font-size="22">Entrenar al assistant: cambiar el dataset, seguir entrenando</text>
+  <text x="480" y="58" text-anchor="middle" class="text-xs">Misma arquitectura, mismo objetivo (predecir el próximo token), pero datos curados por humanos.</text>
+
+  <!-- LEFT: dataset abstract -->
+  <g transform="translate(40,90)">
+    <rect x="0" y="0" width="220" height="320" rx="10" class="stroke bg-soft"/>
+    <text x="110" y="28" text-anchor="middle" class="text-strong" font-size="14">Dataset SFT</text>
+
+    <!-- stack of conversations -->
+    <g transform="translate(30,60)">
+      <rect x="0" y="0" width="160" height="40" rx="4" class="stroke" fill="#FFFFFF"/>
+      <text x="10" y="16" class="role" font-size="9">USER</text>
+      <text x="10" y="30" class="text-xs">¿Cómo declaro un array en Java?</text>
+
+      <rect x="10" y="50" width="160" height="40" rx="4" class="stroke" fill="#FFFFFF"/>
+      <text x="20" y="66" class="role" font-size="9">USER</text>
+      <text x="20" y="80" class="text-xs">Resumime este artículo…</text>
+
+      <rect x="20" y="100" width="160" height="40" rx="4" class="stroke" fill="#FFFFFF"/>
+      <text x="30" y="116" class="role" font-size="9">USER</text>
+      <text x="30" y="130" class="text-xs">Dame ejemplos de monopsony.</text>
+
+      <text x="80" y="170" text-anchor="middle" class="text-xs">…</text>
+
+      <text x="80" y="200" text-anchor="middle" class="text-xs" fill="#7F77DD" font-weight="600">~100K conversaciones</text>
+      <text x="80" y="216" text-anchor="middle" class="text-xs" fill="#666">de alta calidad</text>
+      <text x="80" y="232" text-anchor="middle" class="text-xs" fill="#666">escritas por personas</text>
+    </g>
+  </g>
+
+  <!-- arrow -->
+  <g transform="translate(280,250)">
+    <line x1="0" y1="0" x2="60" y2="0" class="stroke"/>
+    <polygon points="60,0 52,-5 52,5" fill="#222"/>
+    <text x="30" y="-12" text-anchor="middle" class="text-xs">fine-tuning</text>
+  </g>
+
+  <!-- RIGHT: example conversation -->
+  <g transform="translate(360,90)">
+    <rect x="0" y="0" width="560" height="320" rx="10" class="stroke" fill="#FFFFFF"/>
+
+    <text x="14" y="24" class="text-strong" font-size="14">Ejemplo de un par del dataset</text>
+
+    <g transform="translate(20,50)">
+      <text class="role" y="0">&lt;USER&gt;</text>
+      <text class="text-content" y="20">¿Podés escribirme una función en Python que reciba</text>
+      <text class="text-content" y="36">una lista de IPs y devuelva las que pertenecen a la</text>
+      <text class="text-content" y="52">subred 192.168.1.0/24? Manejá las IPs inválidas.</text>
+
+      <text class="role" y="84">&lt;ASSISTANT&gt;</text>
+      <text class="text-content" y="104">Usando el módulo ipaddress de la biblioteca estándar:</text>
+
+      <g font-family="'JetBrains Mono', monospace" font-size="10.5" fill="#222222">
+        <text y="124">import ipaddress</text>
+        <text y="142"> </text>
+        <text y="142">def filtrar_subred(ips, cidr="192.168.1.0/24"):</text>
+        <text y="158">    red = ipaddress.ip_network(cidr)</text>
+        <text y="174">    resultado = []</text>
+        <text y="190">    for ip in ips:</text>
+        <text y="206">        try:</text>
+        <text y="222">            if ipaddress.ip_address(ip) in red:</text>
+        <text y="238">                resultado.append(ip)</text>
+        <text y="254">        except ValueError:</text>
+        <text y="270">            continue   <tspan fill="#888"># ignoramos IPs malformadas</tspan></text>
+      </g>
+    </g>
+  </g>
+
+  <text x="480" y="445" text-anchor="middle" class="text-xs" fill="#666">Pretraining: cantidad. SFT: calidad. El modelo aprende a <tspan font-weight="600" fill="#222">comportarse como un assistant</tspan>, no como internet.</text>
+</svg>

@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 480" font-family="Inter, system-ui, -apple-system, sans-serif">
+  <defs>
+    <style>
+      .stroke { stroke: #222222; stroke-width: 1.4; fill: none; }
+      .stroke-thin { stroke: #222222; stroke-width: 1; fill: none; }
+      .accent { stroke: #7F77DD; stroke-width: 1.6; fill: none; }
+      .bg-soft { fill: #F4F2FF; }
+      .bg-diff { fill: #FAFAFA; }
+      .text { fill: #222222; font-size: 13px; }
+      .text-strong { fill: #222222; font-size: 16px; font-weight: 600; }
+      .text-xs { fill: #666666; font-size: 11px; }
+      .role { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; fill: #7F77DD; }
+      .text-content { fill: #222222; font-size: 12px; }
+      .text-mono { font-family: 'JetBrains Mono', monospace; font-size: 11px; fill: #222222; }
+      .diff-add { fill: #1D9E75; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+      .diff-del { fill: #D14B4B; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+      .winner { fill: #1D9E75; font-size: 20px; font-weight: 700; }
+      .loser { fill: #999; font-size: 14px; }
+    </style>
+  </defs>
+
+  <text x="480" y="36" text-anchor="middle" class="text-strong" font-size="22">RLHF: comparar es más fácil que escribir</text>
+  <text x="480" y="58" text-anchor="middle" class="text-xs">El humano elige el mejor candidato; el modelo aprende sus preferencias.</text>
+
+  <!-- Prompt + diff context -->
+  <g transform="translate(280,80)">
+    <rect x="0" y="0" width="400" height="100" rx="6" class="stroke" fill="#FFFFFF"/>
+    <text x="14" y="20" class="role">USER</text>
+    <text x="14" y="38" class="text-content">Escribí un commit message para este diff:</text>
+
+    <g transform="translate(14,48)" class="bg-diff">
+      <rect x="0" y="0" width="372" height="46" rx="3" fill="#FAFAFA" stroke="#E0E0E0" stroke-width="1"/>
+    </g>
+    <g transform="translate(20,62)">
+      <text class="text-mono" y="0" fill="#666">--- a/auth.py</text>
+      <text class="diff-del" y="14">-    if user.password == hashlib.md5(...)</text>
+      <text class="diff-add" y="28">+    if bcrypt.checkpw(user.password, ...)</text>
+    </g>
+  </g>
+
+  <!-- Candidate A: too vague -->
+  <g transform="translate(40,210)">
+    <rect x="0" y="0" width="280" height="190" rx="8" class="stroke bg-soft"/>
+    <text x="14" y="22" class="role">candidato A</text>
+    <g transform="translate(20,50)" class="text-content">
+      <text class="text-mono" y="0" font-weight="700">fix auth</text>
+
+      <text y="32" class="text-xs" fill="#666" font-style="italic">Demasiado vago: no dice qué cambió ni por qué.</text>
+    </g>
+    <text x="140" y="160" text-anchor="middle" class="loser">3 / 3</text>
+  </g>
+
+  <!-- Candidate B: just right -->
+  <g transform="translate(340,210)">
+    <rect x="0" y="0" width="280" height="190" rx="8" stroke="#1D9E75" stroke-width="2.4" fill="#F0FBF6"/>
+    <text x="14" y="22" class="role" fill="#1D9E75">candidato B</text>
+    <g transform="translate(20,50)" class="text-content">
+      <text class="text-mono" y="0" font-weight="700">auth: replace MD5 with bcrypt</text>
+
+      <text y="22" class="text-xs">Migra el chequeo de contraseñas</text>
+      <text y="38" class="text-xs">de MD5 a bcrypt para mitigar</text>
+      <text y="54" class="text-xs">ataques por colisiones.</text>
+    </g>
+    <text x="140" y="170" text-anchor="middle" class="winner">★ ganador</text>
+  </g>
+
+  <!-- Candidate C: rambling -->
+  <g transform="translate(640,210)">
+    <rect x="0" y="0" width="280" height="190" rx="8" class="stroke bg-soft"/>
+    <text x="14" y="22" class="role">candidato C</text>
+    <g transform="translate(20,50)" class="text-content">
+      <text class="text-mono" y="0" font-weight="700">Refactor de seguridad para</text>
+      <text class="text-mono" y="14" font-weight="700">contraseñas en módulo auth</text>
+
+      <text y="36" class="text-xs">Reemplazo del algoritmo de hash</text>
+      <text y="52" class="text-xs">débil por uno actualizado, lo cual</text>
+      <text y="68" class="text-xs">forma parte de mejoras…</text>
+    </g>
+    <text x="140" y="170" text-anchor="middle" class="loser">2 / 3</text>
+  </g>
+
+  <!-- bottom -->
+  <text x="480" y="430" text-anchor="middle" class="text-xs" fill="#666">Para una persona, <tspan font-weight="600" fill="#222">escribir</tspan> el commit ideal cuesta; <tspan font-weight="600" fill="#222">elegir</tspan> el mejor entre tres es casi inmediato.</text>
+  <text x="480" y="452" text-anchor="middle" class="text-xs" fill="#7F77DD" font-weight="600">→ RLHF / DPO usan miles de estas comparaciones para alinear el modelo a preferencias humanas.</text>
+</svg>

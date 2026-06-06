@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 420" font-family="Inter, system-ui, -apple-system, sans-serif">
+  <defs>
+    <style>
+      .stroke { stroke: #222222; stroke-width: 1.4; fill: none; }
+      .stroke-thin { stroke: #222222; stroke-width: 1; fill: none; }
+      .accent { stroke: #7F77DD; fill: none; }
+      .bg-soft { fill: #F4F2FF; }
+      .text { fill: #222222; font-size: 14px; }
+      .text-strong { fill: #222222; font-size: 16px; font-weight: 600; }
+      .text-xs { fill: #666666; font-size: 11px; }
+      .text-mono { font-family: 'JetBrains Mono', monospace; font-size: 16px; fill: #222222; }
+    </style>
+  </defs>
+
+  <text x="480" y="40" text-anchor="middle" class="text-strong" font-size="22">Attention resuelve la polisemia por contexto</text>
+
+  <!-- Sentence A -->
+  <g transform="translate(60,100)">
+    <text x="0" y="0" class="text-xs" fill="#666">Oración A</text>
+
+    <g transform="translate(0,30)" class="text-mono">
+      <text x="0" y="0">el</text>
+      <text x="40" y="0" font-weight="700" fill="#7F77DD">banco</text>
+      <text x="120" y="0">quebró</text>
+      <text x="200" y="0">porque</text>
+      <text x="270" y="0">estaba</text>
+      <text x="340" y="0" font-weight="600">podrido</text>
+    </g>
+
+    <!-- attention from "banco" to others, weights as line thickness -->
+    <g class="accent" fill="none">
+      <!-- to "podrido": muy fuerte -->
+      <path d="M70 50 Q210 100 360 50" stroke-width="4" opacity="0.85"/>
+      <!-- to "quebró": media -->
+      <path d="M70 50 Q100 80 140 50" stroke-width="2" opacity="0.5"/>
+      <!-- to "el": muy débil -->
+      <path d="M70 50 Q40 70 8 50" stroke-width="0.8" opacity="0.3"/>
+    </g>
+
+    <g transform="translate(420,18)">
+      <text x="0" y="0" class="text" font-weight="600" fill="#7F77DD">→ banco = mueble</text>
+      <text x="0" y="22" class="text-xs">"podrido" tiene mucho peso de atención;</text>
+      <text x="0" y="40" class="text-xs">desambigua hacia el sentido físico.</text>
+    </g>
+  </g>
+
+  <!-- Sentence B -->
+  <g transform="translate(60,260)">
+    <text x="0" y="0" class="text-xs" fill="#666">Oración B</text>
+
+    <g transform="translate(0,30)" class="text-mono">
+      <text x="0" y="0">el</text>
+      <text x="40" y="0" font-weight="700" fill="#7F77DD">banco</text>
+      <text x="120" y="0">subió</text>
+      <text x="190" y="0">la</text>
+      <text x="220" y="0">tasa</text>
+      <text x="280" y="0">de</text>
+      <text x="310" y="0" font-weight="600">interés</text>
+    </g>
+
+    <g class="accent" fill="none">
+      <!-- to "interés": muy fuerte -->
+      <path d="M70 50 Q200 100 340 50" stroke-width="4" opacity="0.85"/>
+      <!-- to "tasa": fuerte -->
+      <path d="M70 50 Q150 90 240 50" stroke-width="3" opacity="0.7"/>
+      <!-- to "subió": media -->
+      <path d="M70 50 Q100 80 140 50" stroke-width="2" opacity="0.5"/>
+    </g>
+
+    <g transform="translate(420,18)">
+      <text x="0" y="0" class="text" font-weight="600" fill="#7F77DD">→ banco = institución</text>
+      <text x="0" y="22" class="text-xs">"tasa de interés" arrastra el sentido</text>
+      <text x="0" y="40" class="text-xs">hacia lo financiero.</text>
+    </g>
+  </g>
+
+  <text x="480" y="400" text-anchor="middle" class="text-xs" fill="#666">El grosor de la línea representa el peso de atención. La misma palabra adopta significados distintos según con quién "se conecta".</text>
+</svg>

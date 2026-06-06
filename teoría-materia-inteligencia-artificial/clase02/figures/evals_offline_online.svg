@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 480" font-family="Inter, system-ui, -apple-system, sans-serif">
+  <defs>
+    <style>
+      .stroke { stroke: #222222; stroke-width: 1.4; fill: none; }
+      .stroke-thin { stroke: #222222; stroke-width: 1; fill: none; }
+      .text { fill: #222222; font-size: 13px; }
+      .text-strong { fill: #222222; font-size: 16px; font-weight: 600; }
+      .text-xs { fill: #666666; font-size: 11px; }
+      .bg-soft { fill: #F4F2FF; }
+      .bg-block { fill: #FFFFFF; }
+      .text-mono { font-family: 'JetBrains Mono', monospace; font-size: 11px; fill: #222222; }
+      .pill-pre { fill: #7F77DD; }
+      .pill-prod { fill: #1D9E75; }
+      .pill-text { fill: #FFFFFF; font-size: 11px; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+    </style>
+  </defs>
+
+  <text x="480" y="36" text-anchor="middle" class="text-strong" font-size="22">Evals offline vs online</text>
+  <text x="480" y="58" text-anchor="middle" class="text-xs">Antes de deployar, medís en el laboratorio. Después de deployar, medís en producción. Las dos cosas, no una.</text>
+
+  <!-- LEFT: offline -->
+  <g transform="translate(40,90)">
+    <rect x="0" y="0" width="420" height="320" rx="10" class="stroke bg-soft"/>
+
+    <g transform="translate(20,28)">
+      <rect x="0" y="0" width="120" height="24" rx="12" class="pill-pre"/>
+      <text x="60" y="16" text-anchor="middle" class="pill-text">EVAL OFFLINE</text>
+    </g>
+
+    <text x="20" y="84" class="text" font-weight="600">Antes del deploy. Dataset estático.</text>
+
+    <g transform="translate(20,110)" class="text">
+      <text y="0" font-weight="600" fill="#666">¿Qué se mide?</text>
+      <text class="text-xs" y="18">• Accuracy en el test set propio.</text>
+      <text class="text-xs" y="34">• Comparación v1 vs v2 (regression testing).</text>
+      <text class="text-xs" y="50">• Tasa de output válido (JSON parseable, etc).</text>
+      <text class="text-xs" y="66">• Costo y latencia esperados.</text>
+    </g>
+
+    <g transform="translate(20,200)" class="text">
+      <text y="0" font-weight="600" fill="#666">¿Cuándo correrlo?</text>
+      <text class="text-xs" y="18">• En CI: cada PR que toca prompts o modelo.</text>
+      <text class="text-xs" y="34">• Antes de promover a prod.</text>
+      <text class="text-xs" y="50">• Cuando cambia el modelo subyacente.</text>
+    </g>
+
+    <g transform="translate(20,290)">
+      <text class="text-xs" y="0" font-weight="600" fill="#7F77DD">→ Es como tu test suite de Python, pero para prompts.</text>
+    </g>
+  </g>
+
+  <!-- RIGHT: online -->
+  <g transform="translate(500,90)">
+    <rect x="0" y="0" width="420" height="320" rx="10" stroke="#1D9E75" stroke-width="1.6" fill="#F0FBF6"/>
+
+    <g transform="translate(20,28)">
+      <rect x="0" y="0" width="120" height="24" rx="12" class="pill-prod"/>
+      <text x="60" y="16" text-anchor="middle" class="pill-text">EVAL ONLINE</text>
+    </g>
+
+    <text x="20" y="84" class="text" font-weight="600">En producción. Tráfico real.</text>
+
+    <g transform="translate(20,110)" class="text">
+      <text y="0" font-weight="600" fill="#666">¿Qué se mide?</text>
+      <text class="text-xs" y="18">• Latencia y costo reales por request.</text>
+      <text class="text-xs" y="34">• Calidad del output (LLM-as-judge sobre muestreo).</text>
+      <text class="text-xs" y="50">• Feedback explícito (👍/👎) e implícito (retries).</text>
+      <text class="text-xs" y="66">• Tasa de errores, refusals, jailbreaks.</text>
+    </g>
+
+    <g transform="translate(20,200)" class="text">
+      <text y="0" font-weight="600" fill="#666">¿Cuándo correrlo?</text>
+      <text class="text-xs" y="18">• Continuamente, sobre todo el tráfico (o sample).</text>
+      <text class="text-xs" y="34">• Dashboards en vivo + alertas por umbrales.</text>
+      <text class="text-xs" y="50">• Reportes diarios/semanales del equipo.</text>
+    </g>
+
+    <g transform="translate(20,290)">
+      <text class="text-xs" y="0" font-weight="600" fill="#1D9E75">→ Acá descubrís lo que tu test set no tenía.</text>
+    </g>
+  </g>
+
+  <!-- Bottom -->
+  <text x="480" y="450" text-anchor="middle" class="text-xs" fill="#666">Una sola no alcanza. Offline te da reproducibilidad; online te da realidad. Las dos juntas, ingeniería.</text>
+</svg>

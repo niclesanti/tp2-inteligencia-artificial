@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 500" font-family="Inter, system-ui, -apple-system, sans-serif">
+  <defs>
+    <style>
+      .stroke { stroke: #222222; stroke-width: 1.4; fill: none; }
+      .stroke-thin { stroke: #222222; stroke-width: 1; fill: none; }
+      .axis { stroke: #444; stroke-width: 1.2; fill: none; }
+      .grid { stroke: #DDD; stroke-width: 0.8; fill: none; }
+      .text { fill: #222222; font-size: 13px; }
+      .text-strong { fill: #222222; font-size: 16px; font-weight: 600; }
+      .text-xs { fill: #666666; font-size: 11px; }
+      .bg-soft { fill: #F4F2FF; }
+      .bg-block { fill: #FFFFFF; }
+      .source-name { fill: #7F77DD; font-size: 13px; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+    </style>
+  </defs>
+
+  <text x="480" y="36" text-anchor="middle" class="text-strong" font-size="22">Drift: lo que cambia con el tiempo</text>
+  <text x="480" y="58" text-anchor="middle" class="text-xs">Tu sistema fue bueno el día del deploy. Tres meses después puede no serlo. Por eso monitoreás.</text>
+
+  <!-- 4 sources of drift -->
+  <g transform="translate(40,90)">
+    <!-- 1: Input drift -->
+    <rect x="0" y="0" width="220" height="160" rx="10" class="stroke bg-soft"/>
+    <text x="14" y="28" class="source-name">① Input drift</text>
+    <text x="14" y="46" class="text-xs" fill="#666">la distribución de inputs cambia</text>
+    <text class="text-xs" x="14" y="76">Llegan preguntas que tu test set</text>
+    <text class="text-xs" x="14" y="92">no contemplaba.</text>
+    <text class="text-xs" x="14" y="118" fill="#666">Ej: lanzaste una feature nueva</text>
+    <text class="text-xs" x="14" y="134" fill="#666">y los usuarios preguntan por ella.</text>
+
+    <!-- 2: Output drift -->
+    <rect x="240" y="0" width="220" height="160" rx="10" class="stroke bg-soft"/>
+    <text x="254" y="28" class="source-name">② Quality drift</text>
+    <text x="254" y="46" class="text-xs" fill="#666">la calidad de salida baja</text>
+    <text class="text-xs" x="254" y="76">Más alucinaciones, más errores</text>
+    <text class="text-xs" x="254" y="92">de formato, más refusals.</text>
+    <text class="text-xs" x="254" y="118" fill="#666">Ej: el provider actualizó el modelo</text>
+    <text class="text-xs" x="254" y="134" fill="#666">silenciosamente (gpt-4o → gpt-4o-2).</text>
+
+    <!-- 3: Cost drift -->
+    <rect x="480" y="0" width="220" height="160" rx="10" class="stroke bg-soft"/>
+    <text x="494" y="28" class="source-name">③ Cost drift</text>
+    <text x="494" y="46" class="text-xs" fill="#666">el gasto se dispara</text>
+    <text class="text-xs" x="494" y="76">Tokens por request crecen,</text>
+    <text class="text-xs" x="494" y="92">los usuarios mandan inputs más largos.</text>
+    <text class="text-xs" x="494" y="118" fill="#666">Ej: alguien pega un PDF entero.</text>
+    <text class="text-xs" x="494" y="134" fill="#666">Tu factura se duplica este mes.</text>
+
+    <!-- 4: Adversarial drift -->
+    <rect x="720" y="0" width="200" height="160" rx="10" class="stroke bg-soft"/>
+    <text x="734" y="28" class="source-name">④ Abuse drift</text>
+    <text x="734" y="46" class="text-xs" fill="#666">aparecen malos actores</text>
+    <text class="text-xs" x="734" y="76">Intentos de jailbreak, prompt</text>
+    <text class="text-xs" x="734" y="92">injection, exfiltración de prompt.</text>
+    <text class="text-xs" x="734" y="118" fill="#666">Ej: spike de inputs con</text>
+    <text class="text-xs" x="734" y="134" fill="#666">"ignore previous instructions".</text>
+  </g>
+
+  <!-- Mini chart showing drift over time -->
+  <g transform="translate(120,290)">
+    <text x="360" y="0" text-anchor="middle" class="text" font-weight="600">Cómo se ve drift en un dashboard</text>
+
+    <g transform="translate(0,20)">
+      <line x1="0" y1="0" x2="0" y2="120" class="axis"/>
+      <line x1="0" y1="120" x2="720" y2="120" class="axis"/>
+
+      <g class="grid">
+        <line x1="0" y1="40" x2="720" y2="40"/>
+        <line x1="0" y1="80" x2="720" y2="80"/>
+      </g>
+
+      <!-- Quality line going down -->
+      <path d="M0 30 L 120 35 L 240 38 L 360 50 L 480 70 L 600 90 L 720 100" stroke="#1D9E75" stroke-width="2" fill="none"/>
+      <text x="700" y="14" text-anchor="end" class="text-xs" fill="#1D9E75" font-weight="600">accuracy ↓</text>
+
+      <!-- Cost line going up -->
+      <path d="M0 100 L 120 96 L 240 92 L 360 80 L 480 60 L 600 40 L 720 20" stroke="#D14B4B" stroke-width="2" fill="none"/>
+      <text x="700" y="34" text-anchor="end" class="text-xs" fill="#D14B4B" font-weight="600">costo ↑</text>
+
+      <!-- alert marker -->
+      <circle cx="500" cy="68" r="6" fill="#D14B4B"/>
+      <text x="500" y="58" text-anchor="middle" class="text-xs" fill="#D14B4B" font-weight="700">⚠ alerta disparada</text>
+
+      <text x="0" y="138" class="text-xs" fill="#666">deploy</text>
+      <text x="720" y="138" text-anchor="end" class="text-xs" fill="#666">3 meses después</text>
+    </g>
+  </g>
+
+  <text x="480" y="488" text-anchor="middle" class="text-xs" fill="#7F77DD" font-weight="600">→ Las alertas son contra umbrales que vos definís. La métrica importa más que el modelo "perfecto".</text>
+</svg>

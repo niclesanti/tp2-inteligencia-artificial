@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 460" font-family="Inter, system-ui, -apple-system, sans-serif">
+  <defs>
+    <style>
+      .stroke { stroke: #222222; stroke-width: 1.4; fill: none; }
+      .stroke-thin { stroke: #222222; stroke-width: 1; fill: none; }
+      .accent { stroke: #7F77DD; stroke-width: 1.6; fill: none; }
+      .bg-soft { fill: #F4F2FF; }
+      .text { fill: #222222; font-size: 13px; }
+      .text-strong { fill: #222222; font-size: 16px; font-weight: 600; }
+      .text-xs { fill: #666666; font-size: 11px; }
+      .role { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; fill: #7F77DD; }
+      .text-content { fill: #222222; font-size: 12px; }
+    </style>
+  </defs>
+
+  <text x="480" y="40" text-anchor="middle" class="text-strong" font-size="22">Estructura de una llamada a un LLM</text>
+
+  <!-- container box -->
+  <g transform="translate(180,90)">
+    <rect x="0" y="0" width="600" height="320" rx="10" class="stroke" fill="#FFFFFF"/>
+
+    <!-- SYSTEM -->
+    <g transform="translate(20,24)">
+      <rect x="0" y="0" width="560" height="80" rx="6" class="stroke bg-soft"/>
+      <text x="14" y="20" class="role">SYSTEM</text>
+      <text x="14" y="40" class="text-xs" fill="#666">(invisible para el usuario final)</text>
+      <text x="14" y="60" class="text-content">Sos un asistente experto en derecho argentino.</text>
+      <text x="14" y="76" class="text-content">Respondés en español formal y citás el Código Civil cuando aplica.</text>
+    </g>
+
+    <!-- USER -->
+    <g transform="translate(20,124)">
+      <rect x="0" y="0" width="560" height="60" rx="6" class="stroke" fill="#FFFFFF"/>
+      <text x="14" y="20" class="role">USER</text>
+      <text x="14" y="44" class="text-content">¿Qué pasa si dejo de pagar el alquiler durante dos meses?</text>
+    </g>
+
+    <!-- ASSISTANT -->
+    <g transform="translate(20,204)">
+      <rect x="0" y="0" width="560" height="100" rx="6" class="stroke" fill="#FFFFFF"/>
+      <text x="14" y="20" class="role">ASSISTANT</text>
+      <text x="14" y="44" class="text-content">Según el Código Civil y Comercial, art. 1219, el incumplimiento</text>
+      <text x="14" y="60" class="text-content">por más de dos períodos habilita al locador a demandar el desalojo.</text>
+      <text x="14" y="76" class="text-content">El art. 1222 regula la intimación previa por 10 días corridos…</text>
+    </g>
+  </g>
+
+  <!-- side annotations -->
+  <g transform="translate(20,108)">
+    <text x="0" y="0" class="text-xs" font-weight="600" fill="#7F77DD">define rol, tono</text>
+    <text x="0" y="14" class="text-xs" font-weight="600" fill="#7F77DD">y restricciones</text>
+    <text x="0" y="32" class="text-xs">Es la "pre-instrucción"</text>
+    <text x="0" y="46" class="text-xs">de la conversación.</text>
+  </g>
+
+  <g transform="translate(20,160)">
+    <line x1="0" y1="0" x2="150" y2="0" class="stroke-thin"/>
+    <polygon points="150,0 142,-4 142,4" fill="#222"/>
+  </g>
+
+  <g transform="translate(20,228)">
+    <text x="0" y="0" class="text-xs" font-weight="600">la respuesta nace</text>
+    <text x="0" y="14" class="text-xs" font-weight="600">condicionada por</text>
+    <text x="0" y="32" class="text-xs">system + user.</text>
+  </g>
+  <g transform="translate(20,260)">
+    <line x1="0" y1="0" x2="150" y2="0" class="stroke-thin"/>
+    <polygon points="150,0 142,-4 142,4" fill="#222"/>
+  </g>
+
+  <text x="480" y="438" text-anchor="middle" class="text-xs" fill="#666">Tres roles. Toda la "ingeniería de prompts" es jugar con estos tres campos.</text>
+</svg>

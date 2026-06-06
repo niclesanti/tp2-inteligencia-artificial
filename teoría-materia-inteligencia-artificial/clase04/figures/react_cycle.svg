@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 86 960 332" font-family="Inter, system-ui, -apple-system, sans-serif">
+  <defs>
+    <style>
+      .stroke { stroke: #222222; stroke-width: 1.4; fill: none; }
+      .stroke-thin { stroke: #222222; stroke-width: 1; fill: none; }
+      .accent { stroke: #7F77DD; stroke-width: 1.6; fill: none; }
+      .text { fill: #222222; font-size: 13px; }
+      .text-strong { fill: #222222; font-size: 16px; font-weight: 600; }
+      .text-xs { fill: #666666; font-size: 11px; }
+      .bg-soft { fill: #F4F2FF; }
+      .bg-block { fill: #FFFFFF; }
+      .bg-good { fill: #F0FBF6; }
+      .step-num { font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; fill: #7F77DD; }
+      .arrow-fill { fill: #7F77DD; }
+    </style>
+    <marker id="arrow-rc" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="10" markerHeight="10" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" class="arrow-fill"/>
+    </marker>
+    <marker id="arrow-rc-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="10" markerHeight="10" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#1D9E75"/>
+    </marker>
+  </defs>
+
+
+  <!-- Triangular cycle. Thought top, Action bottom-right, Observation bottom-left -->
+  <!-- Node Thought (top) -->
+  <g transform="translate(290,100)">
+    <rect x="0" y="0" width="200" height="64" rx="8" class="stroke bg-soft"/>
+    <text x="100" y="26" text-anchor="middle" class="step-num" font-size="12">① Thought</text>
+    <text x="100" y="46" text-anchor="middle" class="text-xs" fill="#666">razona el próximo paso</text>
+  </g>
+
+  <!-- Node Action (bottom-right) -->
+  <g transform="translate(430,300)">
+    <rect x="0" y="0" width="200" height="64" rx="8" class="stroke bg-soft"/>
+    <text x="100" y="26" text-anchor="middle" class="step-num" font-size="12">② Action</text>
+    <text x="100" y="46" text-anchor="middle" class="text-xs" fill="#666">invoca una tool</text>
+  </g>
+
+  <!-- Node Observation (bottom-left) -->
+  <g transform="translate(150,300)">
+    <rect x="0" y="0" width="200" height="64" rx="8" class="stroke bg-soft"/>
+    <text x="100" y="26" text-anchor="middle" class="step-num" font-size="12">③ Observation</text>
+    <text x="100" y="46" text-anchor="middle" class="text-xs" fill="#666">recibe el resultado</text>
+  </g>
+
+  <!-- Cycle arrows -->
+  <g class="accent" fill="none">
+    <!-- Thought -> Action -->
+    <path d="M470 166 Q 560 230 535 296" marker-end="url(#arrow-rc)"/>
+    <!-- Action -> Observation -->
+    <path d="M428 338 L 352 338" marker-end="url(#arrow-rc)"/>
+    <!-- Observation -> Thought -->
+    <path d="M245 298 Q 220 230 310 166" marker-end="url(#arrow-rc)"/>
+  </g>
+
+  <!-- Branch from Thought to Answer -->
+  <text x="592" y="120" text-anchor="middle" class="text-xs" fill="#1D9E75">¿ya tengo la respuesta?</text>
+  <path d="M492 134 L 690 134" stroke="#1D9E75" stroke-width="1.6" fill="none" marker-end="url(#arrow-rc-g)"/>
+
+  <!-- Answer box (green) -->
+  <g transform="translate(700,108)">
+    <rect x="0" y="0" width="190" height="64" rx="8" stroke="#1D9E75" stroke-width="1.6" class="bg-good"/>
+    <text x="95" y="28" text-anchor="middle" class="text" font-weight="700" fill="#1D9E75">Answer</text>
+    <text x="95" y="48" text-anchor="middle" class="text-xs" fill="#666">respuesta final al usuario</text>
+  </g>
+
+  <text x="480" y="404" text-anchor="middle" class="text-xs" fill="#666">Cada Thought puede cerrar el bucle: si ya alcanza, devuelve el Answer en vez de otra Action.</text>
+</svg>

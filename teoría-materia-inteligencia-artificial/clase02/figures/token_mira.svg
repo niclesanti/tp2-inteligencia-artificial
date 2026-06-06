@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 460" font-family="Inter, system-ui, -apple-system, sans-serif">
+  <defs>
+    <style>
+      .stroke { stroke: #222222; stroke-width: 1.4; fill: none; }
+      .stroke-thin { stroke: #222222; stroke-width: 1; fill: none; }
+      .accent { stroke: #7F77DD; stroke-width: 1.6; fill: none; }
+      .accent-strong { stroke: #7F77DD; stroke-width: 3.2; fill: none; }
+      .accent-weak { stroke: #7F77DD; stroke-width: 1; fill: none; opacity: 0.45; }
+      .bg-soft { fill: #F4F2FF; }
+      .text { fill: #222222; font-size: 13px; }
+      .text-strong { fill: #222222; font-size: 16px; font-weight: 600; }
+      .text-xs { fill: #666666; font-size: 11px; }
+      .text-mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; fill: #222222; }
+      .text-mono-sm { font-family: 'JetBrains Mono', monospace; font-size: 10px; fill: #666666; }
+      .ok { fill: #1D9E75; font-size: 12px; font-weight: 600; }
+    </style>
+  </defs>
+
+  <text x="480" y="36" text-anchor="middle" class="text-strong" font-size="22">¿Qué significa que un token "mira" a otro?</text>
+  <text x="480" y="58" text-anchor="middle" class="text-xs">El vector del token se actualiza absorbiendo información de los otros tokens.</text>
+
+  <!-- LEFT panel: ANTES -->
+  <g transform="translate(50,100)">
+    <rect x="0" y="0" width="400" height="300" rx="10" class="stroke bg-soft"/>
+    <text x="200" y="28" text-anchor="middle" class="text-strong">Antes de la atención</text>
+
+    <!-- tokens -->
+    <g transform="translate(40,70)">
+      <rect x="0" y="0" width="80" height="36" rx="4" class="stroke" fill="#FFFFFF"/>
+      <text x="40" y="23" text-anchor="middle" class="text-mono">el</text>
+
+      <rect x="100" y="0" width="100" height="36" rx="4" stroke="#7F77DD" stroke-width="2" fill="#FFFFFF"/>
+      <text x="150" y="23" text-anchor="middle" class="text-mono" font-weight="600">banco</text>
+
+      <rect x="220" y="0" width="100" height="36" rx="4" class="stroke" fill="#FFFFFF"/>
+      <text x="270" y="23" text-anchor="middle" class="text-mono">quebró</text>
+    </g>
+
+    <!-- vector representation -->
+    <g transform="translate(50,150)">
+      <text x="100" y="0" text-anchor="middle" class="text-xs" fill="#7F77DD">vector inicial de "banco"</text>
+      <rect x="0" y="14" width="200" height="24" rx="4" class="stroke" fill="#FFFFFF"/>
+      <text x="100" y="31" text-anchor="middle" class="text-mono-sm">[ 0.21, -0.43, 0.07, 0.55, ... ]</text>
+
+      <text x="100" y="68" text-anchor="middle" class="text-xs" fill="#666" font-style="italic">ambiguo: ¿asiento? ¿entidad financiera?</text>
+    </g>
+  </g>
+
+  <!-- ARROW between panels -->
+  <g transform="translate(460,235)">
+    <line x1="0" y1="0" x2="38" y2="0" class="accent" stroke-width="2"/>
+    <polygon points="40,0 32,-5 32,5" fill="#7F77DD"/>
+    <text x="20" y="-12" text-anchor="middle" class="text-xs" fill="#7F77DD" font-weight="600">atención</text>
+  </g>
+
+  <!-- RIGHT panel: DESPUÉS -->
+  <g transform="translate(510,100)">
+    <rect x="0" y="0" width="400" height="300" rx="10" class="stroke bg-soft"/>
+    <text x="200" y="28" text-anchor="middle" class="text-strong">Después de la atención</text>
+
+    <!-- tokens with attention arrows -->
+    <g transform="translate(40,70)">
+      <rect x="0" y="0" width="80" height="36" rx="4" class="stroke" fill="#FFFFFF"/>
+      <text x="40" y="23" text-anchor="middle" class="text-mono">el</text>
+
+      <rect x="100" y="0" width="100" height="36" rx="4" stroke="#7F77DD" stroke-width="2" fill="#FFFFFF"/>
+      <text x="150" y="23" text-anchor="middle" class="text-mono" font-weight="600">banco</text>
+
+      <rect x="220" y="0" width="100" height="36" rx="4" class="stroke" fill="#FFFFFF"/>
+      <text x="270" y="23" text-anchor="middle" class="text-mono">quebró</text>
+
+      <!-- weak arrow from "el" to "banco" -->
+      <path d="M40 0 Q90 -28 150 0" class="accent-weak"/>
+      <text x="80" y="-22" text-anchor="middle" class="text-mono-sm" fill="#999">peso bajo</text>
+
+      <!-- strong arrow from "quebró" to "banco" -->
+      <path d="M270 0 Q210 -32 150 0" class="accent-strong"/>
+      <text x="220" y="-26" text-anchor="middle" class="text-mono-sm" fill="#7F77DD" font-weight="700">peso alto</text>
+    </g>
+
+    <!-- updated vector -->
+    <g transform="translate(50,150)">
+      <text x="100" y="0" text-anchor="middle" class="text-xs" fill="#7F77DD">vector actualizado de "banco"</text>
+      <rect x="0" y="14" width="200" height="24" rx="4" stroke="#7F77DD" stroke-width="1.6" fill="#FFFFFF"/>
+      <text x="100" y="31" text-anchor="middle" class="text-mono-sm">[ 0.42, -0.81, 0.33, 0.18, ... ]</text>
+
+      <text x="100" y="68" text-anchor="middle" class="ok">→ entidad financiera ✓</text>
+    </g>
+  </g>
+
+  <!-- bottom takeaway -->
+  <text x="480" y="436" text-anchor="middle" class="text" fill="#7F77DD" font-weight="600">nuevo_vector(A) = Σ peso(A, B) × vector(B)</text>
+  <text x="480" y="454" text-anchor="middle" class="text-xs" fill="#666">Los pesos los calcula el mecanismo Q/K/V — próximo slide.</text>
+</svg>

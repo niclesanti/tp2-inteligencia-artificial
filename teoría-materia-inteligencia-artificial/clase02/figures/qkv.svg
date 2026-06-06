@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 440" font-family="Inter, system-ui, -apple-system, sans-serif">
+  <defs>
+    <style>
+      .stroke { stroke: #222222; stroke-width: 1.4; fill: none; }
+      .stroke-thin { stroke: #222222; stroke-width: 1; fill: none; }
+      .accent { stroke: #7F77DD; stroke-width: 1.6; fill: none; }
+      .bg-soft { fill: #F4F2FF; }
+      .text { fill: #222222; font-size: 14px; }
+      .text-strong { fill: #222222; font-size: 18px; font-weight: 600; }
+      .text-xs { fill: #666666; font-size: 11px; }
+      .qkv-letter { font-family: 'JetBrains Mono', monospace; font-size: 36px; font-weight: 700; }
+    </style>
+  </defs>
+
+  <text x="480" y="40" text-anchor="middle" class="text-strong" font-size="22">Query, Key, Value — la metáfora del buscador</text>
+
+  <!-- Q box -->
+  <g transform="translate(60,100)">
+    <rect x="0" y="0" width="260" height="240" rx="10" class="stroke bg-soft"/>
+    <text x="130" y="60" text-anchor="middle" class="qkv-letter" fill="#7F77DD">Q</text>
+    <text x="130" y="86" text-anchor="middle" class="text-xs" fill="#7F77DD">Query</text>
+
+    <text x="130" y="130" text-anchor="middle" class="text" font-weight="600">¿Qué estoy buscando?</text>
+
+    <text x="20" y="170" class="text-xs">Cada token genera un vector Q que</text>
+    <text x="20" y="186" class="text-xs">expresa qué tipo de información</text>
+    <text x="20" y="202" class="text-xs">necesita del resto.</text>
+
+    <text x="130" y="225" text-anchor="middle" class="text-xs" font-style="italic" fill="#666">"yo soy 'banco', necesito contexto"</text>
+  </g>
+
+  <!-- K box -->
+  <g transform="translate(350,100)">
+    <rect x="0" y="0" width="260" height="240" rx="10" class="stroke bg-soft"/>
+    <text x="130" y="60" text-anchor="middle" class="qkv-letter" fill="#7F77DD">K</text>
+    <text x="130" y="86" text-anchor="middle" class="text-xs" fill="#7F77DD">Key</text>
+
+    <text x="130" y="130" text-anchor="middle" class="text" font-weight="600">¿Qué información ofrezco?</text>
+
+    <text x="20" y="170" class="text-xs">Cada token genera un vector K que</text>
+    <text x="20" y="186" class="text-xs">describe qué tipo de información</text>
+    <text x="20" y="202" class="text-xs">tiene para aportar.</text>
+
+    <text x="130" y="225" text-anchor="middle" class="text-xs" font-style="italic" fill="#666">"yo soy 'podrido', describo madera"</text>
+  </g>
+
+  <!-- V box -->
+  <g transform="translate(640,100)">
+    <rect x="0" y="0" width="260" height="240" rx="10" class="stroke bg-soft"/>
+    <text x="130" y="60" text-anchor="middle" class="qkv-letter" fill="#7F77DD">V</text>
+    <text x="130" y="86" text-anchor="middle" class="text-xs" fill="#7F77DD">Value</text>
+
+    <text x="130" y="130" text-anchor="middle" class="text" font-weight="600">¿Qué devuelvo si me eligen?</text>
+
+    <text x="20" y="170" class="text-xs">El contenido real que el token</text>
+    <text x="20" y="186" class="text-xs">aporta al que lo seleccionó.</text>
+
+    <text x="130" y="225" text-anchor="middle" class="text-xs" font-style="italic" fill="#666">"acá va el aporte semántico"</text>
+  </g>
+
+  <!-- Bottom equation in plain words -->
+  <g transform="translate(80,370)">
+    <text x="400" y="0" text-anchor="middle" class="text">
+      <tspan font-weight="600">match</tspan>(Q de "banco", K de cada otro token) → <tspan font-weight="600">pesos</tspan> · V → nueva representación contextual
+    </text>
+    <text x="400" y="22" text-anchor="middle" class="text-xs" fill="#666">Es un buscador interno. Para cada token, "qué busco" se compara con "qué tienen los demás", y se combinan según ese matching.</text>
+  </g>
+</svg>

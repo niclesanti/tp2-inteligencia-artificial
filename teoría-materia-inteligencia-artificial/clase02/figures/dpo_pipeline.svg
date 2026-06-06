@@ -1,0 +1,129 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 480" font-family="Inter, system-ui, -apple-system, sans-serif">
+  <defs>
+    <style>
+      .stroke { stroke: #222222; stroke-width: 1.4; fill: none; }
+      .stroke-thin { stroke: #222222; stroke-width: 1; fill: none; }
+      .text { fill: #222222; font-size: 13px; }
+      .text-strong { fill: #222222; font-size: 16px; font-weight: 600; }
+      .text-xs { fill: #666666; font-size: 11px; }
+      .bg-soft { fill: #F4F2FF; }
+      .bg-block { fill: #FFFFFF; }
+      .bg-faded { fill: #F4F2FF; opacity: 0.5; }
+      .text-mono { font-family: 'JetBrains Mono', monospace; font-size: 11px; fill: #222222; }
+      .arrow-fill { fill: #222222; }
+    </style>
+    <marker id="arrow-dpo-v" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="9" markerHeight="9" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" class="arrow-fill"/>
+    </marker>
+    <marker id="arrow-green-v" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="9" markerHeight="9" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#1D9E75"/>
+    </marker>
+  </defs>
+
+  <text x="480" y="36" text-anchor="middle" class="text-strong" font-size="22">DPO: el atajo</text>
+  <text x="480" y="58" text-anchor="middle" class="text-xs">Direct Preference Optimization. Salta el reward model y ataca al LLM directo.</text>
+
+  <!-- ============================================ -->
+  <!-- LEFT COLUMN: DPO pipeline stacked vertically -->
+  <!-- ============================================ -->
+  <g transform="translate(40,90)">
+    <text x="160" y="0" text-anchor="middle" class="text-xs" font-weight="600" fill="#1D9E75">DPO en un solo paso</text>
+
+    <!-- Box 1: Comparaciones -->
+    <g transform="translate(20,16)">
+      <rect x="0" y="0" width="280" height="68" rx="6" class="stroke bg-soft"/>
+      <text x="140" y="24" text-anchor="middle" class="text-xs" font-weight="600">Comparaciones</text>
+      <text x="140" y="42" text-anchor="middle" class="text-xs" fill="#666">(prompt, ganador, perdedor)</text>
+      <text x="140" y="58" text-anchor="middle" class="text-xs" fill="#666">— las mismas que RLHF —</text>
+    </g>
+
+    <!-- Arrow down with label "función de pérdida" -->
+    <line x1="160" y1="92" x2="160" y2="124" stroke="#1D9E75" stroke-width="2" marker-end="url(#arrow-green-v)"/>
+    <text x="220" y="106" class="text-xs" fill="#1D9E75" font-weight="700">una función</text>
+    <text x="220" y="120" class="text-xs" fill="#1D9E75" font-weight="700">de pérdida</text>
+
+    <!-- Box 2: El LLM se entrena directo -->
+    <g transform="translate(20,132)">
+      <rect x="0" y="0" width="280" height="92" rx="6" stroke="#1D9E75" stroke-width="2" fill="#F0FBF6"/>
+      <text x="140" y="24" text-anchor="middle" class="text-xs" font-weight="600">El LLM se entrena directo</text>
+      <text x="140" y="46" text-anchor="middle" class="text-xs">sube la probabilidad del ganador,</text>
+      <text x="140" y="62" text-anchor="middle" class="text-xs">baja la del perdedor</text>
+      <text x="140" y="82" text-anchor="middle" class="text-xs" fill="#1D9E75" font-weight="600">— en un solo backward pass —</text>
+    </g>
+
+    <!-- Arrow down -->
+    <line x1="160" y1="232" x2="160" y2="252" class="stroke" marker-end="url(#arrow-dpo-v)"/>
+
+    <!-- Box 3: la clave (yellow callout) -->
+    <g transform="translate(20,260)">
+      <rect x="0" y="0" width="280" height="80" rx="6" fill="#FFF7E6" stroke="#E0A45C" stroke-width="1"/>
+      <text x="140" y="22" text-anchor="middle" class="text-xs" font-weight="700" fill="#9E6516">la clave</text>
+      <text x="14" y="40" class="text-xs" fill="#9E6516">Es un fine-tuning supervisado</text>
+      <text x="14" y="54" class="text-xs" fill="#9E6516">como el SFT (Stage 2):</text>
+      <text x="14" y="68" class="text-xs" fill="#9E6516">un solo modelo, forward + backward.</text>
+    </g>
+  </g>
+
+  <!-- Vertical divider -->
+  <line x1="400" y1="90" x2="400" y2="430" stroke="#DDD" stroke-width="1"/>
+
+  <!-- ============================================ -->
+  <!-- RIGHT COLUMN: RLHF reminder + comparison -->
+  <!-- ============================================ -->
+  <g transform="translate(420,90)">
+    <text x="260" y="0" text-anchor="middle" class="text-xs" font-weight="600" fill="#666">RLHF vs DPO</text>
+
+    <!-- mini RLHF reminder (3 pasos compactos, 2 tachados) -->
+    <g transform="translate(20,16)">
+      <rect x="0" y="0" width="148" height="36" rx="4" class="stroke bg-soft"/>
+      <text x="74" y="14" text-anchor="middle" class="text-xs" font-weight="600">1. Comparaciones</text>
+      <text x="74" y="28" text-anchor="middle" class="text-xs" fill="#666">(prompt, ganador, perdedor)</text>
+
+      <line x1="156" y1="18" x2="172" y2="18" class="stroke" marker-end="url(#arrow-dpo-v)"/>
+
+      <g transform="translate(180,0)">
+        <rect x="0" y="0" width="120" height="36" rx="4" class="stroke bg-faded"/>
+        <text x="60" y="14" text-anchor="middle" class="text-xs" fill="#999" font-weight="600">2. Reward model</text>
+        <text x="60" y="28" text-anchor="middle" class="text-xs" fill="#999">(red auxiliar)</text>
+        <line x1="0" y1="0" x2="120" y2="36" stroke="#D14B4B" stroke-width="2"/>
+        <line x1="120" y1="0" x2="0" y2="36" stroke="#D14B4B" stroke-width="2"/>
+      </g>
+
+      <line x1="308" y1="18" x2="324" y2="18" class="stroke" marker-end="url(#arrow-dpo-v)"/>
+
+      <g transform="translate(332,0)">
+        <rect x="0" y="0" width="160" height="36" rx="4" class="stroke bg-faded"/>
+        <text x="80" y="14" text-anchor="middle" class="text-xs" fill="#999" font-weight="600">3. PPO loop</text>
+        <text x="80" y="28" text-anchor="middle" class="text-xs" fill="#999">(generar + puntuar + actualizar)</text>
+        <line x1="0" y1="0" x2="160" y2="36" stroke="#D14B4B" stroke-width="2"/>
+        <line x1="160" y1="0" x2="0" y2="36" stroke="#D14B4B" stroke-width="2"/>
+      </g>
+    </g>
+
+    <text x="260" y="74" text-anchor="middle" class="text-xs" fill="#D14B4B" font-weight="700">DPO se saltea los pasos 2 y 3</text>
+
+    <!-- Comparison box -->
+    <g transform="translate(20,98)">
+      <rect x="0" y="0" width="492" height="232" rx="8" class="stroke bg-block"/>
+      <text x="14" y="22" class="text" font-weight="600">RLHF vs DPO en la práctica</text>
+      <line x1="14" y1="32" x2="478" y2="32" stroke="#EEE" stroke-width="1"/>
+
+      <g transform="translate(14,52)">
+        <text class="text-xs" y="0" font-weight="600" fill="#7F77DD">Calidad</text>
+        <text class="text-xs" y="16">comparable. DPO empata o gana en muchos benchmarks.</text>
+
+        <text class="text-xs" y="44" font-weight="600" fill="#7F77DD">Complejidad</text>
+        <text class="text-xs" y="60">DPO usa una sola red. RLHF necesita dos + tuning de RL.</text>
+
+        <text class="text-xs" y="88" font-weight="600" fill="#7F77DD">Estabilidad</text>
+        <text class="text-xs" y="104">DPO es más predecible. PPO es famoso por explotar.</text>
+
+        <text class="text-xs" y="132" font-weight="600" fill="#7F77DD">Adopción 2026</text>
+        <text class="text-xs" y="148">la mayoría de los modelos open weight usan DPO o variantes</text>
+        <text class="text-xs" y="162">(SimPO, KTO).</text>
+      </g>
+    </g>
+  </g>
+
+  <text x="480" y="460" text-anchor="middle" class="text-xs" fill="#7F77DD" font-weight="600">→ Mismo objetivo, mucho menos código.</text>
+</svg>

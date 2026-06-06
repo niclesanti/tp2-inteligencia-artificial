@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" font-family="Inter, system-ui, -apple-system, sans-serif">
+  <defs>
+    <style>
+      .stroke { stroke: #222222; stroke-width: 1.4; fill: none; }
+      .stroke-thin { stroke: #222222; stroke-width: 1; fill: none; }
+      .text { fill: #222222; font-size: 13px; }
+      .text-strong { fill: #222222; font-size: 16px; font-weight: 600; }
+      .text-xs { fill: #666666; font-size: 11px; }
+      .ok-pill { fill: #1D9E75; }
+      .err-pill { fill: #D14B4B; }
+      .pill-text { fill: #FFFFFF; font-size: 12px; font-weight: 600; }
+    </style>
+  </defs>
+
+  <text x="480" y="36" text-anchor="middle" class="text-strong" font-size="22">Qué sabe (y qué NO sabe) un base model</text>
+  <text x="480" y="58" text-anchor="middle" class="text-xs">Después del pretraining sabe el idioma y mucho del mundo, pero su único reflejo es continuar texto.</text>
+
+  <!-- LEFT: SABE -->
+  <g transform="translate(60,90)">
+    <rect x="0" y="0" width="400" height="400" rx="10" stroke="#1D9E75" stroke-width="1.6" fill="#F0FBF6"/>
+
+    <g transform="translate(20,30)">
+      <rect x="0" y="0" width="100" height="26" rx="13" class="ok-pill"/>
+      <text x="50" y="18" text-anchor="middle" class="pill-text">SÍ SABE</text>
+    </g>
+
+    <g transform="translate(20,80)" class="text">
+      <text y="0" font-weight="600">Completar texto</text>
+      <text y="18" class="text-xs" fill="#444">"En un lugar de la Mancha de cuyo nombre…"</text>
+      <text y="32" class="text-xs" fill="#444">→ "no quiero acordarme."</text>
+
+      <text y="68" font-weight="600">Imitar estilo y formato</text>
+      <text y="86" class="text-xs" fill="#444">si le pasás 3 emails formales, sigue en ese tono.</text>
+
+      <text y="118" font-weight="600">Conocer hechos del mundo</text>
+      <text y="136" class="text-xs" fill="#444">capitales, fechas, biografías, cómo funcionan</text>
+      <text y="150" class="text-xs" fill="#444">las cosas (vimos esto en el slide de Wikipedia).</text>
+
+      <text y="186" font-weight="600">Sintaxis de muchos lenguajes</text>
+      <text y="204" class="text-xs" fill="#444">Python, Java, SQL, JSON, HTML, LaTeX…</text>
+
+      <text y="240" font-weight="600">Patrones estadísticos del texto</text>
+      <text y="258" class="text-xs" fill="#444">colocaciones, registros, modismos por idioma.</text>
+    </g>
+  </g>
+
+  <!-- RIGHT: NO SABE -->
+  <g transform="translate(500,90)">
+    <rect x="0" y="0" width="400" height="400" rx="10" stroke="#D14B4B" stroke-width="1.6" fill="#FFF1F1"/>
+
+    <g transform="translate(20,30)">
+      <rect x="0" y="0" width="100" height="26" rx="13" class="err-pill"/>
+      <text x="50" y="18" text-anchor="middle" class="pill-text">NO SABE</text>
+    </g>
+
+    <g transform="translate(20,80)" class="text">
+      <text y="0" font-weight="600">Seguir una instrucción</text>
+      <text y="18" class="text-xs" fill="#444">"resumime esto en 3 bullets" → no entiende</text>
+      <text y="32" class="text-xs" fill="#444">la pregunta como pregunta.</text>
+
+      <text y="68" font-weight="600">Detenerse cuando ya respondió</text>
+      <text y="86" class="text-xs" fill="#444">sigue completando hasta agotar tokens.</text>
+
+      <text y="118" font-weight="600">Decir "no sé"</text>
+      <text y="136" class="text-xs" fill="#444">prefiere inventar antes que admitir un hueco.</text>
+
+      <text y="172" font-weight="600">Negarse a algo dañino</text>
+      <text y="190" class="text-xs" fill="#444">no tiene reglas de comportamiento todavía.</text>
+
+      <text y="226" font-weight="600">Mantener un rol o persona</text>
+      <text y="244" class="text-xs" fill="#444">no entiende "actuá como un profesor".</text>
+
+      <text y="280" font-weight="600">Entender el formato chat</text>
+      <text y="298" class="text-xs" fill="#444">los roles SYSTEM / USER son posteriores (SFT).</text>
+    </g>
+  </g>
+
+  <!-- bottom -->
+  <text x="480" y="522" text-anchor="middle" class="text" fill="#7F77DD" font-weight="600">→ Todo lo de la derecha lo enseña Stage 2 (SFT) y Stage 3 (RLHF).</text>
+</svg>
