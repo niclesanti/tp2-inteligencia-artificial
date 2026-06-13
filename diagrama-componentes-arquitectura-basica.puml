@@ -1,0 +1,66 @@
+@startuml Diagrama_Componentes_FinanzasBot_Gateway
+
+skinparam componentStyle uml2
+skinparam backgroundColor white
+skinparam handwritten false
+
+skinparam Rectangle {
+    BackgroundColor<<Infra>> #F1F5F9
+    BorderColor<<Infra>> #94A3B8
+}
+
+skinparam Component {
+    BackgroundColor<<App>> #E0F2FE
+    BorderColor<<App>> #0284C7
+    BackgroundColor<<Agent>> #F0FDF4
+    BorderColor<<Agent>> #16A34A
+    BackgroundColor<<Data>> #FEF3C7
+    BorderColor<<Data>> #D97706
+}
+
+package "Capa de Presentación (UI)" {
+    [Frontend (React / TS)] <<App>> as FE
+}
+
+package "Capa de Enrutamiento y Seguridad" {
+    [API Gateway] <<App>> as GW
+}
+
+package "Capa de Negocio e Infraestructura Existente" {
+    [Backend (Spring Boot API)] <<App>> as BE
+    database "PostgreSQL\n(Datos Financieros)" <<Data>> as DB
+}
+
+package "Microservicio de IA (Python)" <<Agente>> {
+    component "Orquestador del Agente\n(Pydantic AI + LLM)" <<Agent>> as Core
+    
+    package "Componentes Internos del Agente" {
+        [Memoria Corto Plazo] <<Agent>> as ST_Mem
+        [Tools] <<Agent>> as Tools
+        [RAG] <<Agent>> as RAG
+    }
+    database "Qdrant Vector Store\n(Educación Financiera)" <<Data>> as VectorDB
+    database "Redis Session Store\n(Memoria Contextual)" <<Data>> as Redis
+}
+
+' ---- FLUJOS Y COMUNICACIÓN ----
+
+' El Frontend solo conoce al Gateway
+FE --> GW : 1. Peticiones HTTP / Mensajes de Chat
+
+' El Gateway redirige según el Endpoint
+GW --> BE : [/api/*]\nRedirige operaciones comunes
+GW --> Core : [/api/agente/*]\nRedirige flujo conversacional
+
+' Persistencia tradicional y de contexto
+BE --> DB : Consulta/Guarda estados financieros
+Core <--> Redis : Consulta/Actualiza historial de chat
+
+' Funcionamiento interno y percepción del Agente
+Core <--> ST_Mem : Mantiene contexto del diálogo
+Core --> Tools : Planifica acciones cuantitativas
+Tools --> BE : 2. Consume Datos Crudos (Filtros de Transacciones/Crédito)
+Core --> RAG : Dispara consulta pedagógica
+RAG <--> VectorDB : Búsqueda por similitud semántica
+
+@enduml
