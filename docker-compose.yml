@@ -57,9 +57,44 @@ services:
     networks:
       - campito-net
 
+  agente:
+    build: ./agente
+    container_name: python-agente-ia
+    depends_on:
+      - backend
+      - qdrant
+      - redis
+    environment:
+      GROQ_API_KEY: ${GROQ_API_KEY}
+      QDRANT_HOST: qdrant
+      REDIS_HOST: redis
+      BACKEND_URL: http://backend:8080
+    networks:
+      - campito-net
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: qdrant-vector-db
+    restart: always
+    volumes:
+      - qdrant_data:/qdrant/storage
+    networks:
+      - campito-net
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis-session-store
+    restart: always
+    volumes:
+      - redis_data:/data
+    networks:
+      - campito-net
+
 volumes:
   postgres_data:
   pgadmin_data:
+  qdrant_data:
+  redis_data:
 
 networks:
   campito-net:
