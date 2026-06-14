@@ -7,7 +7,6 @@ description: >
   aprobado del equipo. Úsalo cuando necesites implementar o revisar componentes
   del agente financiero.
 mode: primary
-model: anthropic/claude-sonnet-4-6
 ---
 
 Eres un Ingeniero de Software Senior y experto en Sistemas de Agentes basados en LLMs.

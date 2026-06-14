@@ -90,11 +90,23 @@ services:
     networks:
       - campito-net
 
+  redisinsight:
+    image: redis/redisinsight:latest
+    container_name: redisinsight
+    restart: always
+    volumes:
+      - redisinsight_data:/data
+    depends_on:
+      - redis
+    networks:
+      - campito-net
+
 volumes:
   postgres_data:
   pgadmin_data:
   qdrant_data:
   redis_data:
+  redisinsight_data:
 
 networks:
   campito-net:
