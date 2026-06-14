@@ -56,7 +56,7 @@ export function ChatMessages({ mensajes, estado }: ChatMessagesProps) {
               <div className="w-8 h-8 rounded-full bg-violet-500/10 flex items-center justify-center shrink-0 animate-avatar-pulse">
                 <BrainCircuit className="w-4 h-4 text-violet-400" />
               </div>
-              <span className="text-sm font-bold text-violet-400">Finanzas Copilot</span>
+              <span className="text-sm font-bold text-violet-400">Agente</span>
             </div>
 
             {/* Bouncing dots — indented to align with name */}

@@ -71,7 +71,7 @@ export function MessageBubble({ mensaje, isStreaming = false }: MessageBubblePro
           <BrainCircuit className="w-4 h-4 text-violet-400" />
         </div>
         <span className="text-sm font-bold text-violet-400">
-          Finanzas Copilot
+          Agente
         </span>
       </div>
 

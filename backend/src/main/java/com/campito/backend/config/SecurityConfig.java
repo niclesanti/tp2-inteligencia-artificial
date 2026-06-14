@@ -95,6 +95,12 @@ public class SecurityConfig {
         // La seguridad en producción se garantiza porque el puerto 9090
         // solo es accesible localmente (127.0.0.1) dentro del servidor.
         publicEndpoints.add("/actuator/**");
+
+        // Endpoints internos para el microservicio de IA (agente).
+        // Solo accesibles desde la red interna de Docker.
+        // NO requieren JWT porque el agente ya está autenticado
+        // al recibir el mensaje del usuario y validó el token.
+        publicEndpoints.add("/api/internal/**");
         
         http
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))

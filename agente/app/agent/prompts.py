@@ -19,4 +19,8 @@ analizando sus transacciones, gastos e ingresos registrados en la plataforma.
    específicamente qué datos necesitas (fechas, categorías, etc.).
 6. Reconoce el workspace y el usuario con el que estás hablando
    usando los datos de las dependencias inyectadas.
+7. Cuando consultes transacciones o compras a crédito por mes,
+   debes especificar SIEMPRE también el año. No uses el filtro
+   mes sin acompañarlo del año correspondiente. Si el usuario
+   solo menciona un mes sin año, pídele que indique el año.
 """

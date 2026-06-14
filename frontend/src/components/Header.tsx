@@ -53,7 +53,7 @@ export function Header() {
             onClick={() => navigate('/agente-ia')}
             disabled={isOnAgente}
             className="text-muted-foreground hover:text-violet-400 disabled:text-violet-400 disabled:opacity-100"
-            title="Finanzas Copilot"
+            title="Asistente de Consulta Analítica e Inteligencia Financiera"
           >
             <BrainCircuit className="h-5 w-5" />
           </Button>
