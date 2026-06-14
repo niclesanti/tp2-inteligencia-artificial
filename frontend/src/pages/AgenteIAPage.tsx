@@ -23,7 +23,7 @@ export default function AgenteIAPage() {
     return (
       <div className={`flex flex-col ${PAGE_HEIGHT}`}>
         <div className="flex-1 overflow-hidden">
-          <ChatWelcome onSuggestionClick={enviarMensaje} />
+          <ChatWelcome />
         </div>
         <ChatInput onSend={enviarMensaje} disabled={estado === 'streaming' || estado === 'thinking'} />
       </div>

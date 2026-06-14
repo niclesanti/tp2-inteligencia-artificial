@@ -399,6 +399,7 @@ export type AgenteIAEstado = 'idle' | 'thinking' | 'streaming' | 'error'
 // Conversación completa por workspace
 export interface AgenteIAConversacion {
   workspaceId: string
+  sessionId: string  // UUID de sesión para Redis (persistencia de historial)
   mensajes: AgenteIAMensaje[]
   ultimaActualizacion: number  // timestamp
 }
