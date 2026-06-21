@@ -1,3 +1,11 @@
+
+# ── Inicializar observabilidad ANTES de cualquier otro import ────
+# Esto garantiza que Langfuse + OpenTelemetry estén activos
+# desde el segundo cero del ciclo de vida del servidor.
+from app.services.logging_config import init_observability
+
+init_observability()
+
 import json
 from contextlib import asynccontextmanager
 
@@ -19,6 +27,14 @@ async def lifespan(app: FastAPI):
     app.state.redis_store = RedisModelMessageStore(redis_client)
     yield
     await redis_client.close()
+    # Flush de trazas pendientes en Langfuse antes de cerrar
+    try:
+        from langfuse import get_client
+
+        get_client().flush()
+    except Exception:
+        pass
+
 
 
 app = FastAPI(

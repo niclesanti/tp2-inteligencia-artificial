@@ -60,14 +60,14 @@ async def filtrar_transacciones(
     if size is not None:
         payload["size"] = size
 
-    logger.info("POST %s | payload=%s", url, payload)
+
 
     try:
         async with httpx.AsyncClient(timeout=_TIMEOUT_SECONDS) as client:
             resp = await client.post(url, json=payload)
             resp.raise_for_status()
             data = resp.json()
-            logger.info("Respuesta OK | totalElements=%s", data.get("totalElements", "?"))
+
             return data
     except httpx.HTTPStatusError as e:
         logger.error("HTTP error %s al llamar a transaccion/buscar: %s", e.response.status_code, e.response.text)
@@ -122,14 +122,14 @@ async def filtrar_compras_credito(
     if size is not None:
         payload["size"] = size
 
-    logger.info("POST %s | payload=%s", url, payload)
+
 
     try:
         async with httpx.AsyncClient(timeout=_TIMEOUT_SECONDS) as client:
             resp = await client.post(url, json=payload)
             resp.raise_for_status()
             data = resp.json()
-            logger.info("Respuesta OK | totalElements=%s", data.get("totalElements", "?"))
+
             return data
     except httpx.HTTPStatusError as e:
         logger.error("HTTP error %s al llamar a comprascredito/buscar: %s", e.response.status_code, e.response.text)

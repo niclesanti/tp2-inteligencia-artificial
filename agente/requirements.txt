@@ -6,3 +6,7 @@ redis
 pydantic-settings
 httpx
 python-dotenv
+langfuse
+opentelemetry-api
+opentelemetry-sdk
+opentelemetry-exporter-otlp

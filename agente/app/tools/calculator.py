@@ -85,10 +85,7 @@ def _detectar_tipo(items: list[dict[str, Any]]) -> Literal["transacciones", "com
     if "monto" in first:
         return "transacciones"
 
-    logger.warning(
-        "No se pudo detectar el tipo de dato (campos: %s), usando default 'transacciones'",
-        list(first.keys()),
-    )
+
     return "transacciones"
 
 
@@ -125,7 +122,7 @@ def _aplicar_filtros(
             for it in items
             if fc in (it.get("nombreMotivo") or "").lower()
         ]
-        logger.debug("Filtro categoria='%s' → %d items restantes", filtro_categoria, len(items))
+
 
     if filtro_tipo and tipo_dato == "transacciones":
         ft = filtro_tipo.upper()
@@ -134,7 +131,7 @@ def _aplicar_filtros(
             for it in items
             if it.get("tipo", "").upper() == ft
         ]
-        logger.debug("Filtro tipo='%s' → %d items restantes", filtro_tipo, len(items))
+
 
     return items
 
@@ -485,12 +482,7 @@ def calcular(
         >>> calcular(data_json, "sumar", filtro_tipo="GASTO")
         '{"operacion": "sumar", "total": 35000.0, ...}'
     """
-    logger.info(
-        "calcular | operacion=%s filtro_categoria=%s filtro_tipo=%s",
-        operacion,
-        filtro_categoria,
-        filtro_tipo,
-    )
+
 
     # 1. Validar operación
     op = operacion.lower().strip()
@@ -516,7 +508,7 @@ def calcular(
 
     # 3. Detectar tipo de dato
     tipo_dato = _detectar_tipo(items)
-    logger.info("calcular | tipo_dato=%s, items=%d", tipo_dato, len(items))
+
 
     # 4. Validar compatibilidad operación ↔ tipo_dato
     #    (se saltea si la lista está vacía, ya que no podemos
@@ -567,7 +559,7 @@ def calcular(
 
     try:
         resultado = operaciones_map[op]()
-        logger.info("calcular | operacion=%s OK | items=%d", op, len(items))
+
         return json.dumps(resultado, ensure_ascii=False)
     except Exception as e:
         logger.error(
