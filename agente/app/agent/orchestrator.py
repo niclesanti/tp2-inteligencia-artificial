@@ -30,6 +30,7 @@ agent: Agent[Deps] = Agent(
     model,
     system_prompt=SYSTEM_PROMPT,
     deps_type=Deps,
+    instrument=True,
 )
 
 
@@ -69,10 +70,7 @@ async def tool_filtrar_transacciones(
             "Por favor, indica también el año (ej: 2025) para poder realizar la búsqueda."
         )
 
-    logger.info(
-        "tool_filtrar_transacciones | workspace=%s mes=%s anio=%s motivo=%s contacto=%s page=%s size=%s",
-        ctx.deps.workspace_id, mes, anio, motivo, contacto, page, size,
-    )
+
 
     try:
         data = await filtrar_transacciones(
@@ -86,7 +84,7 @@ async def tool_filtrar_transacciones(
         )
         return json.dumps(data, default=str, ensure_ascii=False)
     except ValueError as e:
-        logger.error("Error en tool_filtrar_transacciones: %s", str(e))
+        logger.error("tool_filtrar_transacciones | error: %s", str(e))
         return f"Error al consultar transacciones: {e}"
 
 
@@ -124,10 +122,7 @@ async def tool_filtrar_compras_credito(
             "Por favor, indica también el año (ej: 2025) para poder realizar la búsqueda."
         )
 
-    logger.info(
-        "tool_filtrar_compras_credito | workspace=%s mes=%s anio=%s motivo=%s contacto=%s page=%s size=%s",
-        ctx.deps.workspace_id, mes, anio, motivo, contacto, page, size,
-    )
+
 
     try:
         data = await filtrar_compras_credito(
@@ -141,7 +136,7 @@ async def tool_filtrar_compras_credito(
         )
         return json.dumps(data, default=str, ensure_ascii=False)
     except ValueError as e:
-        logger.error("Error en tool_filtrar_compras_credito: %s", str(e))
+        logger.error("tool_filtrar_compras_credito | error: %s", str(e))
         return f"Error al consultar compras a crédito: {e}"
 
 
@@ -186,12 +181,7 @@ async def tool_calculadora_estadistica(
         JSON string con el resultado estructurado del cálculo.
         Incluye siempre los campos ``operacion`` y ``moneda``.
     """
-    logger.info(
-        "tool_calculadora_estadistica | op=%s cat=%s tipo=%s",
-        operacion,
-        filtro_categoria,
-        filtro_tipo,
-    )
+
 
     try:
         resultado = calcular(
@@ -200,7 +190,7 @@ async def tool_calculadora_estadistica(
             filtro_categoria=filtro_categoria,
             filtro_tipo=filtro_tipo,
         )
-        logger.info("tool_calculadora_estadistica | OK")
+
         return resultado
     except Exception as e:
         logger.error(

@@ -1,5 +1,3 @@
-
-
 services:
   db:
     image: postgres:14
@@ -69,6 +67,10 @@ services:
       QDRANT_HOST: qdrant
       REDIS_HOST: redis
       BACKEND_URL: http://backend:8080
+      # Observabilidad: Langfuse (trazas estructuradas vía OpenTelemetry)
+      LANGFUSE_PUBLIC_KEY: ${LANGFUSE_PUBLIC_KEY:-}
+      LANGFUSE_SECRET_KEY: ${LANGFUSE_SECRET_KEY:-}
+      LANGFUSE_BASE_URL: ${LANGFUSE_BASE_URL:-https://cloud.langfuse.com}
     networks:
       - campito-net
 
