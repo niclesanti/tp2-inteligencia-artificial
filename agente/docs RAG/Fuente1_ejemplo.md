@@ -1,1 +1,0 @@
-Pegar información sobre educación financiera.

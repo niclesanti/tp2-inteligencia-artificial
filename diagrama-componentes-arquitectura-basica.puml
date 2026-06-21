@@ -16,6 +16,8 @@ skinparam Component {
     BorderColor<<Agent>> #16A34A
     BackgroundColor<<Data>> #FEF3C7
     BorderColor<<Data>> #D97706
+    BackgroundColor<<Obs>> #F3E8FF
+    BorderColor<<Obs>> #9333EA
 }
 
 package "Capa de Presentación (UI)" {
@@ -23,7 +25,7 @@ package "Capa de Presentación (UI)" {
 }
 
 package "Capa de Enrutamiento y Seguridad" {
-    [API Gateway] <<App>> as GW
+    [API Gateway] <<Infra>> as GW
 }
 
 package "Capa de Negocio e Infraestructura Existente" {
@@ -33,34 +35,38 @@ package "Capa de Negocio e Infraestructura Existente" {
 
 package "Microservicio de IA (Python)" <<Agente>> {
     component "Orquestador del Agente\n(Pydantic AI + LLM)" <<Agent>> as Core
-    
-    package "Componentes Internos del Agente" {
-        [Memoria Corto Plazo] <<Agent>> as ST_Mem
-        [Tools] <<Agent>> as Tools
-        [RAG] <<Agent>> as RAG
-    }
-    database "Qdrant Vector Store\n(Educación Financiera)" <<Data>> as VectorDB
-    database "Redis Session Store\n(Memoria Contextual)" <<Data>> as Redis
+    [Tools] <<Agent>> as Tools
+    [Módulo RAG] <<Agent>> as RAG
+    database "Qdrant\n(Vectores Educación Fin.)" <<Data>> as VectorDB
+    database "Redis\n(Memoria Conversacional)" <<Data>> as Redis
+}
+
+package "Observabilidad" {
+    [Langfuse] <<Obs>> as Langfuse
 }
 
 ' ---- FLUJOS Y COMUNICACIÓN ----
 
-' El Frontend solo conoce al Gateway
-FE --> GW : 1. Peticiones HTTP / Mensajes de Chat
+' El Frontend envía todo al Gateway
+FE --> GW : Peticiones HTTP / SSE
 
-' El Gateway redirige según el Endpoint
-GW --> BE : [/api/*]\nRedirige operaciones comunes
-GW --> Core : [/api/agente/*]\nRedirige flujo conversacional
+' El Gateway redirige según el path
+GW --> BE : [/api/*] REST
+GW --> Core : [/api/agente/*] SSE
 
-' Persistencia tradicional y de contexto
+' Persistencia financiera
 BE --> DB : Consulta/Guarda estados financieros
-Core <--> Redis : Consulta/Actualiza historial de chat
 
-' Funcionamiento interno y percepción del Agente
-Core <--> ST_Mem : Mantiene contexto del diálogo
+' Memoria conversacional (Redis, único store)
+Core --> Redis : Guarda/Recupera historial de chat
+
+' Funcionamiento interno del Agente
 Core --> Tools : Planifica acciones cuantitativas
-Tools --> BE : 2. Consume Datos Crudos (Filtros de Transacciones/Crédito)
+Tools --> BE : Consulta datos crudos (REST interna)
 Core --> RAG : Dispara consulta pedagógica
 RAG <--> VectorDB : Búsqueda por similitud semántica
+
+' Observabilidad
+Core --> Langfuse : Trazas OpenTelemetry
 
 @enduml

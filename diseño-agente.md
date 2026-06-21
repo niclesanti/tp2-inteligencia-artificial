@@ -243,12 +243,29 @@ dota al modelo de la capacidad de resolver co-referencias gramaticales y mantene
 coherencia del contexto analítico durante toda la sesión interactiva, aislando este flujo
 transaccional veloz de la base de datos vectorial del RAG.
 
-Conectividad entre sistemas: REST API (JSON / HTTP)
-Justificación: El microservicio del agente inteligente se desacopla completamente del
-backend principal de la aplicación mediante interfaces REST. El contenedor de Python
-consume endpoints dedicados expuestos por Spring Boot para leer el historial transaccional
-del usuario pasando el identificador de contexto correspondiente (`workspace_id`). Esto
-preserva la modularidad del sistema, respeta el principio de única responsabilidad para este
-microservicio y evita la duplicación innecesaria de la lógica de acceso a datos de
-PostgreSQL en múltiples lenguajes de programación.
+Conectividad entre sistemas: SSE (chat) + REST API (datos internos)
+Justificación: La comunicación entre el frontend y el agente no utiliza REST, sino
+**Server-Sent Events (SSE)**. El frontend crea una conexión `EventSource` contra
+`/api/agente/chat/stream` que el API gateway redirige directamente al microservicio Python. Esto permite recibir la respuesta del LLM token por token en tiempo real, ofreciendo una experiencia conversacional fluida similar a los chat conversacionales modernos. SSE fue elegido sobre WebSocket porque el flujo es unidireccional (solo el servidor envía tokens). Para la comunicación inversa (agente → backend), sí se utiliza **REST API (JSON/HTTP)**. El microservicio Python consume los endpoints internos expuestos por Spring Boot para recuperar el historial transaccional del usuario.
+
+### 3.4. Observabilidad (trazas estructuradas)
+
+Los sistemas basados en agentes de LLM presentan desafíos de depuración y monitoreo
+cualitativamente distintos a los del software tradicional: el ciclo ReAct introduce múltiples
+llamadas encadenadas al modelo, invocaciones a herramientas con argumentos dinámicos y
+caminos de razonamiento no deterministas. Sin un sistema de trazabilidad, diagnosticar una
+respuesta incorrecta (ya sea por una alucinación, un error en el parsing de una tool o un
+fallo de groundness) resulta inviable en producción.
+
+Para abordar esto, se incorpora un subsistema de observabilidad basado en **Langfuse**
+como backend de trazas, **OpenTelemetry** como protocolo de instrumentación y la
+**instrumentación nativa de Pydantic AI** como mecanismo de captura automática.
+
+#### Stack tecnológico de observabilidad
+
+| Componente | Tecnología | Rol |
+|---|---|---|
+| Backend de trazas | **Langfuse** (SaaS cloud o self-hosted) | Almacenamiento, visualización y análisis de spans y traces |
+| Protocolo de instrumentación | **OpenTelemetry** (OTLP) | Estandariza la emisión de spans desde el microservicio hacia Langfuse |
+| Instrumentación automática | **Pydantic AI** (`Agent.instrument_all()`) | Captura spans de cada paso del loop ReAct sin código manual por agente |
 

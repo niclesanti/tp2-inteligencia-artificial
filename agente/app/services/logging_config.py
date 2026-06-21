@@ -8,7 +8,6 @@ y retornos JSON.
 """
 
 import logging
-import os
 
 logger = logging.getLogger(__name__)
 
@@ -32,8 +31,10 @@ def init_observability() -> None:
     )
 
     # ── Verificar credenciales de Langfuse ───────────────────────
-    public_key = os.getenv("LANGFUSE_PUBLIC_KEY")
-    secret_key = os.getenv("LANGFUSE_SECRET_KEY")
+    from app.core.config import settings
+
+    public_key = settings.langfuse_public_key
+    secret_key = settings.langfuse_secret_key
 
     if not public_key or not secret_key:
         logger.warning(
