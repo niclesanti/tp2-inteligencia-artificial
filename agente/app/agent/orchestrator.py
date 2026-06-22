@@ -8,9 +8,14 @@ el loop ReAct (Reasoning and Acting).
 
 import json
 import logging
+import os
 
+import httpx
+from groq import AsyncGroq
 from pydantic_ai import Agent, RunContext
+from pydantic_ai.capabilities import Instrumentation
 from pydantic_ai.models.groq import GroqModel
+from pydantic_ai.providers.groq import GroqProvider
 
 from app.agent.dependencies import Deps
 from app.agent.prompts import SYSTEM_PROMPT
@@ -24,13 +29,28 @@ logger = logging.getLogger(__name__)
 
 # ── Modelo y agente ──────────────────────────────────────────────
 
-model = GroqModel("llama-3.3-70b-versatile")
+# Cliente HTTP personalizado con timeout generoso (180s) para evitar
+# que los retries automáticos del SDK de Groq disparen demoras de
+# ~3 minutos cuando el LLM tarda en decidir el siguiente paso del
+# loop ReAct. Además, max_retries=0 desactiva los reintentos internos.
+_groq_http_client = httpx.AsyncClient(
+    timeout=httpx.Timeout(180.0, connect=30.0),
+)
+_groq_client = AsyncGroq(
+    api_key=os.getenv("GROQ_API_KEY"),
+    http_client=_groq_http_client,
+    max_retries=0,
+    timeout=httpx.Timeout(180.0),
+)
+_groq_provider = GroqProvider(groq_client=_groq_client)
+
+model = GroqModel("llama-3.3-70b-versatile", provider=_groq_provider)
 
 agent: Agent[Deps] = Agent(
     model,
     system_prompt=SYSTEM_PROMPT,
     deps_type=Deps,
-    instrument=True,
+    capabilities=[Instrumentation()],
 )
 
 
@@ -138,6 +158,82 @@ async def tool_filtrar_compras_credito(
     except ValueError as e:
         logger.error("tool_filtrar_compras_credito | error: %s", str(e))
         return f"Error al consultar compras a crédito: {e}"
+
+
+# ── Tool de recuperación RAG ─────────────────────────────────────
+
+
+@agent.tool
+async def tool_recuperacion_RAG(
+    ctx: RunContext[Deps],
+    consulta: str,
+) -> str:
+    """Recupera información de la base de conocimiento de educación financiera.
+
+    Usá esta herramienta SOLO cuando el usuario pida:
+    - Consejos de ahorro o educación financiera personal
+    - Información sobre el contexto macroeconómico argentino
+      (inflación, IPC, salarios, INDEC)
+    - Explicaciones sobre productos financieros
+      (plazos fijos, cuentas remuneradas, FCI Money Market, Dólar MEP, CEDEARs)
+    - Marco regulatorio y derechos del consumidor financiero
+      (BCRA, CNV, Ley de Tarjetas de Crédito 25.065, Transferencias 3.0)
+    - Estrategias de cobertura contra la inflación
+    - Capacidad de endeudamiento y gestión de deudas
+    - Cualquier tema de finanzas personales que requiera fundamentos teóricos
+
+    NO uses esta herramienta para consultas sobre transacciones, gastos,
+    ingresos o balances del usuario — esas van a las tools de filtrado.
+
+    Args:
+        consulta: La pregunta o tema sobre el cual se necesita
+                  información financiera detallada.
+
+    Returns:
+        Texto con los fragmentos más relevantes de la base de conocimiento,
+        incluyendo fuente y sección de origen para que el usuario pueda
+        identificar el origen de la información.
+    """
+    logger.info("tool_recuperacion_RAG | consulta='%s'", consulta)
+
+    # ── Validación temprana: rechazar consultas triviales/no financieras ──
+    consulta_stripped = consulta.strip().lower()
+    saludos = {"hola", "hola como estas", "como estas", "buenos dias",
+               "buenas tardes", "buenas noches", "que tal", "hello",
+               "hi", "hey", "gracias", "muchas gracias", "chau", "adios",
+               "bye", "nos vemos", "saludos"}
+    if consulta_stripped in saludos or len(consulta_stripped) < 5:
+        logger.info(
+            "tool_recuperacion_RAG | consulta trivial ignorada: '%s'",
+            consulta[:60],
+        )
+        return (
+            "Esta herramienta es solo para consultas de educación "
+            "financiera. Para saludos o conversación general, "
+            "respondé directamente sin usar herramientas."
+        )
+
+    try:
+        contexto = await ctx.deps.retriever.retrieve(consulta)
+        if not contexto:
+            logger.info(
+                "tool_recuperacion_RAG | sin resultados para: %s",
+                consulta[:80],
+            )
+            return (
+                "No se encontró información relevante en la base de "
+                "conocimiento financiera para esa consulta."
+            )
+        logger.info(
+            "tool_recuperacion_RAG | OK (%d caracteres)",
+            len(contexto),
+        )
+        return contexto
+    except Exception as e:
+        logger.error(
+            "tool_recuperacion_RAG | error: %s", str(e), exc_info=True
+        )
+        return f"Error al recuperar información financiera: {e}"
 
 
 # ── Tool de cálculo determinístico ───────────────────────────────

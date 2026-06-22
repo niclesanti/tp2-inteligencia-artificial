@@ -7,26 +7,68 @@ from app.services.logging_config import init_observability
 init_observability()
 
 import json
+import logging
 from contextlib import asynccontextmanager
 
 import httpx
-from fastapi import FastAPI, Query, Request
-from fastapi.responses import StreamingResponse
+from fastapi import FastAPI, HTTPException, Query, Request
+from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel
+from pydantic_ai.exceptions import ModelHTTPError
 from redis.asyncio import Redis
 
 from app.agent.dependencies import Deps
 from app.agent.orchestrator import agent
 from app.core.config import settings
 from app.memory.redis_store import RedisModelMessageStore
+from app.rag.connection import ensure_collection_async, get_async_client
+from app.rag.retriever import Retriever
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # ── Redis (memoria conversacional) ────────────────────────
     redis_client = Redis(host=settings.redis_host, port=settings.redis_port)
     app.state.redis_store = RedisModelMessageStore(redis_client)
+
+    # ── RAG: asegurar colección en Qdrant ────────────────────
+    qdrant_client = get_async_client()
+    try:
+        await ensure_collection_async(qdrant_client)
+        logger = logging.getLogger("rag")
+        logger.info(
+            "Colección '%s' lista en Qdrant",
+            settings.qdrant_collection_name,
+        )
+    except ConnectionError:
+        logger = logging.getLogger("rag")
+        logger.warning(
+            "Qdrant no está disponible en este momento. "
+            "El RAG se activará cuando Qdrant responda."
+        )
+    finally:
+        await qdrant_client.close()
+
+    # ── Retriever ──────────────────────────────────────────────
+    retriever = Retriever()
+    app.state.retriever = retriever
+
+    # ── Precargar modelo de embeddings (eager) ────────────────
+    # para evitar el lag de ~60s en la primera consulta RAG
+    logger = logging.getLogger("rag")
+    try:
+        await retriever.ensure_model()
+        logger.info("Modelo de embeddings precargado correctamente.")
+    except Exception:
+        logger.warning(
+            "No se pudo precargar el modelo de embeddings. "
+            "Se cargará lazy en la primera consulta RAG."
+        )
+
     yield
+
     await redis_client.close()
+    await app.state.retriever.close()
     # Flush de trazas pendientes en Langfuse antes de cerrar
     try:
         from langfuse import get_client
@@ -88,9 +130,27 @@ async def chat(body: ChatRequest, request: Request) -> ChatResponse:
         session_id=body.session_id,
         workspace_id=body.workspace_id,
         user_id=body.user_id,
+        retriever=request.app.state.retriever,
     )
 
-    result = await agent.run(body.message, deps=deps, message_history=history)
+    try:
+        result = await agent.run(body.message, deps=deps, message_history=history)
+    except ModelHTTPError as e:
+        logger = logging.getLogger(__name__)
+        logger.error("Error del modelo LLM: status_code=%s, body=%s", e.status_code, e.body)
+        if e.status_code == 429:
+            raise HTTPException(
+                status_code=429,
+                detail=(
+                    "El asistente está temporalmente sobrecargado (límite de uso del "
+                    "modelo de lenguaje alcanzado). Por favor, intentá de nuevo en "
+                    "unos minutos. Si el problema persiste, contactá al administrador."
+                ),
+            )
+        raise HTTPException(
+            status_code=502,
+            detail=f"Error de comunicación con el modelo de lenguaje. Código: {e.status_code}",
+        )
 
     all_messages = result.all_messages()
     await store.save_messages(body.session_id, all_messages)
@@ -135,6 +195,7 @@ async def chat_stream(
         session_id=session_id,
         workspace_id=workspace_id,
         user_id=user_id,
+        retriever=request.app.state.retriever,
     )
 
     async def event_stream():
@@ -165,7 +226,20 @@ async def chat_stream(
                     "tokensUsed": usage.total_tokens if usage else 0,
                 }
             yield f"event: done\ndata: {json.dumps(metadata)}\n\n"
+        except ModelHTTPError as e:
+            logger = logging.getLogger(__name__)
+            logger.error("ModelHTTPError en SSE: status_code=%s, body=%s", e.status_code, e.body)
+            if e.status_code == 429:
+                msg = (
+                    "El asistente está temporalmente sobrecargado (límite de uso alcanzado). "
+                    "Por favor, esperá unos minutos y volvé a intentar."
+                )
+            else:
+                msg = f"Error de comunicación con el modelo de lenguaje (código {e.status_code})."
+            yield f"event: error-message\ndata: {json.dumps(msg)}\n\n"
         except Exception as e:
+            logger = logging.getLogger(__name__)
+            logger.error("Error inesperado en SSE: %s", str(e), exc_info=True)
             yield f"event: error-message\ndata: {json.dumps(str(e))}\n\n"
 
     return StreamingResponse(
