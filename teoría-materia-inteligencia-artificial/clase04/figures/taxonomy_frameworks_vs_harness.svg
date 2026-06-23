@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 380" font-family="Inter, system-ui, -apple-system, sans-serif">
+  <defs>
+    <style>
+      .stroke { stroke: #222222; stroke-width: 1.4; fill: none; }
+      .stroke-thin { stroke: #222222; stroke-width: 1; fill: none; }
+      .accent { stroke: #7F77DD; stroke-width: 1.6; fill: none; }
+      .text { fill: #222222; font-size: 13px; }
+      .text-strong { fill: #222222; font-size: 16px; font-weight: 600; }
+      .text-xs { fill: #666666; font-size: 11px; }
+      .bg-soft { fill: #F4F2FF; }
+      .bg-block { fill: #FFFFFF; }
+      .step-num { font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; fill: #7F77DD; }
+      .arrow-fill { fill: #7F77DD; }
+      .tier { fill: #222222; font-size: 14px; font-weight: 700; }
+      .box-name { fill: #222222; font-size: 13px; font-weight: 600; text-anchor: middle; }
+    </style>
+    <marker id="arrow-tx" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="10" markerHeight="10" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" class="arrow-fill"/>
+    </marker>
+  </defs>
+
+  <!-- ===== TIER 1 band (top) ===== -->
+  <g transform="translate(40,20)">
+    <rect x="0" y="0" width="820" height="160" rx="10" class="stroke bg-soft"/>
+    <text x="18" y="28" class="tier">Tier 1 — Frameworks de orquestación · vos armás el loop</text>
+
+    <!-- tiny "you wire nodes" icon -->
+    <g transform="translate(640,40)">
+      <text x="90" y="-4" text-anchor="middle" class="text-xs" fill="#666">vos cableás los nodos</text>
+      <circle cx="20" cy="20" r="8" stroke="#7F77DD" stroke-width="1.4" fill="#fff"/>
+      <circle cx="90" cy="14" r="8" stroke="#7F77DD" stroke-width="1.4" fill="#fff"/>
+      <circle cx="160" cy="22" r="8" stroke="#7F77DD" stroke-width="1.4" fill="#fff"/>
+      <circle cx="70" cy="60" r="8" stroke="#7F77DD" stroke-width="1.4" fill="#fff"/>
+      <line x1="28" y1="20" x2="82" y2="14" class="stroke-thin"/>
+      <line x1="98" y1="14" x2="152" y2="22" class="stroke-thin"/>
+      <line x1="26" y1="26" x2="64" y2="56" class="stroke-thin"/>
+      <line x1="78" y1="58" x2="86" y2="22" class="stroke-thin"/>
+    </g>
+
+    <!-- 4 boxes -->
+    <g transform="translate(18,52)">
+      <rect x="0" y="0" width="140" height="50" rx="8" class="stroke bg-block"/>
+      <text x="70" y="30" class="box-name">smolagents</text>
+      <rect x="152" y="0" width="180" height="50" rx="8" class="stroke bg-block"/>
+      <text x="242" y="24" class="box-name">LangChain /</text>
+      <text x="242" y="40" class="box-name">LangGraph</text>
+      <rect x="344" y="0" width="140" height="50" rx="8" class="stroke bg-block"/>
+      <text x="414" y="30" class="box-name">LlamaIndex</text>
+    </g>
+    <!-- row 2: 5 boxes (full band width — below the icon) -->
+    <g transform="translate(0,116)">
+      <rect x="18" y="0" width="120" height="34" rx="8" class="stroke bg-block"/>
+      <text x="78" y="22" class="box-name">PydanticAI</text>
+      <rect x="150" y="0" width="96" height="34" rx="8" class="stroke bg-block"/>
+      <text x="198" y="22" class="box-name">CrewAI</text>
+      <rect x="258" y="0" width="80" height="34" rx="8" class="stroke bg-block"/>
+      <text x="298" y="22" class="box-name">Agno</text>
+      <rect x="350" y="0" width="160" height="34" rx="8" class="stroke bg-block"/>
+      <text x="430" y="22" class="box-name">OpenAI Agents SDK</text>
+      <rect x="522" y="0" width="118" height="34" rx="8" class="stroke bg-block"/>
+      <text x="581" y="22" class="box-name">Google ADK</text>
+    </g>
+  </g>
+
+  <!-- ===== TIER 2 band (bottom) ===== -->
+  <g transform="translate(40,200)">
+    <rect x="0" y="0" width="820" height="160" rx="10" class="stroke bg-soft"/>
+    <text x="18" y="28" class="tier">Tier 2 — Deep-agent harnesses · el harness trae el loop</text>
+
+    <!-- tiny "planner + subagentes + filesystem" icon set -->
+    <g transform="translate(600,38)">
+      <text x="110" y="-4" text-anchor="middle" class="text-xs" fill="#666">planner + subagentes + filesystem</text>
+      <rect x="80" y="6" width="60" height="22" rx="6" stroke="#7F77DD" stroke-width="1.4" fill="#fff"/>
+      <text x="110" y="21" text-anchor="middle" class="text-xs" fill="#7F77DD">planner</text>
+      <rect x="30" y="48" width="46" height="20" rx="6" class="stroke-thin" fill="#fff"/>
+      <text x="53" y="62" text-anchor="middle" class="text-xs" fill="#666">sub</text>
+      <rect x="92" y="48" width="46" height="20" rx="6" class="stroke-thin" fill="#fff"/>
+      <text x="115" y="62" text-anchor="middle" class="text-xs" fill="#666">sub</text>
+      <rect x="154" y="48" width="46" height="20" rx="6" class="stroke-thin" fill="#fff"/>
+      <text x="177" y="62" text-anchor="middle" class="text-xs" fill="#666">fs</text>
+      <line x1="100" y1="28" x2="60" y2="46" class="stroke-thin"/>
+      <line x1="110" y1="28" x2="115" y2="46" class="stroke-thin"/>
+      <line x1="120" y1="28" x2="170" y2="46" class="stroke-thin"/>
+    </g>
+
+    <!-- 4 boxes -->
+    <g transform="translate(18,52)">
+      <rect x="0" y="0" width="170" height="50" rx="8" class="stroke bg-block"/>
+      <text x="85" y="24" class="box-name">Claude Agent</text>
+      <text x="85" y="40" class="box-name">SDK</text>
+      <rect x="186" y="0" width="120" height="50" rx="8" class="stroke bg-block"/>
+      <text x="246" y="30" class="box-name">opencode</text>
+      <rect x="320" y="0" width="100" height="50" rx="8" class="stroke bg-block"/>
+      <text x="370" y="30" class="box-name">pi.dev</text>
+    </g>
+    <rect x="18" y="116" width="140" height="34" rx="8" class="stroke bg-block"/>
+    <text x="88" y="138" class="box-name">deepagents</text>
+  </g>
+
+  <!-- Vertical double-arrow axis on the right -->
+  <g transform="translate(876,25)">
+    <text x="20" y="-2" text-anchor="middle" class="text-xs" fill="#7F77DD">bajo nivel</text>
+    <path d="M20 8 L 20 320" class="accent" marker-start="url(#arrow-tx)" marker-end="url(#arrow-tx)"/>
+    <text x="20" y="338" text-anchor="middle" class="text-xs" fill="#7F77DD">alto nivel</text>
+  </g>
+</svg>

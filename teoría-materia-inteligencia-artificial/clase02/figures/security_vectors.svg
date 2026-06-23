@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 380" font-family="Inter, system-ui, -apple-system, sans-serif">
+  <defs>
+    <style>
+      .stroke { stroke: #222222; stroke-width: 1.4; fill: none; }
+      .stroke-thin { stroke: #222222; stroke-width: 1; fill: none; }
+      .bg-soft { fill: #F4F2FF; }
+      .text { fill: #222222; font-size: 13px; }
+      .text-strong { fill: #222222; font-size: 16px; font-weight: 600; }
+      .text-xs { fill: #666666; font-size: 11px; }
+      .vector-name { font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; fill: #7F77DD; }
+    </style>
+  </defs>
+
+  <text x="480" y="40" text-anchor="middle" class="text-strong" font-size="22">Tres vectores de ataque a un LLM en producción</text>
+
+  <!-- Vector 1: jailbreak -->
+  <g transform="translate(60,90)">
+    <rect x="0" y="0" width="260" height="240" rx="10" class="stroke bg-soft"/>
+
+    <!-- icon: lock breaking -->
+    <g transform="translate(110,40)">
+      <rect x="0" y="20" width="40" height="32" rx="3" class="stroke" fill="#FFFFFF"/>
+      <path d="M8 20 Q8 6 20 6 Q32 6 32 20" class="stroke" fill="none"/>
+      <line x1="2" y1="14" x2="38" y2="58" stroke="#D14B4B" stroke-width="2.5"/>
+      <circle cx="20" cy="36" r="2" fill="#222"/>
+    </g>
+
+    <text x="130" y="124" text-anchor="middle" class="vector-name">Jailbreaks</text>
+
+    <text x="20" y="158" class="text-xs">El usuario engaña al modelo</text>
+    <text x="20" y="174" class="text-xs">para saltarse sus reglas:</text>
+    <text x="20" y="194" class="text-xs">role-play ("DAN"), encoding</text>
+    <text x="20" y="210" class="text-xs">en base64, idioma raro,</text>
+    <text x="20" y="226" class="text-xs">"escenario hipotético".</text>
+  </g>
+
+  <!-- Vector 2: prompt injection -->
+  <g transform="translate(350,90)">
+    <rect x="0" y="0" width="260" height="240" rx="10" class="stroke bg-soft"/>
+
+    <!-- icon: doc with arrow -->
+    <g transform="translate(95,30)">
+      <path d="M0 0 L48 0 L66 18 L66 70 L0 70 Z" class="stroke" fill="#FFFFFF"/>
+      <path d="M48 0 L48 18 L66 18" class="stroke-thin"/>
+      <line x1="10" y1="28" x2="50" y2="28" class="stroke-thin"/>
+      <line x1="10" y1="40" x2="50" y2="40" class="stroke-thin"/>
+      <line x1="10" y1="52" x2="40" y2="52" class="stroke-thin"/>
+      <!-- arrow pointing into the doc with red tip -->
+      <line x1="-22" y1="44" x2="6" y2="44" stroke="#D14B4B" stroke-width="2.5"/>
+      <polygon points="6,44 -2,40 -2,48" fill="#D14B4B"/>
+    </g>
+
+    <text x="130" y="124" text-anchor="middle" class="vector-name">Prompt injection</text>
+
+    <text x="20" y="158" class="text-xs">El atacante esconde instrucciones</text>
+    <text x="20" y="174" class="text-xs">en datos que el LLM va a leer:</text>
+    <text x="20" y="194" class="text-xs">un email, una página web, un</text>
+    <text x="20" y="210" class="text-xs">documento, un comentario en</text>
+    <text x="20" y="226" class="text-xs">un PR. El modelo las ejecuta.</text>
+  </g>
+
+  <!-- Vector 3: data poisoning -->
+  <g transform="translate(640,90)">
+    <rect x="0" y="0" width="260" height="240" rx="10" class="stroke bg-soft"/>
+
+    <!-- icon: dataset with poison drop -->
+    <g transform="translate(100,30)">
+      <rect x="0" y="0" width="60" height="14" rx="2" class="stroke" fill="#FFFFFF"/>
+      <rect x="0" y="20" width="60" height="14" rx="2" class="stroke" fill="#FFFFFF"/>
+      <rect x="0" y="40" width="60" height="14" rx="2" class="stroke" fill="#D14B4B" fill-opacity="0.18"/>
+      <rect x="0" y="60" width="60" height="14" rx="2" class="stroke" fill="#FFFFFF"/>
+      <!-- drop -->
+      <path d="M70 -2 Q78 8 70 14 Q62 8 70 -2 Z" fill="#D14B4B"/>
+    </g>
+
+    <text x="130" y="124" text-anchor="middle" class="vector-name">Data poisoning</text>
+
+    <text x="20" y="158" class="text-xs">El atacante contamina los datos</text>
+    <text x="20" y="174" class="text-xs">de entrenamiento con backdoors</text>
+    <text x="20" y="194" class="text-xs">o "sleeper agents": el modelo</text>
+    <text x="20" y="210" class="text-xs">se comporta normal hasta que</text>
+    <text x="20" y="226" class="text-xs">ve un trigger específico.</text>
+  </g>
+
+  <text x="480" y="365" text-anchor="middle" class="text-xs" fill="#666">Tres superficies de ataque distintas. Cada una requiere defensas distintas.</text>
+</svg>

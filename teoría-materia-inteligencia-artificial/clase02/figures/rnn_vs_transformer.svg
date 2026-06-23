@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 440" font-family="Inter, system-ui, -apple-system, sans-serif">
+  <defs>
+    <style>
+      .stroke { stroke: #222222; stroke-width: 1.4; fill: none; }
+      .stroke-thin { stroke: #222222; stroke-width: 1; fill: none; }
+      .accent { stroke: #7F77DD; stroke-width: 1.6; fill: none; }
+      .bg-soft { fill: #F4F2FF; }
+      .text { fill: #222222; font-size: 13px; }
+      .text-strong { fill: #222222; font-size: 16px; font-weight: 600; }
+      .text-xs { fill: #666666; font-size: 11px; }
+      .text-mono { font-family: 'JetBrains Mono', monospace; font-size: 13px; fill: #222222; }
+    </style>
+  </defs>
+
+  <text x="480" y="40" text-anchor="middle" class="text-strong" font-size="22">De RNN secuencial a Transformer en paralelo</text>
+
+  <!-- LEFT: RNN -->
+  <g transform="translate(60,90)">
+    <text x="190" y="0" text-anchor="middle" class="text-strong">RNN / LSTM (~hasta 2017)</text>
+    <text x="190" y="20" text-anchor="middle" class="text-xs">una palabra a la vez, en orden</text>
+
+    <!-- chain of cells -->
+    <g transform="translate(0,50)">
+      <g>
+        <rect x="0" y="40" width="60" height="50" rx="6" class="stroke bg-soft"/>
+        <text x="30" y="70" text-anchor="middle" class="text-mono">h₁</text>
+        <text x="30" y="115" text-anchor="middle" class="text-mono">la</text>
+      </g>
+      <g>
+        <rect x="80" y="40" width="60" height="50" rx="6" class="stroke bg-soft"/>
+        <text x="110" y="70" text-anchor="middle" class="text-mono">h₂</text>
+        <text x="110" y="115" text-anchor="middle" class="text-mono">red</text>
+      </g>
+      <g>
+        <rect x="160" y="40" width="60" height="50" rx="6" class="stroke bg-soft"/>
+        <text x="190" y="70" text-anchor="middle" class="text-mono">h₃</text>
+        <text x="190" y="115" text-anchor="middle" class="text-mono">se</text>
+      </g>
+      <g>
+        <rect x="240" y="40" width="60" height="50" rx="6" class="stroke bg-soft"/>
+        <text x="270" y="70" text-anchor="middle" class="text-mono">h₄</text>
+        <text x="270" y="115" text-anchor="middle" class="text-mono">cae</text>
+      </g>
+
+      <!-- arrows between cells -->
+      <g class="stroke">
+        <line x1="60" y1="65" x2="76" y2="65"/>
+        <polygon points="80,65 72,61 72,69" fill="#222"/>
+        <line x1="140" y1="65" x2="156" y2="65"/>
+        <polygon points="160,65 152,61 152,69" fill="#222"/>
+        <line x1="220" y1="65" x2="236" y2="65"/>
+        <polygon points="240,65 232,61 232,69" fill="#222"/>
+      </g>
+
+      <!-- problem note -->
+      <g transform="translate(0,160)">
+        <text x="0" y="0" class="text-xs" fill="#D14B4B">✗ no se paraleliza en GPU</text>
+        <text x="0" y="20" class="text-xs" fill="#D14B4B">✗ olvida lo que pasó hace 50 tokens</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- DIVIDER -->
+  <line x1="480" y1="100" x2="480" y2="380" stroke="#DDD" stroke-width="1"/>
+
+  <!-- RIGHT: Transformer -->
+  <g transform="translate(540,90)">
+    <text x="190" y="0" text-anchor="middle" class="text-strong">Transformer (2017 →)</text>
+    <text x="190" y="20" text-anchor="middle" class="text-xs">todas las palabras a la vez, atención global</text>
+
+    <g transform="translate(0,50)">
+      <!-- tokens -->
+      <g>
+        <rect x="0" y="40" width="60" height="50" rx="6" class="stroke bg-soft"/>
+        <text x="30" y="70" text-anchor="middle" class="text-mono">la</text>
+      </g>
+      <g>
+        <rect x="80" y="40" width="60" height="50" rx="6" class="stroke bg-soft"/>
+        <text x="110" y="70" text-anchor="middle" class="text-mono">red</text>
+      </g>
+      <g>
+        <rect x="160" y="40" width="60" height="50" rx="6" class="stroke bg-soft"/>
+        <text x="190" y="70" text-anchor="middle" class="text-mono">se</text>
+      </g>
+      <g>
+        <rect x="240" y="40" width="60" height="50" rx="6" class="stroke bg-soft"/>
+        <text x="270" y="70" text-anchor="middle" class="text-mono">cae</text>
+      </g>
+
+      <!-- all-to-all attention arrows -->
+      <g class="accent" opacity="0.6">
+        <path d="M30 40 Q70 10 110 40" />
+        <path d="M30 40 Q110 0 190 40" />
+        <path d="M30 40 Q150 -10 270 40" />
+        <path d="M110 40 Q150 10 190 40" />
+        <path d="M110 40 Q190 0 270 40" />
+        <path d="M190 40 Q230 10 270 40" />
+      </g>
+
+      <text x="150" y="120" text-anchor="middle" class="text-xs" fill="#7F77DD">cada token mira a todos los demás</text>
+
+      <g transform="translate(0,160)">
+        <text x="0" y="0" class="text-xs" fill="#1D9E75">✓ entrenamiento masivamente paralelo</text>
+        <text x="0" y="20" class="text-xs" fill="#1D9E75">✓ contexto lejano sin pérdida</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- bottom takeaway -->
+  <text x="480" y="412" text-anchor="middle" class="text" fill="#7F77DD" font-weight="600">→ Esta es la idea de "Attention Is All You Need" (Vaswani et al., 2017).</text>
+</svg>

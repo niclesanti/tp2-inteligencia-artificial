@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 460" font-family="Inter, system-ui, -apple-system, sans-serif">
+  <defs>
+    <style>
+      .stroke { stroke: #222222; stroke-width: 1.4; fill: none; }
+      .stroke-thin { stroke: #222222; stroke-width: 1; fill: none; }
+      .axis { stroke: #444; stroke-width: 1.2; fill: none; }
+      .text { fill: #222222; font-size: 13px; }
+      .text-strong { fill: #222222; font-size: 15px; font-weight: 600; }
+      .text-xs { fill: #666666; font-size: 11px; }
+      .text-mono { font-family: 'JetBrains Mono', monospace; font-size: 11px; fill: #222222; }
+      .label { fill: #7F77DD; font-size: 12px; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+    </style>
+  </defs>
+
+  <text x="480" y="36" text-anchor="middle" class="text-strong" font-size="22">Cómo el modelo elige el próximo token</text>
+  <text x="480" y="56" text-anchor="middle" class="text-xs">Después de la red sale una distribución de probabilidad sobre todo el vocabulario. Sampling es cómo elegimos uno.</text>
+
+  <!-- 3 columns: temperature low, top-K, top-P -->
+  <!-- Helper: each column draws a short bar chart of token probabilities -->
+
+  <!-- Column 1: temperature low -->
+  <g transform="translate(40,100)">
+    <rect x="0" y="0" width="280" height="320" rx="10" class="stroke" fill="#FFFFFF"/>
+    <text x="140" y="28" text-anchor="middle" class="label">temperature = 0.1</text>
+    <text x="140" y="48" text-anchor="middle" class="text-xs" fill="#666">distribución filosa, output predecible</text>
+
+    <!-- bars -->
+    <g transform="translate(40,80)">
+      <rect x="0" y="0" width="50" height="180" fill="#7F77DD"/>
+      <rect x="60" y="160" width="50" height="20" fill="#9E8FE5"/>
+      <rect x="120" y="172" width="50" height="8" fill="#C7B7F2"/>
+      <rect x="180" y="176" width="50" height="4" fill="#E0D7F8"/>
+      <line x1="-4" y1="180" x2="240" y2="180" class="axis"/>
+      <text x="25" y="196" text-anchor="middle" class="text-mono">mat</text>
+      <text x="85" y="196" text-anchor="middle" class="text-mono">rug</text>
+      <text x="145" y="196" text-anchor="middle" class="text-mono">desk</text>
+      <text x="205" y="196" text-anchor="middle" class="text-mono">…</text>
+      <text x="25" y="220" text-anchor="middle" class="text-xs" fill="#7F77DD">97%</text>
+      <text x="85" y="220" text-anchor="middle" class="text-xs">2%</text>
+      <text x="145" y="220" text-anchor="middle" class="text-xs">0.5%</text>
+    </g>
+
+    <text x="20" y="290" class="text-xs">→ casi siempre elige el más probable.</text>
+    <text x="20" y="306" class="text-xs">→ útil para tareas factuales / código.</text>
+  </g>
+
+  <!-- Column 2: temperature high -->
+  <g transform="translate(340,100)">
+    <rect x="0" y="0" width="280" height="320" rx="10" class="stroke" fill="#FFFFFF"/>
+    <text x="140" y="28" text-anchor="middle" class="label">temperature = 1.0</text>
+    <text x="140" y="48" text-anchor="middle" class="text-xs" fill="#666">distribución plana, output diverso</text>
+
+    <g transform="translate(40,80)">
+      <rect x="0" y="80" width="50" height="100" fill="#7F77DD"/>
+      <rect x="60" y="100" width="50" height="80" fill="#9E8FE5"/>
+      <rect x="120" y="120" width="50" height="60" fill="#C7B7F2"/>
+      <rect x="180" y="140" width="50" height="40" fill="#E0D7F8"/>
+      <line x1="-4" y1="180" x2="240" y2="180" class="axis"/>
+      <text x="25" y="196" text-anchor="middle" class="text-mono">mat</text>
+      <text x="85" y="196" text-anchor="middle" class="text-mono">rug</text>
+      <text x="145" y="196" text-anchor="middle" class="text-mono">desk</text>
+      <text x="205" y="196" text-anchor="middle" class="text-mono">…</text>
+      <text x="25" y="220" text-anchor="middle" class="text-xs" fill="#7F77DD">42%</text>
+      <text x="85" y="220" text-anchor="middle" class="text-xs">28%</text>
+      <text x="145" y="220" text-anchor="middle" class="text-xs">18%</text>
+      <text x="205" y="220" text-anchor="middle" class="text-xs">12%</text>
+    </g>
+
+    <text x="20" y="290" class="text-xs">→ explora alternativas con más libertad.</text>
+    <text x="20" y="306" class="text-xs">→ útil para creatividad / brainstorming.</text>
+  </g>
+
+  <!-- Column 3: top-K / top-P -->
+  <g transform="translate(640,100)">
+    <rect x="0" y="0" width="280" height="320" rx="10" class="stroke" fill="#FFFFFF"/>
+    <text x="140" y="28" text-anchor="middle" class="label">top-K = 3, top-P = 0.9</text>
+    <text x="140" y="48" text-anchor="middle" class="text-xs" fill="#666">cortan la cola larga antes de muestrear</text>
+
+    <g transform="translate(40,80)">
+      <rect x="0" y="40" width="50" height="140" fill="#7F77DD"/>
+      <rect x="60" y="80" width="50" height="100" fill="#9E8FE5"/>
+      <rect x="120" y="120" width="50" height="60" fill="#C7B7F2"/>
+      <rect x="180" y="160" width="50" height="20" fill="#E0E0E0"/>
+      <line x1="-4" y1="180" x2="240" y2="180" class="axis"/>
+      <!-- cut line -->
+      <line x1="174" y1="40" x2="174" y2="180" stroke="#D14B4B" stroke-width="2" stroke-dasharray="3 3"/>
+      <text x="25" y="196" text-anchor="middle" class="text-mono">mat</text>
+      <text x="85" y="196" text-anchor="middle" class="text-mono">rug</text>
+      <text x="145" y="196" text-anchor="middle" class="text-mono">desk</text>
+      <text x="205" y="196" text-anchor="middle" class="text-mono" fill="#999">⊘</text>
+      <text x="100" y="226" text-anchor="middle" class="text-xs" fill="#D14B4B">cut-off</text>
+    </g>
+
+    <text x="20" y="290" class="text-xs">top-K: solo los K más probables.</text>
+    <text x="20" y="306" class="text-xs">top-P: hasta sumar P de probabilidad.</text>
+  </g>
+
+  <text x="480" y="448" text-anchor="middle" class="text-xs" fill="#666">Bug clásico: con temperature muy baja o top-K=1 el modelo entra en <tspan font-weight="600">repetition loop</tspan>.</text>
+</svg>

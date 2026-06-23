@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 460" font-family="Inter, system-ui, -apple-system, sans-serif">
+  <defs>
+    <style>
+      .stroke { stroke: #222222; stroke-width: 1.4; fill: none; }
+      .stroke-thin { stroke: #222222; stroke-width: 1; fill: none; }
+      .text-content { fill: #222222; font-size: 13px; }
+      .text-xs { fill: #666666; font-size: 11px; }
+      .text-strong { fill: #222222; font-size: 18px; font-weight: 600; }
+      /* The actual highlight: red, thick underline drawn by the renderer
+         exactly under the marked tspan. */
+      .hl {
+        fill: #222222;
+        text-decoration: underline;
+        text-decoration-color: #D14B4B;
+        text-decoration-thickness: 2px;
+        text-underline-offset: 3px;
+      }
+    </style>
+  </defs>
+
+  <text x="480" y="40" text-anchor="middle" class="text-strong" font-size="22">Predecir tokens fuerza a aprender el mundo</text>
+
+  <!-- Wikipedia-style article -->
+  <g transform="translate(80,80)">
+    <rect x="0" y="0" width="800" height="320" rx="6" class="stroke" fill="#FFFFFF"/>
+
+    <!-- header -->
+    <rect x="0" y="0" width="800" height="36" fill="#F4F2FF"/>
+    <line x1="0" y1="36" x2="800" y2="36" class="stroke-thin"/>
+    <text x="20" y="24" font-size="14" font-weight="600" fill="#222">Ruth Marianna Handler · Wikipedia</text>
+
+    <!-- body -->
+    <g transform="translate(20,64)">
+      <text class="text-content" x="0" y="0">
+        <tspan>Ruth Marianna Handler (née </tspan><tspan fill="#7F77DD">Mosko</tspan><tspan>; </tspan><tspan class="hl">4 de noviembre de 1916</tspan><tspan>) fue una empresaria</tspan>
+      </text>
+      <text class="text-content" x="0" y="22">
+        <tspan>e inventora </tspan><tspan class="hl">estadounidense</tspan><tspan>. Es conocida por inventar la </tspan><tspan class="hl">muñeca Barbie</tspan><tspan> en </tspan><tspan class="hl">1959</tspan>
+      </text>
+      <text class="text-content" x="0" y="44">
+        <tspan>y por ser cofundadora del fabricante de juguetes </tspan><tspan class="hl">Mattel</tspan><tspan> junto a su esposo </tspan><tspan class="hl">Elliot</tspan><tspan>,</tspan>
+      </text>
+      <text class="text-content" x="0" y="66">
+        <tspan>ejerciendo además como primera presidenta de la empresa entre </tspan><tspan class="hl">1945 y 1975</tspan><tspan>.</tspan>
+      </text>
+
+      <text class="text-content" x="0" y="102">
+        <tspan>Los Handler fueron </tspan><tspan class="hl">forzados a renunciar</tspan><tspan> a Mattel en </tspan><tspan class="hl">1975</tspan><tspan> luego de que la </tspan><tspan class="hl">SEC</tspan>
+      </text>
+      <text class="text-content" x="0" y="124">
+        <tspan>investigara a la compañía por </tspan><tspan class="hl">falsificación de documentos financieros</tspan><tspan>.</tspan>
+      </text>
+
+      <text x="0" y="166" font-size="14" font-weight="600">Vida temprana</text>
+      <text class="text-content" x="0" y="190">
+        <tspan>Ruth Marianna Mosko nació en </tspan><tspan class="hl">Denver, Colorado</tspan><tspan>, hija de </tspan><tspan class="hl">inmigrantes polaco-judíos</tspan><tspan>.</tspan>
+      </text>
+    </g>
+  </g>
+
+  <!-- Bottom callout -->
+  <text x="480" y="430" text-anchor="middle" class="text-xs" fill="#444">
+    Cada palabra subrayada en rojo es un <tspan font-weight="600">hecho del mundo</tspan> que el modelo tiene que "saber" para poder predecirla bien.
+  </text>
+</svg>

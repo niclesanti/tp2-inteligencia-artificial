@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 500" font-family="Inter, system-ui, -apple-system, sans-serif">
+  <defs>
+    <style>
+      .stroke { stroke: #222222; stroke-width: 1.4; fill: none; }
+      .stroke-thin { stroke: #222222; stroke-width: 1; fill: none; }
+      .accent { stroke: #7F77DD; stroke-width: 1.6; fill: none; }
+      .bg-soft { fill: #F4F2FF; }
+      .bg-soft-2 { fill: #F0FBF6; }
+      .text { fill: #222222; font-size: 13px; }
+      .text-strong { fill: #222222; font-size: 16px; font-weight: 600; }
+      .text-xs { fill: #666666; font-size: 11px; }
+      .stage-num { font-family: 'JetBrains Mono', monospace; font-size: 16px; font-weight: 700; fill: #7F77DD; }
+      .cadence { fill: #1D9E75; font-size: 12px; font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+    </style>
+  </defs>
+
+  <text x="480" y="40" text-anchor="middle" class="text-strong" font-size="22">Cómo se entrena un ChatGPT, en una imagen</text>
+
+  <!-- Stage 1 -->
+  <g transform="translate(40,90)">
+    <rect x="0" y="0" width="880" height="160" rx="10" class="stroke bg-soft"/>
+    <text x="20" y="34" class="stage-num">Stage 1 — Pretraining</text>
+    <text x="20" y="58" class="text-xs" fill="#666">una vez por año, ~12 días, ~2 M USD</text>
+
+    <g transform="translate(20,80)">
+      <text class="text" y="0">1. Descargar ~10 TB de texto de internet (Common Crawl, libros, código, etc).</text>
+      <text class="text" y="20">2. Conseguir un cluster de ~6.000 GPUs.</text>
+      <text class="text" y="40">3. Comprimir el texto en una red neuronal (next-token prediction).</text>
+      <text class="text" y="60">4. <tspan font-weight="600" fill="#7F77DD">Obtenés un base model.</tspan> Sabe el idioma, no sabe responder.</text>
+    </g>
+
+    <g transform="translate(820,40)">
+      <text x="0" y="0" class="cadence" text-anchor="end">~año</text>
+    </g>
+  </g>
+
+  <!-- Stage 2 -->
+  <g transform="translate(40,270)">
+    <rect x="0" y="0" width="880" height="200" rx="10" class="stroke bg-soft-2"/>
+    <text x="20" y="34" class="stage-num" fill="#1D9E75">Stage 2 — Fine-tuning</text>
+    <text x="20" y="58" class="text-xs" fill="#666">una vez por semana, ~1 día, mucho más barato</text>
+
+    <g transform="translate(20,80)">
+      <text class="text" y="0">1. Escribir <tspan font-weight="600">labeling instructions</tspan> (helpful / truthful / harmless).</text>
+      <text class="text" y="20">2. Contratar gente (o usar un servicio): juntar ~100K Q&amp;A ideales y/o comparaciones.</text>
+      <text class="text" y="40">3. Fine-tunear el base model sobre esos datos (~1 día).</text>
+      <text class="text" y="60">4. <tspan font-weight="600" fill="#1D9E75">Obtenés un assistant model.</tspan></text>
+      <text class="text" y="80">5. Evaluar a fondo. Deployar.</text>
+      <text class="text" y="100">6. Monitorear, recolectar misbehaviors → volver a paso 1.</text>
+    </g>
+
+    <g transform="translate(820,40)">
+      <text x="0" y="0" class="cadence" fill="#1D9E75" text-anchor="end">~semana</text>
+    </g>
+  </g>
+
+  <text x="480" y="490" text-anchor="middle" class="text-xs" fill="#666">El loop importante es Stage 2: muchas iteraciones rápidas sobre un base model que cambia mucho menos seguido.</text>
+</svg>

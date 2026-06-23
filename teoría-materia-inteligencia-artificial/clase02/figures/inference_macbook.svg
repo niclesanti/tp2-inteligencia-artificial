@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 380" font-family="Inter, system-ui, -apple-system, sans-serif">
+  <defs>
+    <style>
+      .stroke { stroke: #222222; stroke-width: 1.4; fill: none; }
+      .stroke-thin { stroke: #222222; stroke-width: 1; fill: none; }
+      .accent { stroke: #7F77DD; stroke-width: 1.6; fill: none; }
+      .bg-soft { fill: #F4F2FF; }
+      .text { fill: #222222; font-size: 14px; }
+      .text-strong { fill: #222222; font-size: 18px; font-weight: 600; }
+      .text-xs { fill: #666666; font-size: 11px; }
+      .text-mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; fill: #222222; }
+      .accent-fill { fill: #7F77DD; }
+    </style>
+  </defs>
+
+  <text x="480" y="40" text-anchor="middle" class="text-strong" font-size="22">Inferencia: corre 100% local, sin internet</text>
+
+  <!-- MacBook -->
+  <g transform="translate(280,90)">
+    <rect x="0" y="0" width="400" height="240" rx="8" class="stroke" fill="#1A1A1A"/>
+    <rect x="10" y="10" width="380" height="220" rx="3" fill="#FFFFFF"/>
+    <circle cx="200" cy="6" r="2" fill="#444"/>
+
+    <text x="24" y="40" class="text-mono" font-size="11" fill="#666"># Compilamos el runtime</text>
+    <text x="24" y="58" class="text-mono">$ gcc -O3 run.c -o run</text>
+
+    <text x="24" y="86" class="text-mono" font-size="11" fill="#666"># Cargamos los pesos</text>
+    <text x="24" y="104" class="text-mono">$ ./run parameters.bin</text>
+    <text x="24" y="122" class="text-mono" fill="#7F77DD">&gt; Loaded 70B params (140 GB)</text>
+    <text x="24" y="140" class="text-mono" fill="#7F77DD">&gt; Ready.</text>
+
+    <text x="24" y="170" class="text-mono">&gt; Escribime un poema sobre la</text>
+    <text x="24" y="186" class="text-mono">  ingeniería de software:</text>
+    <text x="24" y="208" class="text-mono" fill="#444">El bug acecha en la oscuridad,</text>
+
+    <rect x="240" y="198" width="7" height="12" fill="#222">
+      <animate attributeName="opacity" values="1;0;1" dur="1s" repeatCount="indefinite"/>
+    </rect>
+  </g>
+  <!-- base -->
+  <path d="M270 330 L690 330 L700 346 L260 346 Z" class="stroke" fill="#E8E8E8"/>
+  <rect x="455" y="330" width="30" height="4" fill="#CCCCCC"/>
+
+  <!-- left badge: no internet -->
+  <g transform="translate(80,160)">
+    <circle cx="50" cy="40" r="42" class="stroke" fill="#FFFFFF"/>
+    <!-- wifi -->
+    <path d="M28 44 Q50 22 72 44" class="stroke-thin"/>
+    <path d="M34 50 Q50 36 66 50" class="stroke-thin"/>
+    <path d="M40 56 Q50 48 60 56" class="stroke-thin"/>
+    <circle cx="50" cy="62" r="2" fill="#222"/>
+    <line x1="22" y1="14" x2="78" y2="66" stroke="#D14B4B" stroke-width="2.5"/>
+    <text x="50" y="100" text-anchor="middle" class="text-xs" fill="#D14B4B" font-weight="600">sin internet</text>
+  </g>
+
+  <!-- right badge: no API key -->
+  <g transform="translate(770,160)">
+    <circle cx="50" cy="40" r="42" class="stroke" fill="#FFFFFF"/>
+    <!-- key -->
+    <circle cx="38" cy="40" r="8" class="stroke" fill="#FFFFFF"/>
+    <line x1="46" y1="40" x2="68" y2="40" class="stroke"/>
+    <line x1="60" y1="40" x2="60" y2="48" class="stroke"/>
+    <line x1="64" y1="40" x2="64" y2="48" class="stroke"/>
+    <line x1="22" y1="14" x2="78" y2="66" stroke="#D14B4B" stroke-width="2.5"/>
+    <text x="50" y="100" text-anchor="middle" class="text-xs" fill="#D14B4B" font-weight="600">sin API key</text>
+  </g>
+
+  <text x="480" y="372" text-anchor="middle" class="text-xs" fill="#666">Una vez que tenés los pesos, el modelo es tuyo. No hay servicio externo en el medio.</text>
+</svg>

@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 520" font-family="Inter, system-ui, -apple-system, sans-serif">
+  <defs>
+    <style>
+      .stroke { stroke: #222222; stroke-width: 1.4; fill: none; }
+      .stroke-thin { stroke: #222222; stroke-width: 1; fill: none; }
+      .text { fill: #222222; font-size: 13px; }
+      .text-strong { fill: #222222; font-size: 16px; font-weight: 600; }
+      .text-xs { fill: #666666; font-size: 11px; }
+      .bg-soft { fill: #F4F2FF; }
+      .stage-name { font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; fill: #7F77DD; }
+      .arrow-fill { fill: #222222; }
+    </style>
+    <marker id="arrow-pt" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="9" markerHeight="9" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" class="arrow-fill"/>
+    </marker>
+  </defs>
+
+  <text x="480" y="36" text-anchor="middle" class="text-strong" font-size="22">Post-training scaling: SFT → DPO → RLVR / GRPO</text>
+  <text x="480" y="58" text-anchor="middle" class="text-xs">Una progresión histórica. Cada técnica resuelve una limitación de la anterior.</text>
+
+  <!-- Stage 1: SFT -->
+  <g transform="translate(40,90)">
+    <rect x="0" y="0" width="280" height="184" rx="10" class="stroke bg-soft"/>
+    <text x="14" y="28" class="stage-name">SFT (~2022)</text>
+    <text x="14" y="44" class="text-xs" fill="#666">Supervised Fine-Tuning</text>
+    <text x="14" y="74" class="text-xs">Humanos escriben respuestas</text>
+    <text x="14" y="90" class="text-xs">"ideales". El modelo las imita.</text>
+    <text x="14" y="118" class="text-xs" fill="#D14B4B">✗ Caro: alguien tiene que</text>
+    <text x="14" y="132" class="text-xs" fill="#D14B4B">  escribir cada respuesta.</text>
+  </g>
+
+  <!-- arrow -->
+  <line x1="328" y1="182" x2="352" y2="182" class="stroke" marker-end="url(#arrow-pt)"/>
+
+  <!-- Stage 2: RLHF / DPO -->
+  <g transform="translate(360,90)">
+    <rect x="0" y="0" width="280" height="184" rx="10" class="stroke bg-soft"/>
+    <text x="14" y="28" class="stage-name">RLHF / DPO (~2023)</text>
+    <text x="14" y="44" class="text-xs" fill="#666">RL from Human Feedback / Direct Pref. Opt.</text>
+    <text x="14" y="74" class="text-xs">Humanos comparan respuestas</text>
+    <text x="14" y="90" class="text-xs">("A es mejor que B").</text>
+    <text x="14" y="118" class="text-xs" fill="#1D9E75">✓ Más barato (comparar &lt;</text>
+    <text x="14" y="132" class="text-xs" fill="#1D9E75">  escribir).</text>
+    <text x="14" y="148" class="text-xs" fill="#D14B4B">✗ Subjetivo, ruidoso.</text>
+  </g>
+
+  <!-- arrow -->
+  <line x1="648" y1="182" x2="672" y2="182" class="stroke" marker-end="url(#arrow-pt)"/>
+
+  <!-- Stage 3: RLVR -->
+  <g transform="translate(680,90)">
+    <rect x="0" y="0" width="240" height="184" rx="10" stroke="#1D9E75" stroke-width="2" fill="#F0FBF6"/>
+    <text x="14" y="28" class="stage-name" fill="#1D9E75">RLVR / GRPO (~2025)</text>
+    <text x="14" y="44" class="text-xs" fill="#666">RL with Verifiable Rewards</text>
+    <text x="14" y="74" class="text-xs">Sin humanos: tests, proof</text>
+    <text x="14" y="90" class="text-xs">checkers, calc.</text>
+    <text x="14" y="118" class="text-xs" fill="#1D9E75">✓ Escalable, objetivo.</text>
+    <text x="14" y="138" class="text-xs" fill="#666" font-style="italic">GRPO: introducida por</text>
+    <text x="14" y="152" class="text-xs" fill="#666" font-style="italic">DeepSeek (2024). Reemplaza</text>
+    <text x="14" y="166" class="text-xs" fill="#666" font-style="italic">PPO en muchos modelos.</text>
+  </g>
+
+  <!-- Example callout: DeepSeek-R1 -->
+  <g transform="translate(40,300)">
+    <rect x="0" y="0" width="880" height="170" rx="10" class="stroke" fill="#FFFFFF"/>
+    <text x="14" y="26" class="text" font-weight="600">📌 Ejemplo concreto: DeepSeek-R1 (enero 2025)</text>
+
+    <g transform="translate(20,50)">
+      <text class="text-xs" y="0">• Tomaron un base model y lo entrenaron <tspan font-weight="600">solo con RL + recompensas verificables</tspan> (sin SFT humano previo).</text>
+      <text class="text-xs" y="20">• Recompensa: ¿el output pasa los tests / la matemática es correcta / la prueba se valida?</text>
+      <text class="text-xs" y="40">• Resultado: <tspan font-weight="600">razonamiento emergente</tspan> — el modelo aprendió solo a "pensar paso a paso", a auto-corregirse,</text>
+      <text class="text-xs" y="56">  a explorar varias estrategias. <tspan fill="#666">Nadie le enseñó "cómo" razonar; emergió del entrenamiento.</tspan></text>
+      <text class="text-xs" y="84">• Open weight, gratis, comparable a o1 de OpenAI en muchos benchmarks.</text>
+    </g>
+
+    <g transform="translate(20,150)">
+      <text class="text-xs" fill="#7F77DD" font-weight="600">→ Esto es lo que cambió en 2025-2026: el modelo ya no aprende qué decir, aprende a razonar.</text>
+    </g>
+  </g>
+
+  <text x="480" y="500" text-anchor="middle" class="text-xs" fill="#666">Lectura recomendada: DeepSeek-R1 paper · "The State of LLM Reasoning Model Training" (Raschka, 2025).</text>
+</svg>

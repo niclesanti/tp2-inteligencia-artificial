@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 440" font-family="Inter, system-ui, -apple-system, sans-serif">
+  <defs>
+    <style>
+      .stroke { stroke: #222222; stroke-width: 1.4; fill: none; }
+      .stroke-thin { stroke: #222222; stroke-width: 1; fill: none; }
+      .accent { stroke: #7F77DD; stroke-width: 1.6; fill: none; }
+      .bg-soft { fill: #F4F2FF; }
+      .bg-base { fill: #FAFAFA; }
+      .text { fill: #222222; font-size: 13px; }
+      .text-strong { fill: #222222; font-size: 16px; font-weight: 600; }
+      .text-xs { fill: #666666; font-size: 11px; }
+      .role { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; fill: #7F77DD; }
+      .text-content { fill: #222222; font-size: 12px; }
+      .text-mono { font-family: 'JetBrains Mono', monospace; font-size: 11px; fill: #222222; }
+    </style>
+  </defs>
+
+  <text x="480" y="36" text-anchor="middle" class="text-strong" font-size="22">Antes vs después del fine-tuning</text>
+
+  <!-- BEFORE: base model -->
+  <g transform="translate(40,80)">
+    <rect x="0" y="0" width="430" height="300" rx="10" class="stroke bg-base"/>
+    <text x="215" y="28" text-anchor="middle" class="text-strong" font-size="14">Base model (solo pretrain)</text>
+    <text x="215" y="46" text-anchor="middle" class="text-xs">completa texto, no responde preguntas</text>
+
+    <g transform="translate(20,70)">
+      <text class="role" y="0">&lt;USER&gt;</text>
+      <text class="text-content" y="22">¿Podés ayudarme con este código?</text>
+      <text class="text-content" y="38">Tiene un bug:</text>
+      <text class="text-mono" y="60">  print("hello world)</text>
+
+      <text class="role" y="98">&lt;respuesta del modelo&gt;</text>
+      <text class="text-content" y="120" fill="#D14B4B">¿Podés ayudarme a hacer un sitio web?</text>
+      <text class="text-content" y="136" fill="#D14B4B">Necesito uno simple para mi negocio…</text>
+      <text class="text-content" y="160" fill="#D14B4B">¿Podés ayudarme con la traducción de</text>
+      <text class="text-content" y="176" fill="#D14B4B">este texto al inglés?</text>
+
+      <text class="text-xs" y="208" fill="#D14B4B">→ Sigue inventando preguntas en el mismo formato.</text>
+      <text class="text-xs" y="222" fill="#D14B4B">   Está completando un "documento de internet".</text>
+    </g>
+  </g>
+
+  <!-- AFTER: assistant -->
+  <g transform="translate(490,80)">
+    <rect x="0" y="0" width="430" height="300" rx="10" class="stroke bg-soft"/>
+    <text x="215" y="28" text-anchor="middle" class="text-strong" font-size="14">Assistant (pretrain + SFT)</text>
+    <text x="215" y="46" text-anchor="middle" class="text-xs">entiende que es una conversación</text>
+
+    <g transform="translate(20,70)">
+      <text class="role" y="0">&lt;USER&gt;</text>
+      <text class="text-content" y="22">¿Podés ayudarme con este código?</text>
+      <text class="text-content" y="38">Tiene un bug:</text>
+      <text class="text-mono" y="60">  print("hello world)</text>
+
+      <text class="role" y="98">&lt;ASSISTANT&gt;</text>
+      <text class="text-content" y="120" fill="#1D9E75">Te falta cerrar la string. Probá con:</text>
+      <text class="text-mono" y="142" fill="#1D9E75">  print("hello world")</text>
+
+      <text class="text-content" y="172" fill="#1D9E75">Avisame si necesitás algo más.</text>
+
+      <text class="text-xs" y="208" fill="#1D9E75">→ Detecta intent, da una respuesta útil.</text>
+      <text class="text-xs" y="222" fill="#1D9E75">   Sigue siendo "predict next token", pero</text>
+      <text class="text-xs" y="236" fill="#1D9E75">   sobre datos USER/ASSISTANT.</text>
+    </g>
+  </g>
+
+  <!-- bottom -->
+  <text x="480" y="412" text-anchor="middle" class="text-xs" fill="#666">El base model y el assistant son la <tspan font-weight="600">misma red neuronal</tspan>; cambia solo en qué se la entrenó al final.</text>
+</svg>

@@ -1,0 +1,72 @@
+@startuml Diagrama_Componentes_FinanzasBot_Gateway
+
+skinparam componentStyle uml2
+skinparam backgroundColor white
+skinparam handwritten false
+
+skinparam Rectangle {
+    BackgroundColor<<Infra>> #F1F5F9
+    BorderColor<<Infra>> #94A3B8
+}
+
+skinparam Component {
+    BackgroundColor<<App>> #E0F2FE
+    BorderColor<<App>> #0284C7
+    BackgroundColor<<Agent>> #F0FDF4
+    BorderColor<<Agent>> #16A34A
+    BackgroundColor<<Data>> #FEF3C7
+    BorderColor<<Data>> #D97706
+    BackgroundColor<<Obs>> #F3E8FF
+    BorderColor<<Obs>> #9333EA
+}
+
+package "Capa de Presentación (UI)" {
+    [Frontend (React / TS)] <<App>> as FE
+}
+
+package "Capa de Enrutamiento y Seguridad" {
+    [API Gateway] <<Infra>> as GW
+}
+
+package "Capa de Negocio e Infraestructura Existente" {
+    [Backend (Spring Boot API)] <<App>> as BE
+    database "PostgreSQL\n(Datos Financieros)" <<Data>> as DB
+}
+
+package "Microservicio de IA (Python)" <<Agente>> {
+    component "Orquestador del Agente\n(Pydantic AI + LLM)" <<Agent>> as Core
+    [Tools] <<Agent>> as Tools
+    [Módulo RAG] <<Agent>> as RAG
+    database "Qdrant\n(Vectores Educación Fin.)" <<Data>> as VectorDB
+    database "Redis\n(Memoria Conversacional)" <<Data>> as Redis
+}
+
+package "Observabilidad" {
+    [Langfuse] <<Obs>> as Langfuse
+}
+
+' ---- FLUJOS Y COMUNICACIÓN ----
+
+' El Frontend envía todo al Gateway
+FE --> GW : Peticiones HTTP / SSE
+
+' El Gateway redirige según el path
+GW --> BE : [/api/*] REST
+GW --> Core : [/api/agente/*] SSE
+
+' Persistencia financiera
+BE --> DB : Consulta/Guarda estados financieros
+
+' Memoria conversacional (Redis, único store)
+Core --> Redis : Guarda/Recupera historial de chat
+
+' Funcionamiento interno del Agente
+Core --> Tools : Planifica acciones cuantitativas
+Tools --> BE : Consulta datos crudos (REST interna)
+Core --> RAG : Dispara consulta pedagógica
+RAG <--> VectorDB : Búsqueda por similitud semántica
+
+' Observabilidad
+Core --> Langfuse : Trazas OpenTelemetry
+
+@enduml

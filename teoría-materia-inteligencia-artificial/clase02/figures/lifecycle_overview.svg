@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 460" font-family="Inter, system-ui, -apple-system, sans-serif">
+  <defs>
+    <style>
+      .stroke { stroke: #222222; stroke-width: 1.4; fill: none; }
+      .stroke-thin { stroke: #222222; stroke-width: 1; fill: none; }
+      .accent { stroke: #7F77DD; stroke-width: 1.6; fill: none; }
+      .bg-soft { fill: #F4F2FF; }
+      .bg-block { fill: #FFFFFF; }
+      .text { fill: #222222; font-size: 13px; }
+      .text-strong { fill: #222222; font-size: 16px; font-weight: 600; }
+      .text-xs { fill: #666666; font-size: 11px; }
+      .stage-num { font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; fill: #7F77DD; }
+      .stage-title { fill: #222222; font-size: 15px; font-weight: 700; }
+      .arrow-fill { fill: #222222; }
+      .out-pill { fill: #1D9E75; }
+    </style>
+    <marker id="arrow-flow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="9" markerHeight="9" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" class="arrow-fill"/>
+    </marker>
+  </defs>
+
+  <text x="480" y="36" text-anchor="middle" class="text-strong" font-size="22">El ciclo de vida de un LLM</text>
+  <text x="480" y="56" text-anchor="middle" class="text-xs">Tres etapas. Cada una toma el modelo de la anterior y lo modifica con datos distintos.</text>
+
+  <!-- Stage 1 -->
+  <g transform="translate(40,90)">
+    <rect x="0" y="0" width="280" height="280" rx="10" class="stroke bg-soft"/>
+    <text x="20" y="30" class="stage-num">Stage 1</text>
+    <text x="20" y="52" class="stage-title">Pretraining</text>
+    <text x="20" y="72" class="text-xs" fill="#666">aprender el idioma y el mundo</text>
+
+    <!-- input/output cards -->
+    <g transform="translate(20,90)">
+      <text class="text-xs" y="0" font-weight="600" fill="#666">Datos:</text>
+      <text class="text-xs" y="16">~10 TB de texto crudo</text>
+      <text class="text-xs" y="30">(internet, libros, código)</text>
+
+      <text class="text-xs" y="58" font-weight="600" fill="#666">Objetivo:</text>
+      <text class="text-xs" y="74">predecir el próximo token</text>
+
+      <text class="text-xs" y="102" font-weight="600" fill="#666">Costo:</text>
+      <text class="text-xs" y="118">~6.000 GPUs · ~12 días · ~2 M USD</text>
+      <text class="text-xs" y="132" fill="#7F77DD">se hace ~1 vez por año</text>
+    </g>
+
+    <!-- output pill -->
+    <g transform="translate(20,238)">
+      <rect x="0" y="0" width="240" height="28" rx="14" class="out-pill"/>
+      <text x="120" y="18" text-anchor="middle" class="text-xs" fill="#FFFFFF" font-weight="700">→ base model</text>
+    </g>
+  </g>
+
+  <!-- arrow 1 -->
+  <line x1="328" y1="230" x2="352" y2="230" class="stroke" marker-end="url(#arrow-flow)"/>
+
+  <!-- Stage 2 -->
+  <g transform="translate(360,90)">
+    <rect x="0" y="0" width="280" height="280" rx="10" class="stroke bg-soft"/>
+    <text x="20" y="30" class="stage-num">Stage 2</text>
+    <text x="20" y="52" class="stage-title">SFT — Supervised Fine-Tuning</text>
+    <text x="20" y="72" class="text-xs" fill="#666">aprender a ser un assistant</text>
+
+    <g transform="translate(20,90)">
+      <text class="text-xs" y="0" font-weight="600" fill="#666">Datos:</text>
+      <text class="text-xs" y="16">~100 K conversaciones</text>
+      <text class="text-xs" y="30">USER / ASSISTANT (humanos)</text>
+
+      <text class="text-xs" y="58" font-weight="600" fill="#666">Objetivo:</text>
+      <text class="text-xs" y="74">imitar respuestas ideales</text>
+
+      <text class="text-xs" y="102" font-weight="600" fill="#666">Costo:</text>
+      <text class="text-xs" y="118">~1 día de GPU · &lt;&lt; pretraining</text>
+      <text class="text-xs" y="132" fill="#7F77DD">se hace ~1 vez por semana</text>
+    </g>
+
+    <g transform="translate(20,238)">
+      <rect x="0" y="0" width="240" height="28" rx="14" class="out-pill"/>
+      <text x="120" y="18" text-anchor="middle" class="text-xs" fill="#FFFFFF" font-weight="700">→ assistant model</text>
+    </g>
+  </g>
+
+  <!-- arrow 2 -->
+  <line x1="648" y1="230" x2="672" y2="230" class="stroke" marker-end="url(#arrow-flow)"/>
+
+  <!-- Stage 3 -->
+  <g transform="translate(680,90)">
+    <rect x="0" y="0" width="240" height="280" rx="10" class="stroke bg-soft"/>
+    <text x="20" y="30" class="stage-num">Stage 3</text>
+    <text x="20" y="52" class="stage-title">RLHF / DPO</text>
+    <text x="20" y="72" class="text-xs" fill="#666">aprender preferencias humanas</text>
+
+    <g transform="translate(20,90)">
+      <text class="text-xs" y="0" font-weight="600" fill="#666">Datos:</text>
+      <text class="text-xs" y="16">comparaciones</text>
+      <text class="text-xs" y="30">("A es mejor que B")</text>
+
+      <text class="text-xs" y="58" font-weight="600" fill="#666">Objetivo:</text>
+      <text class="text-xs" y="74">maximizar lo que el</text>
+      <text class="text-xs" y="88">humano prefiere</text>
+
+      <text class="text-xs" y="116" font-weight="600" fill="#666">Costo:</text>
+      <text class="text-xs" y="132">moderado · iterativo</text>
+    </g>
+
+    <g transform="translate(20,238)">
+      <rect x="0" y="0" width="200" height="28" rx="14" class="out-pill"/>
+      <text x="100" y="18" text-anchor="middle" class="text-xs" fill="#FFFFFF" font-weight="700">→ aligned model</text>
+    </g>
+  </g>
+
+  <!-- bottom -->
+  <text x="480" y="410" text-anchor="middle" class="text" font-weight="600" fill="#7F77DD">El "ChatGPT" que usás todos los días salió de las tres etapas.</text>
+  <text x="480" y="432" text-anchor="middle" class="text-xs" fill="#666">En este bloque vamos a recorrer cada una en detalle, con ejemplos.</text>
+</svg>

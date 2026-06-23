@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 460" font-family="Inter, system-ui, -apple-system, sans-serif">
+  <defs>
+    <style>
+      .stroke { stroke: #222222; stroke-width: 1.4; fill: none; }
+      .stroke-thin { stroke: #222222; stroke-width: 1; fill: none; }
+      .accent { stroke: #7F77DD; stroke-width: 1.6; fill: none; }
+      .bg-soft { fill: #F4F2FF; }
+      .text { fill: #222222; font-size: 13px; }
+      .text-strong { fill: #222222; font-size: 18px; font-weight: 600; }
+      .text-xs { fill: #666666; font-size: 11px; }
+      .text-mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; fill: #222222; }
+      .ok { fill: #1D9E75; font-size: 14px; font-weight: 700; }
+      .err { fill: #D14B4B; font-size: 14px; font-weight: 700; }
+    </style>
+  </defs>
+
+  <text x="480" y="36" text-anchor="middle" class="text-strong" font-size="22">¿Cómo funciona por dentro? Casi nadie lo sabe en detalle.</text>
+
+  <!-- LEFT: simplified Transformer block -->
+  <g transform="translate(60,90)">
+    <rect x="0" y="0" width="380" height="330" rx="10" class="stroke bg-soft"/>
+    <text x="190" y="28" text-anchor="middle" class="text" font-weight="600">Transformer (decoder)</text>
+
+    <!-- input embedding -->
+    <rect x="60" y="50" width="260" height="30" rx="4" class="stroke" fill="#FFFFFF"/>
+    <text x="190" y="69" text-anchor="middle" class="text-xs">Token embedding + posición</text>
+
+    <line x1="190" y1="80" x2="190" y2="100" class="stroke-thin"/>
+
+    <!-- block 1: attention -->
+    <rect x="60" y="100" width="260" height="36" rx="4" class="stroke" fill="#FFFFFF"/>
+    <text x="190" y="123" text-anchor="middle" class="text-xs">Multi-Head Self-Attention</text>
+
+    <line x1="190" y1="136" x2="190" y2="150" class="stroke-thin"/>
+
+    <!-- block 2: ffn -->
+    <rect x="60" y="150" width="260" height="36" rx="4" class="stroke" fill="#FFFFFF"/>
+    <text x="190" y="173" text-anchor="middle" class="text-xs">Feed-Forward + Norm</text>
+
+    <line x1="190" y1="186" x2="190" y2="200" class="stroke-thin"/>
+
+    <!-- repeat indicator -->
+    <text x="190" y="214" text-anchor="middle" class="text-xs" fill="#7F77DD">× N capas</text>
+
+    <line x1="190" y1="220" x2="190" y2="240" class="stroke-thin"/>
+
+    <!-- output -->
+    <rect x="60" y="240" width="260" height="30" rx="4" class="stroke" fill="#FFFFFF"/>
+    <text x="190" y="259" text-anchor="middle" class="text-xs">Linear → Softmax → próximo token</text>
+
+    <text x="190" y="300" text-anchor="middle" class="text-xs" fill="#7F77DD" font-weight="600">~100 mil millones de parámetros</text>
+    <text x="190" y="316" text-anchor="middle" class="text-xs" fill="#666">distribuidos por toda la red</text>
+  </g>
+
+  <!-- RIGHT: known/unknown + reversal curse -->
+  <g transform="translate(480,90)">
+    <text x="0" y="14" class="text" font-weight="600" fill="#222">Lo que sí sabemos:</text>
+    <text x="0" y="34" class="text-xs">• Sabemos ajustar los parámetros para predecir mejor.</text>
+    <text x="0" y="50" class="text-xs">• Podemos medir que funciona (benchmarks).</text>
+
+    <text x="0" y="80" class="text" font-weight="600" fill="#222">Lo que NO sabemos:</text>
+    <text x="0" y="100" class="text-xs">• Cómo colaboran los miles de millones de parámetros.</text>
+    <text x="0" y="116" class="text-xs">• Por qué a veces sabe X pero no su simétrico.</text>
+
+    <!-- reversal curse box -->
+    <g transform="translate(0,140)">
+      <rect x="0" y="0" width="420" height="180" rx="8" class="stroke" fill="#FFFFFF"/>
+      <rect x="0" y="0" width="420" height="28" class="bg-soft"/>
+      <line x1="0" y1="28" x2="420" y2="28" class="stroke-thin"/>
+      <text x="14" y="19" class="text" font-weight="600">Ejemplo: la "maldición de la reversibilidad"</text>
+
+      <g transform="translate(16,48)">
+        <text class="text-mono" y="0">Q: ¿Quién es la madre de Barack Obama?</text>
+        <text class="text-mono" y="22">A: Stanley Ann Dunham  </text>
+        <text class="ok" x="232" y="22">✓</text>
+
+        <text class="text-mono" y="60">Q: ¿Quién es el hijo de Stanley Ann Dunham?</text>
+        <text class="text-mono" y="82">A: No lo sé.  </text>
+        <text class="err" x="124" y="82">✗</text>
+
+        <text class="text-xs" y="118" fill="#666">El conocimiento existe, pero está "ligado" a una dirección.</text>
+      </g>
+    </g>
+  </g>
+
+</svg>

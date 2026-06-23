@@ -7,6 +7,11 @@ import { dirname, resolve } from 'path'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
+// Usar nombres de servicios Docker para entorno containerizado,
+// con fallback a localhost para desarrollo local fuera de Docker
+const AGENTE_URL = process.env.AGENTE_URL || 'http://localhost:8000'
+const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8080'
+
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
@@ -25,8 +30,14 @@ export default defineConfig({
       usePolling: true, // Necesario para hot-reload en Docker
     },
     proxy: {
+      // API Gateway: rutear /api/agente al microservicio Python
+      '/api/agente': {
+        target: AGENTE_URL,
+        changeOrigin: true,
+      },
+      // Rutear el resto de /api al backend Spring Boot
       '/api': {
-        target: 'http://localhost:8080',
+        target: BACKEND_URL,
         changeOrigin: true,
       },
     },

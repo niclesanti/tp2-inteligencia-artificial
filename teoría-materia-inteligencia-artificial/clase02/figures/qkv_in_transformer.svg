@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 500" font-family="Inter, system-ui, -apple-system, sans-serif">
+  <defs>
+    <style>
+      .stroke { stroke: #222222; stroke-width: 1.4; fill: none; }
+      .stroke-thin { stroke: #222222; stroke-width: 1; fill: none; }
+      .bg-soft { fill: #F4F2FF; }
+      .bg-block { fill: #FFFFFF; }
+      .text { fill: #222222; font-size: 13px; }
+      .text-strong { fill: #222222; font-size: 16px; font-weight: 600; }
+      .text-xs { fill: #666666; font-size: 11px; }
+      .label-side { fill: #7F77DD; font-size: 13px; font-weight: 700; }
+      .qkv { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; }
+      .arrow-fill { fill: #222222; }
+      .arrow-cross { fill: #E0A45C; }
+    </style>
+    <marker id="arrow-blk" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" class="arrow-fill"/>
+    </marker>
+    <marker id="arrow-org" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" class="arrow-cross"/>
+    </marker>
+  </defs>
+
+  <text x="480" y="36" text-anchor="middle" class="text-strong" font-size="22">¿Dónde vive Q / K / V dentro del Transformer?</text>
+  <text x="480" y="56" text-anchor="middle" class="text-xs">El mecanismo Q/K/V aparece en los tres bloques de atención. Lo que cambia es de dónde sale cada vector.</text>
+
+  <!-- ENCODER side -->
+  <g transform="translate(80,90)">
+    <rect x="0" y="0" width="280" height="340" rx="10" class="stroke bg-soft"/>
+    <text x="140" y="26" text-anchor="middle" class="label-side">ENCODER</text>
+
+    <!-- input -->
+    <rect x="40" y="50" width="200" height="28" rx="4" class="stroke bg-block"/>
+    <text x="140" y="68" text-anchor="middle" class="text-xs">Input embedding (oración fuente)</text>
+
+    <!-- self-attention block -->
+    <rect x="40" y="100" width="200" height="120" rx="4" class="stroke bg-block"/>
+    <text x="140" y="120" text-anchor="middle" class="text-xs" font-weight="600">Self-Attention</text>
+    <text x="140" y="136" text-anchor="middle" class="text-xs" fill="#666">(bidireccional)</text>
+
+    <!-- Q, K, V coming from same source -->
+    <g transform="translate(70,158)">
+      <rect x="0" y="0" width="44" height="22" rx="3" fill="#7F77DD"/>
+      <text x="22" y="16" text-anchor="middle" class="qkv" fill="#FFFFFF">Q</text>
+      <rect x="58" y="0" width="44" height="22" rx="3" fill="#7F77DD"/>
+      <text x="80" y="16" text-anchor="middle" class="qkv" fill="#FFFFFF">K</text>
+      <rect x="116" y="0" width="44" height="22" rx="3" fill="#7F77DD"/>
+      <text x="138" y="16" text-anchor="middle" class="qkv" fill="#FFFFFF">V</text>
+    </g>
+    <text x="140" y="200" text-anchor="middle" class="text-xs" fill="#7F77DD" font-weight="600">los 3 salen del mismo input</text>
+
+    <!-- ffn -->
+    <rect x="40" y="240" width="200" height="28" rx="4" class="stroke bg-block"/>
+    <text x="140" y="258" text-anchor="middle" class="text-xs">Feed-Forward + Norm</text>
+
+    <text x="140" y="298" text-anchor="middle" class="text-xs" fill="#666">salida: representación</text>
+    <text x="140" y="312" text-anchor="middle" class="text-xs" fill="#666">contextual de la entrada</text>
+  </g>
+
+  <!-- DECODER side -->
+  <g transform="translate(540,90)">
+    <rect x="0" y="0" width="340" height="340" rx="10" class="stroke bg-soft"/>
+    <text x="170" y="26" text-anchor="middle" class="label-side">DECODER</text>
+
+    <!-- output embedding -->
+    <rect x="40" y="50" width="260" height="28" rx="4" class="stroke bg-block"/>
+    <text x="170" y="68" text-anchor="middle" class="text-xs">Output embedding (lo generado)</text>
+
+    <!-- masked self-attention -->
+    <rect x="40" y="100" width="260" height="80" rx="4" class="stroke bg-block"/>
+    <text x="170" y="120" text-anchor="middle" class="text-xs" font-weight="600">Masked Self-Attention</text>
+    <text x="170" y="135" text-anchor="middle" class="text-xs" fill="#666">(causal)</text>
+
+    <g transform="translate(96,148)">
+      <rect x="0" y="0" width="36" height="20" rx="3" fill="#7F77DD"/>
+      <text x="18" y="14" text-anchor="middle" class="qkv" fill="#FFFFFF" font-size="11">Q</text>
+      <rect x="46" y="0" width="36" height="20" rx="3" fill="#7F77DD"/>
+      <text x="64" y="14" text-anchor="middle" class="qkv" fill="#FFFFFF" font-size="11">K</text>
+      <rect x="92" y="0" width="36" height="20" rx="3" fill="#7F77DD"/>
+      <text x="110" y="14" text-anchor="middle" class="qkv" fill="#FFFFFF" font-size="11">V</text>
+    </g>
+
+    <!-- cross attention -->
+    <rect x="40" y="200" width="260" height="80" rx="4" stroke="#E0A45C" stroke-width="1.6" fill="#FFF7E6"/>
+    <text x="170" y="220" text-anchor="middle" class="text-xs" font-weight="600" fill="#9E6516">Cross-Attention</text>
+    <text x="170" y="235" text-anchor="middle" class="text-xs" fill="#9E6516">(decoder mira al encoder)</text>
+
+    <g transform="translate(96,248)">
+      <rect x="0" y="0" width="36" height="20" rx="3" fill="#7F77DD"/>
+      <text x="18" y="14" text-anchor="middle" class="qkv" fill="#FFFFFF" font-size="11">Q</text>
+      <rect x="46" y="0" width="36" height="20" rx="3" fill="#E0A45C"/>
+      <text x="64" y="14" text-anchor="middle" class="qkv" fill="#FFFFFF" font-size="11">K</text>
+      <rect x="92" y="0" width="36" height="20" rx="3" fill="#E0A45C"/>
+      <text x="110" y="14" text-anchor="middle" class="qkv" fill="#FFFFFF" font-size="11">V</text>
+    </g>
+
+    <!-- output -->
+    <rect x="40" y="300" width="260" height="22" rx="4" class="stroke bg-block"/>
+    <text x="170" y="315" text-anchor="middle" class="text-xs">FF · Linear · Softmax → token</text>
+  </g>
+
+  <!-- Cross-attention bridge: encoder output -> decoder K/V -->
+  <path d="M360 290 Q 460 280 540 258" stroke="#E0A45C" stroke-width="1.8" fill="none" marker-end="url(#arrow-org)" stroke-dasharray="0"/>
+  <text x="450" y="266" text-anchor="middle" class="text-xs" fill="#9E6516" font-weight="600">K, V vienen del encoder</text>
+
+  <!-- Bottom legend / takeaway -->
+  <g transform="translate(60,448)">
+    <rect x="0" y="0" width="14" height="10" fill="#7F77DD"/>
+    <text x="22" y="9" class="text-xs">Q, K, V calculados localmente (mismo input)</text>
+
+    <rect x="320" y="0" width="14" height="10" fill="#E0A45C"/>
+    <text x="342" y="9" class="text-xs">K, V vienen del encoder (Q sigue siendo del decoder)</text>
+  </g>
+  <text x="480" y="488" text-anchor="middle" class="text-xs" fill="#7F77DD" font-weight="600">→ Q/K/V es el "cómo". Encoder/decoder/cross-attention son el "dónde".</text>
+</svg>

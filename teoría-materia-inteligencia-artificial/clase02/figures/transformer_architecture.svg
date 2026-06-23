@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 500" font-family="Inter, system-ui, -apple-system, sans-serif">
+  <defs>
+    <style>
+      .stroke { stroke: #222222; stroke-width: 1.4; fill: none; }
+      .stroke-thin { stroke: #222222; stroke-width: 1; fill: none; }
+      .accent { stroke: #7F77DD; stroke-width: 1.6; fill: none; }
+      .bg-soft { fill: #F4F2FF; }
+      .bg-block { fill: #FFFFFF; }
+      .text { fill: #222222; font-size: 13px; }
+      .text-strong { fill: #222222; font-size: 16px; font-weight: 600; }
+      .text-xs { fill: #666666; font-size: 11px; }
+      .text-mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; fill: #222222; }
+      .label-side { fill: #7F77DD; font-size: 14px; font-weight: 700; }
+      .arrow-fill { fill: #222222; }
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" class="arrow-fill"/>
+    </marker>
+  </defs>
+
+  <text x="480" y="36" text-anchor="middle" class="text-strong" font-size="22">La arquitectura Transformer original (2017)</text>
+  <text x="480" y="56" text-anchor="middle" class="text-xs">Vaswani et al. la propusieron para traducción: encoder lee el idioma fuente, decoder genera el destino.</text>
+
+  <!-- ENCODER stack (left) -->
+  <g transform="translate(120,90)">
+    <rect x="0" y="0" width="240" height="320" rx="10" class="stroke bg-soft"/>
+    <text x="120" y="26" text-anchor="middle" class="label-side">ENCODER</text>
+    <text x="120" y="42" text-anchor="middle" class="text-xs">"entiende" la entrada</text>
+
+    <!-- input embedding -->
+    <rect x="40" y="60" width="160" height="28" rx="4" class="stroke bg-block"/>
+    <text x="120" y="78" text-anchor="middle" class="text-xs">Input embedding + posición</text>
+
+    <!-- self-attention -->
+    <rect x="40" y="104" width="160" height="36" rx="4" class="stroke bg-block"/>
+    <text x="120" y="120" text-anchor="middle" class="text-xs" font-weight="600">Self-Attention</text>
+    <text x="120" y="134" text-anchor="middle" class="text-xs" fill="#666">(bidireccional)</text>
+
+    <!-- add & norm -->
+    <rect x="40" y="148" width="160" height="22" rx="4" class="stroke bg-block"/>
+    <text x="120" y="163" text-anchor="middle" class="text-xs">Add &amp; Norm</text>
+
+    <!-- feed forward -->
+    <rect x="40" y="178" width="160" height="32" rx="4" class="stroke bg-block"/>
+    <text x="120" y="198" text-anchor="middle" class="text-xs" font-weight="600">Feed-Forward</text>
+
+    <!-- add & norm -->
+    <rect x="40" y="218" width="160" height="22" rx="4" class="stroke bg-block"/>
+    <text x="120" y="233" text-anchor="middle" class="text-xs">Add &amp; Norm</text>
+
+    <!-- repeat -->
+    <text x="120" y="266" text-anchor="middle" class="text-xs" fill="#7F77DD" font-weight="600">× N capas</text>
+
+    <text x="120" y="296" text-anchor="middle" class="text-xs" fill="#666">salida: representación</text>
+    <text x="120" y="310" text-anchor="middle" class="text-xs" fill="#666">contextual de la entrada</text>
+  </g>
+
+  <!-- DECODER stack (right) -->
+  <g transform="translate(600,90)">
+    <rect x="0" y="0" width="240" height="320" rx="10" class="stroke bg-soft"/>
+    <text x="120" y="26" text-anchor="middle" class="label-side">DECODER</text>
+    <text x="120" y="42" text-anchor="middle" class="text-xs">genera la salida token a token</text>
+
+    <!-- output embedding -->
+    <rect x="40" y="60" width="160" height="28" rx="4" class="stroke bg-block"/>
+    <text x="120" y="78" text-anchor="middle" class="text-xs">Output embedding + posición</text>
+
+    <!-- masked self-attention -->
+    <rect x="40" y="104" width="160" height="36" rx="4" class="stroke bg-block"/>
+    <text x="120" y="120" text-anchor="middle" class="text-xs" font-weight="600">Masked Self-Attention</text>
+    <text x="120" y="134" text-anchor="middle" class="text-xs" fill="#666">(causal: solo el pasado)</text>
+
+    <!-- cross-attention -->
+    <rect x="40" y="148" width="160" height="36" rx="4" class="stroke" fill="#FFF7E6" stroke="#E0A45C" stroke-width="1.6"/>
+    <text x="120" y="164" text-anchor="middle" class="text-xs" font-weight="600" fill="#9E6516">Cross-Attention</text>
+    <text x="120" y="178" text-anchor="middle" class="text-xs" fill="#9E6516">(mira al encoder)</text>
+
+    <!-- feed forward -->
+    <rect x="40" y="194" width="160" height="32" rx="4" class="stroke bg-block"/>
+    <text x="120" y="214" text-anchor="middle" class="text-xs" font-weight="600">Feed-Forward</text>
+
+    <!-- add & norm -->
+    <rect x="40" y="234" width="160" height="22" rx="4" class="stroke bg-block"/>
+    <text x="120" y="249" text-anchor="middle" class="text-xs">Add &amp; Norm</text>
+
+    <!-- repeat -->
+    <text x="120" y="276" text-anchor="middle" class="text-xs" fill="#7F77DD" font-weight="600">× N capas</text>
+
+    <!-- output -->
+    <rect x="40" y="290" width="160" height="22" rx="4" stroke="#7F77DD" stroke-width="1.6" fill="#F4F2FF"/>
+    <text x="120" y="305" text-anchor="middle" class="text-xs" font-weight="600" fill="#7F77DD">Linear → Softmax → token</text>
+  </g>
+
+  <!-- Cross-attention bridge -->
+  <g>
+    <path d="M360 256 Q 480 200 600 166" stroke="#E0A45C" stroke-width="1.6" fill="none" marker-end="url(#arrow)"/>
+    <text x="480" y="200" text-anchor="middle" class="text-xs" fill="#9E6516" font-weight="600">cross-attention</text>
+    <text x="480" y="214" text-anchor="middle" class="text-xs" fill="#9E6516">conecta los dos lados</text>
+  </g>
+
+  <!-- Bottom takeaway -->
+  <g transform="translate(80,432)">
+    <text x="400" y="0" text-anchor="middle" class="text" font-weight="600" fill="#7F77DD">Tres maneras de usar la arquitectura</text>
+    <text x="60"  y="22" class="text-xs"><tspan font-weight="600">Solo encoder:</tspan> BERT, RoBERTa → entender texto, embeddings</text>
+    <text x="60"  y="40" class="text-xs"><tspan font-weight="600">Solo decoder:</tspan> GPT, Llama, Claude, Qwen → generar texto (lo más común hoy)</text>
+    <text x="60"  y="58" class="text-xs"><tspan font-weight="600">Encoder + Decoder:</tspan> T5, BART, Whisper, MarianMT → traducción, summarization, speech-to-text</text>
+  </g>
+</svg>

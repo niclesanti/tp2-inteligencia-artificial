@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 480" font-family="Inter, system-ui, -apple-system, sans-serif">
+  <defs>
+    <style>
+      .axis { stroke: #444; stroke-width: 1.2; fill: none; }
+      .grid { stroke: #DDD; stroke-width: 0.8; fill: none; }
+      .text { fill: #222222; font-size: 13px; }
+      .text-strong { fill: #222222; font-size: 16px; font-weight: 600; }
+      .text-xs { fill: #666666; font-size: 11px; }
+    </style>
+  </defs>
+
+  <text x="480" y="36" text-anchor="middle" class="text-strong" font-size="22">El salto razonador vs clásico (2026)</text>
+  <text x="480" y="58" text-anchor="middle" class="text-xs">Misma "familia" de modelos. La diferencia es post-training de razonamiento + test-time compute.</text>
+
+  <!-- chart area -->
+  <g transform="translate(140,100)">
+    <line x1="0" y1="0" x2="0" y2="280" class="axis"/>
+    <line x1="0" y1="280" x2="700" y2="280" class="axis"/>
+
+    <g class="grid">
+      <line x1="0" y1="0" x2="700" y2="0"/>
+      <line x1="0" y1="56" x2="700" y2="56"/>
+      <line x1="0" y1="112" x2="700" y2="112"/>
+      <line x1="0" y1="168" x2="700" y2="168"/>
+      <line x1="0" y1="224" x2="700" y2="224"/>
+    </g>
+
+    <text x="-8" y="4" text-anchor="end" class="text-xs">100%</text>
+    <text x="-8" y="60" text-anchor="end" class="text-xs">80%</text>
+    <text x="-8" y="116" text-anchor="end" class="text-xs">60%</text>
+    <text x="-8" y="172" text-anchor="end" class="text-xs">40%</text>
+    <text x="-8" y="228" text-anchor="end" class="text-xs">20%</text>
+    <text x="-8" y="284" text-anchor="end" class="text-xs">0%</text>
+
+    <!-- 4 benchmarks. Bar width 50, gap 60 between bars -->
+    <!-- Per benchmark: 2 bars (clasico, razonador), spacing -->
+
+    <!-- 1. AIME 2024: clásico=13, razonador=87 -->
+    <g>
+      <rect x="20" y="244" width="50" height="36" fill="#5C72FF"/>
+      <text x="45" y="240" text-anchor="middle" class="text-xs" fill="#5C72FF" font-weight="700">13%</text>
+      <rect x="76" y="36" width="50" height="244" fill="#1D9E75"/>
+      <text x="101" y="32" text-anchor="middle" class="text-xs" fill="#1D9E75" font-weight="700">87%</text>
+      <text x="73" y="300" text-anchor="middle" class="text-xs">AIME 2024</text>
+      <text x="73" y="316" text-anchor="middle" class="text-xs" fill="#666">matemática olímpica</text>
+    </g>
+
+    <!-- 2. GPQA Diamond: clásico=50, razonador=85 -->
+    <g>
+      <rect x="190" y="140" width="50" height="140" fill="#5C72FF"/>
+      <text x="215" y="136" text-anchor="middle" class="text-xs" fill="#5C72FF" font-weight="700">50%</text>
+      <rect x="246" y="42" width="50" height="238" fill="#1D9E75"/>
+      <text x="271" y="38" text-anchor="middle" class="text-xs" fill="#1D9E75" font-weight="700">85%</text>
+      <text x="243" y="300" text-anchor="middle" class="text-xs">GPQA Diamond</text>
+      <text x="243" y="316" text-anchor="middle" class="text-xs" fill="#666">ciencia nivel PhD</text>
+    </g>
+
+    <!-- 3. SWE-Bench Verified: clásico=33, razonador=72 -->
+    <g>
+      <rect x="360" y="187" width="50" height="93" fill="#5C72FF"/>
+      <text x="385" y="183" text-anchor="middle" class="text-xs" fill="#5C72FF" font-weight="700">33%</text>
+      <rect x="416" y="78" width="50" height="202" fill="#1D9E75"/>
+      <text x="441" y="74" text-anchor="middle" class="text-xs" fill="#1D9E75" font-weight="700">72%</text>
+      <text x="413" y="300" text-anchor="middle" class="text-xs">SWE-Bench</text>
+      <text x="413" y="316" text-anchor="middle" class="text-xs" fill="#666">bugs en repos reales</text>
+    </g>
+
+    <!-- 4. Codeforces (rating mapped to %ile): clásico=11%, razonador=96% -->
+    <g>
+      <rect x="530" y="249" width="50" height="31" fill="#5C72FF"/>
+      <text x="555" y="245" text-anchor="middle" class="text-xs" fill="#5C72FF" font-weight="700">11%</text>
+      <rect x="586" y="11" width="50" height="269" fill="#1D9E75"/>
+      <text x="611" y="7" text-anchor="middle" class="text-xs" fill="#1D9E75" font-weight="700">96%</text>
+      <text x="583" y="300" text-anchor="middle" class="text-xs">Codeforces</text>
+      <text x="583" y="316" text-anchor="middle" class="text-xs" fill="#666">percentil competitivo</text>
+    </g>
+
+    <!-- legend -->
+    <g transform="translate(440,-22)">
+      <rect x="0" y="0" width="14" height="10" fill="#5C72FF"/>
+      <text x="20" y="9" class="text-xs">GPT-4o / Claude 3.5 (clásicos)</text>
+      <rect x="180" y="0" width="14" height="10" fill="#1D9E75"/>
+      <text x="200" y="9" class="text-xs">o3 / Claude Opus 4 (razonadores)</text>
+    </g>
+  </g>
+
+  <text x="480" y="450" text-anchor="middle" class="text-xs" fill="#666">Misma generación de modelos, mismo año. La diferencia es <tspan font-weight="600" fill="#222">cómo se entrenó después del pretraining</tspan>.</text>
+  <text x="480" y="468" text-anchor="middle" class="text-xs" fill="#7F77DD" font-weight="600">→ El nuevo "salto" en capacidad ya no viene de modelos más grandes, viene del post-training.</text>
+</svg>

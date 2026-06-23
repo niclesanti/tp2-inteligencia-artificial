@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 480" font-family="Inter, system-ui, -apple-system, sans-serif">
+  <defs>
+    <style>
+      .stroke { stroke: #222222; stroke-width: 1.4; fill: none; }
+      .stroke-thin { stroke: #222222; stroke-width: 1; fill: none; }
+      .accent { stroke: #7F77DD; stroke-width: 1.6; fill: none; }
+      .bg-soft { fill: #F4F2FF; }
+      .text { fill: #222222; font-size: 13px; }
+      .text-strong { fill: #222222; font-size: 16px; font-weight: 600; }
+      .text-xs { fill: #666666; font-size: 11px; }
+      .text-mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; fill: #222222; }
+      .badge-fill { fill: #7F77DD; }
+    </style>
+  </defs>
+
+  <text x="480" y="40" text-anchor="middle" class="text-strong" font-size="22">Encoder vs Decoder</text>
+
+  <!-- LEFT: Encoder -->
+  <g transform="translate(70,90)">
+    <rect x="0" y="0" width="340" height="320" rx="10" class="stroke bg-soft"/>
+    <text x="170" y="28" text-anchor="middle" class="text-strong">Encoder (BERT, RoBERTa)</text>
+
+    <!-- attention is bidirectional -->
+    <g transform="translate(40,60)">
+      <!-- tokens -->
+      <rect x="0" y="0" width="50" height="36" rx="4" class="stroke" fill="#FFFFFF"/>
+      <text x="25" y="23" text-anchor="middle" class="text-mono">el</text>
+      <rect x="70" y="0" width="50" height="36" rx="4" class="stroke" fill="#FFFFFF"/>
+      <text x="95" y="23" text-anchor="middle" class="text-mono">[MASK]</text>
+      <rect x="140" y="0" width="50" height="36" rx="4" class="stroke" fill="#FFFFFF"/>
+      <text x="165" y="23" text-anchor="middle" class="text-mono">come</text>
+      <rect x="210" y="0" width="50" height="36" rx="4" class="stroke" fill="#FFFFFF"/>
+      <text x="235" y="23" text-anchor="middle" class="text-mono">queso</text>
+
+      <!-- bidirectional arrows over tokens -->
+      <g class="accent" opacity="0.7">
+        <path d="M25 0 Q60 -22 95 0"/>
+        <path d="M95 0 Q130 -22 165 0"/>
+        <path d="M165 0 Q200 -22 235 0"/>
+        <path d="M25 0 Q130 -34 235 0"/>
+      </g>
+    </g>
+
+    <text x="170" y="170" text-anchor="middle" class="text-xs" fill="#7F77DD">↔ atención bidireccional</text>
+
+    <text x="20" y="210" class="text">Sirve para <tspan font-weight="600">entender</tspan> texto:</text>
+    <text x="20" y="232" class="text-xs">• embeddings semánticos</text>
+    <text x="20" y="250" class="text-xs">• clasificación de sentimiento</text>
+    <text x="20" y="268" class="text-xs">• NER, similitud, retrieval</text>
+
+    <text x="20" y="298" class="text-xs" fill="#666">Predice tokens enmascarados; ve todo el contexto.</text>
+  </g>
+
+  <!-- RIGHT: Decoder -->
+  <g transform="translate(550,90)">
+    <rect x="0" y="0" width="340" height="320" rx="10" class="stroke bg-soft"/>
+    <text x="170" y="28" text-anchor="middle" class="text-strong">Decoder (GPT, Llama, Qwen, Claude)</text>
+
+    <!-- causal attention -->
+    <g transform="translate(40,60)">
+      <rect x="0" y="0" width="50" height="36" rx="4" class="stroke" fill="#FFFFFF"/>
+      <text x="25" y="23" text-anchor="middle" class="text-mono">el</text>
+      <rect x="70" y="0" width="50" height="36" rx="4" class="stroke" fill="#FFFFFF"/>
+      <text x="95" y="23" text-anchor="middle" class="text-mono">gato</text>
+      <rect x="140" y="0" width="50" height="36" rx="4" class="stroke" fill="#FFFFFF"/>
+      <text x="165" y="23" text-anchor="middle" class="text-mono">come</text>
+      <rect x="210" y="0" width="50" height="36" rx="4" class="stroke" fill="#FFFFFF"/>
+      <text x="235" y="23" text-anchor="middle" class="text-mono">→ ?</text>
+
+      <!-- causal: only look back -->
+      <g class="accent" opacity="0.7">
+        <path d="M235 0 Q200 -22 165 0"/>
+        <path d="M235 0 Q165 -34 95 0"/>
+        <path d="M235 0 Q130 -42 25 0"/>
+      </g>
+    </g>
+
+    <text x="170" y="170" text-anchor="middle" class="text-xs" fill="#7F77DD">← atención causal (solo tokens anteriores)</text>
+
+    <text x="20" y="210" class="text">Sirve para <tspan font-weight="600">generar</tspan> texto:</text>
+    <text x="20" y="232" class="text-xs">• completar, escribir, resumir</text>
+    <text x="20" y="250" class="text-xs">• chatbots, asistentes</text>
+    <text x="20" y="268" class="text-xs">• código, traducción</text>
+
+    <text x="20" y="298" class="text-xs" fill="#666">Predice el siguiente token mirando solo los anteriores.</text>
+  </g>
+
+  <!-- bottom -->
+  <text x="480" y="450" text-anchor="middle" class="text" fill="#7F77DD" font-weight="600">→ En este curso usamos modelos decoder. Son los que generan respuestas.</text>
+</svg>
