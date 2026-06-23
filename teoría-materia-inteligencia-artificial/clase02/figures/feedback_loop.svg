@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 480" font-family="Inter, system-ui, -apple-system, sans-serif">
+  <defs>
+    <style>
+      .stroke { stroke: #222222; stroke-width: 1.4; fill: none; }
+      .stroke-thin { stroke: #222222; stroke-width: 1; fill: none; }
+      .accent { stroke: #7F77DD; stroke-width: 1.6; fill: none; }
+      .text { fill: #222222; font-size: 13px; }
+      .text-strong { fill: #222222; font-size: 16px; font-weight: 600; }
+      .text-xs { fill: #666666; font-size: 11px; }
+      .bg-soft { fill: #F4F2FF; }
+      .bg-block { fill: #FFFFFF; }
+      .bg-good { fill: #F0FBF6; }
+      .step-num { font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; fill: #7F77DD; }
+      .arrow-fill { fill: #7F77DD; }
+    </style>
+    <marker id="arrow-fl" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="10" markerHeight="10" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" class="arrow-fill"/>
+    </marker>
+  </defs>
+
+  <text x="480" y="36" text-anchor="middle" class="text-strong" font-size="22">El loop completo: prompt → producto → mejora</text>
+  <text x="480" y="58" text-anchor="middle" class="text-xs">Cada pieza que armamos en los Bloques 5 y 6 encaja en este ciclo. No es lineal, es virtuoso.</text>
+
+  <!-- Loop diagram: 6 nodes around an oval -->
+  <!-- Center coords: 480, 280. Radius: 200x130 -->
+
+  <g>
+    <!-- Node 1: top center - Prompt template -->
+    <g transform="translate(380,110)">
+      <rect x="0" y="0" width="200" height="60" rx="8" class="stroke bg-soft"/>
+      <text x="100" y="22" text-anchor="middle" class="step-num" font-size="11">① diseño</text>
+      <text x="100" y="42" text-anchor="middle" class="text-xs" font-weight="600">Prompt template + variables</text>
+      <text x="100" y="56" text-anchor="middle" class="text-xs" fill="#666">versionado en git</text>
+    </g>
+
+    <!-- Node 2: right top - Eval offline -->
+    <g transform="translate(680,180)">
+      <rect x="0" y="0" width="200" height="60" rx="8" class="stroke bg-soft"/>
+      <text x="100" y="22" text-anchor="middle" class="step-num" font-size="11">② eval offline</text>
+      <text x="100" y="42" text-anchor="middle" class="text-xs" font-weight="600">Test set → accuracy</text>
+      <text x="100" y="56" text-anchor="middle" class="text-xs" fill="#666">en CI antes del deploy</text>
+    </g>
+
+    <!-- Node 3: right bottom - Production -->
+    <g transform="translate(680,300)">
+      <rect x="0" y="0" width="200" height="60" rx="8" class="stroke bg-good"/>
+      <text x="100" y="22" text-anchor="middle" class="step-num" font-size="11" fill="#1D9E75">③ producción</text>
+      <text x="100" y="42" text-anchor="middle" class="text-xs" font-weight="600">App + LLM + Logger</text>
+      <text x="100" y="56" text-anchor="middle" class="text-xs" fill="#666">tráfico real</text>
+    </g>
+
+    <!-- Node 4: bottom center - Online metrics -->
+    <g transform="translate(380,370)">
+      <rect x="0" y="0" width="200" height="60" rx="8" class="stroke bg-soft"/>
+      <text x="100" y="22" text-anchor="middle" class="step-num" font-size="11">④ eval online</text>
+      <text x="100" y="42" text-anchor="middle" class="text-xs" font-weight="600">Logs + LLM-as-judge</text>
+      <text x="100" y="56" text-anchor="middle" class="text-xs" fill="#666">sample sobre tráfico</text>
+    </g>
+
+    <!-- Node 5: left bottom - Detect issues -->
+    <g transform="translate(80,300)">
+      <rect x="0" y="0" width="200" height="60" rx="8" class="stroke bg-soft"/>
+      <text x="100" y="22" text-anchor="middle" class="step-num" font-size="11">⑤ análisis</text>
+      <text x="100" y="42" text-anchor="middle" class="text-xs" font-weight="600">Drift + casos fallidos</text>
+      <text x="100" y="56" text-anchor="middle" class="text-xs" fill="#666">¿qué inputs nuevos aparecen?</text>
+    </g>
+
+    <!-- Node 6: left top - Update test set -->
+    <g transform="translate(80,180)">
+      <rect x="0" y="0" width="200" height="60" rx="8" class="stroke bg-soft"/>
+      <text x="100" y="22" text-anchor="middle" class="step-num" font-size="11">⑥ feedback</text>
+      <text x="100" y="42" text-anchor="middle" class="text-xs" font-weight="600">+ casos al test set</text>
+      <text x="100" y="56" text-anchor="middle" class="text-xs" fill="#666">+ ideas para v(n+1)</text>
+    </g>
+
+    <!-- Curved arrows between nodes (clockwise) -->
+    <g class="accent" fill="none">
+      <!-- 1 -> 2 -->
+      <path d="M580 145 Q 660 155 685 200" marker-end="url(#arrow-fl)"/>
+      <!-- 2 -> 3 -->
+      <path d="M780 244 L 780 295" marker-end="url(#arrow-fl)"/>
+      <!-- 3 -> 4 -->
+      <path d="M680 345 Q 600 380 580 395" marker-end="url(#arrow-fl)"/>
+      <!-- 4 -> 5 -->
+      <path d="M380 395 Q 300 380 280 345" marker-end="url(#arrow-fl)"/>
+      <!-- 5 -> 6 -->
+      <path d="M180 295 L 180 244" marker-end="url(#arrow-fl)"/>
+      <!-- 6 -> 1 -->
+      <path d="M280 200 Q 360 155 380 145" marker-end="url(#arrow-fl)"/>
+    </g>
+
+    <!-- Center label -->
+    <text x="480" y="270" text-anchor="middle" class="text" font-weight="700" fill="#7F77DD">PROMPT</text>
+    <text x="480" y="290" text-anchor="middle" class="text" font-weight="700" fill="#7F77DD">LIFECYCLE</text>
+  </g>
+
+  <!-- bottom takeaway -->
+  <text x="480" y="466" text-anchor="middle" class="text-xs" fill="#666">El prompt nunca está "terminado". Igual que el código, evoluciona con feedback de la realidad.</text>
+</svg>

@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 300" font-family="Inter, system-ui, -apple-system, sans-serif">
+  <defs>
+    <style>
+      .stroke { stroke: #222222; stroke-width: 1.4; fill: none; }
+      .stroke-thin { stroke: #222222; stroke-width: 1; fill: none; }
+      .accent { stroke: #7F77DD; stroke-width: 1.6; fill: none; }
+      .text { fill: #222222; font-size: 13px; }
+      .text-strong { fill: #222222; font-size: 16px; font-weight: 600; }
+      .text-xs { fill: #666666; font-size: 11px; }
+      .bg-soft { fill: #F4F2FF; }
+      .bg-block { fill: #FFFFFF; }
+      .step-num { font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; fill: #7F77DD; }
+      .mono { font-family: 'JetBrains Mono', monospace; font-size: 11px; fill: #222222; }
+      .arrow-fill { fill: #7F77DD; }
+    </style>
+    <marker id="arrow-tc" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="10" markerHeight="10" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" class="arrow-fill"/>
+    </marker>
+  </defs>
+
+  <!-- (1) Catálogo de tools -->
+  <g transform="translate(30,45)">
+    <rect x="0" y="0" width="170" height="90" rx="8" class="stroke bg-soft"/>
+    <text x="14" y="24" class="step-num" font-size="11">① Catálogo de tools</text>
+    <text x="14" y="46" class="text-xs" fill="#666">nombre</text>
+    <text x="14" y="62" class="text-xs" fill="#666">descripción</text>
+    <text x="14" y="78" class="text-xs" fill="#666">schema (JSON)</text>
+  </g>
+
+  <!-- (2) LLM (big) -->
+  <g transform="translate(250,30)">
+    <rect x="0" y="0" width="150" height="120" rx="8" stroke="#7F77DD" stroke-width="2.2" class="bg-soft"/>
+    <text x="75" y="30" text-anchor="middle" class="step-num" font-size="11">②</text>
+    <text x="75" y="62" text-anchor="middle" class="text" font-weight="700" fill="#7F77DD" font-size="20">LLM</text>
+    <text x="75" y="88" text-anchor="middle" class="text-xs" fill="#666">elige tool y</text>
+    <text x="75" y="103" text-anchor="middle" class="text-xs" fill="#666">argumentos</text>
+  </g>
+
+  <!-- (3) JSON tool call -->
+  <g transform="translate(450,45)">
+    <rect x="0" y="0" width="280" height="90" rx="8" class="stroke bg-block"/>
+    <text x="14" y="24" class="step-num" font-size="11">③ tool call (JSON)</text>
+    <text x="14" y="46" class="mono">{ "name": "calculadora",</text>
+    <text x="14" y="62" class="mono">  "arguments": {</text>
+    <text x="14" y="78" class="mono">    "expr": "8 * 0.12" } }</text>
+  </g>
+
+  <!-- (4) Runtime ejecuta -->
+  <g transform="translate(780,45)">
+    <rect x="0" y="0" width="150" height="90" rx="8" class="stroke bg-soft"/>
+    <text x="14" y="24" class="step-num" font-size="11">④ Runtime</text>
+    <text x="14" y="46" class="text-xs" fill="#666">ejecuta la</text>
+    <text x="14" y="62" class="text-xs" fill="#666">función real</text>
+    <text x="14" y="80" class="mono">→ 0.96</text>
+  </g>
+
+  <!-- Forward arrows -->
+  <g class="accent" fill="none">
+    <path d="M200 90 L 248 90" marker-end="url(#arrow-tc)"/>
+    <path d="M400 90 L 448 90" marker-end="url(#arrow-tc)"/>
+    <path d="M730 90 L 778 90" marker-end="url(#arrow-tc)"/>
+  </g>
+
+  <!-- Loop-back from Runtime to LLM -->
+  <path d="M855 135 L 855 245 L 325 245 L 325 152" class="accent" marker-end="url(#arrow-tc)"/>
+  <rect x="470" y="234" width="240" height="22" rx="6" fill="#F4F2FF" stroke="#7F77DD" stroke-width="1"/>
+  <text x="590" y="249" text-anchor="middle" class="text-xs" fill="#7F77DD" font-weight="600">Observation / resultado vuelve al LLM</text>
+
+  <text x="480" y="288" text-anchor="middle" class="text-xs" fill="#666">El LLM y el runtime se turnan: decidir y ejecutar son responsabilidades separadas.</text>
+</svg>

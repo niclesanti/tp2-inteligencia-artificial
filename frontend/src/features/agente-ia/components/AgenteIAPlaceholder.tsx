@@ -12,7 +12,7 @@ export function AgenteIAPlaceholder() {
           
           <div className="space-y-2">
             <h3 className="text-2xl font-semibold tracking-tight">
-              Finanzas Copilot
+              Asistente de Consulta Analítica e Inteligencia Financiera
             </h3>
             <p className="text-muted-foreground max-w-md">
               Para interactuar con tu asistente inteligente, primero selecciona un espacio de trabajo en el menú lateral.

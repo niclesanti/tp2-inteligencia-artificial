@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 480" font-family="Inter, system-ui, -apple-system, sans-serif">
+  <defs>
+    <style>
+      .stroke { stroke: #222222; stroke-width: 1.4; fill: none; }
+      .stroke-thin { stroke: #222222; stroke-width: 1; fill: none; }
+      .text { fill: #222222; font-size: 13px; }
+      .text-strong { fill: #222222; font-size: 16px; font-weight: 600; }
+      .text-xs { fill: #666666; font-size: 11px; }
+      .bg-soft { fill: #F4F2FF; }
+      .bg-block { fill: #FFFFFF; }
+      .bg-code { fill: #FAFAFA; }
+      .text-mono { font-family: 'JetBrains Mono', monospace; font-size: 11px; fill: #222222; }
+      .var { fill: #7F77DD; font-weight: 700; }
+      .keyword { fill: #5949C9; }
+      .string { fill: #1D9E75; }
+      .role { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; fill: #7F77DD; }
+      .arrow-fill { fill: #222222; }
+    </style>
+    <marker id="arrow-pv" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="9" markerHeight="9" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" class="arrow-fill"/>
+    </marker>
+  </defs>
+
+  <text x="480" y="36" text-anchor="middle" class="text-strong" font-size="22">Prompt como código: variables y templating</text>
+  <text x="480" y="58" text-anchor="middle" class="text-xs">El prompt deja de ser un string suelto. Pasa a ser un template versionado, parametrizable, reusable.</text>
+
+  <!-- LEFT: bad approach -->
+  <g transform="translate(40,90)">
+    <rect x="0" y="0" width="420" height="170" rx="10" stroke="#D14B4B" stroke-width="1.4" fill="#FFF1F1"/>
+    <text x="14" y="26" class="text" font-weight="600" fill="#D14B4B">✗ Hardcodeado en el código</text>
+
+    <g transform="translate(20,46)">
+      <rect x="0" y="0" width="380" height="106" rx="4" class="bg-code" stroke="#E0E0E0"/>
+      <g transform="translate(10,16)" class="text-mono">
+        <text y="0"><tspan class="keyword">def</tspan> classify(review):</text>
+        <text y="14">    prompt = <tspan class="string">"Clasificá esta reseña: "</tspan></text>
+        <text y="28">    prompt += review + <tspan class="string">". POSITIVA o NEGATIVA?"</tspan></text>
+        <text y="42">    <tspan class="keyword">return</tspan> llm(prompt)</text>
+
+        <text y="70" fill="#D14B4B">¿cambiamos el formato? hay que tocar código.</text>
+        <text y="84" fill="#D14B4B">¿probamos otra versión? hay que duplicar la función.</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- RIGHT: good approach -->
+  <g transform="translate(500,90)">
+    <rect x="0" y="0" width="420" height="170" rx="10" stroke="#1D9E75" stroke-width="1.6" fill="#F0FBF6"/>
+    <text x="14" y="26" class="text" font-weight="600" fill="#1D9E75">✓ Template separado del código</text>
+
+    <g transform="translate(20,46)">
+      <rect x="0" y="0" width="380" height="106" rx="4" class="bg-code" stroke="#E0E0E0"/>
+      <g transform="translate(10,16)" class="text-mono">
+        <text y="0" fill="#666"># prompts/classify_review_v3.txt</text>
+        <text y="16">Sos un clasificador de reseñas.</text>
+        <text y="30">Respondés: POSITIVA, NEUTRAL, o NEGATIVA.</text>
+        <text y="50">Reseña: <tspan class="var">{{ review }}</tspan></text>
+        <text y="64">Idioma: <tspan class="var">{{ language }}</tspan></text>
+        <text y="78">Etiqueta:</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Arrow connecting left to right -->
+  <line x1="465" y1="174" x2="495" y2="174" class="stroke" marker-end="url(#arrow-pv)"/>
+
+  <!-- Bottom: how to render the template -->
+  <g transform="translate(40,290)">
+    <rect x="0" y="0" width="880" height="130" rx="10" class="stroke bg-soft"/>
+    <text x="14" y="26" class="text" font-weight="600">El código solo renderea el template:</text>
+
+    <g transform="translate(20,46)">
+      <rect x="0" y="0" width="840" height="74" rx="4" class="bg-code" stroke="#E0E0E0"/>
+      <g transform="translate(10,16)" class="text-mono">
+        <text y="0"><tspan class="keyword">from</tspan> jinja2 <tspan class="keyword">import</tspan> Template</text>
+        <text y="14">tmpl = Template(open(<tspan class="string">"prompts/classify_review_v3.txt"</tspan>).read())</text>
+        <text y="32">prompt = tmpl.render(review=user_input, language=<tspan class="string">"es"</tspan>)</text>
+        <text y="50">resp = llm(prompt)</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Bottom benefits -->
+  <g transform="translate(40,440)" class="text-xs">
+    <text x="60"  y="0">✓ Versionable en git</text>
+    <text x="260" y="0">✓ A/B testeable</text>
+    <text x="440" y="0">✓ Editable sin redeploy</text>
+    <text x="660" y="0">✓ Compartible entre devs / no-devs</text>
+  </g>
+
+  <text x="480" y="470" text-anchor="middle" class="text-xs" fill="#7F77DD" font-weight="600">→ Frameworks: Jinja2, LangChain PromptTemplate, Mirascope, Promptfoo.</text>
+</svg>

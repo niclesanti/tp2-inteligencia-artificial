@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 460" font-family="Inter, system-ui, -apple-system, sans-serif">
+  <defs>
+    <style>
+      .stroke { stroke: #222222; stroke-width: 1.4; fill: none; }
+      .stroke-thin { stroke: #222222; stroke-width: 1; fill: none; }
+      .bg-soft { fill: #F4F2FF; }
+      .text { fill: #222222; font-size: 13px; }
+      .text-strong { fill: #222222; font-size: 18px; font-weight: 600; }
+      .text-xs { fill: #666666; font-size: 11px; }
+      .text-mono { font-family: 'JetBrains Mono', monospace; font-size: 10px; fill: #222222; }
+      .label-card { fill: #222222; font-size: 13px; font-weight: 600; }
+    </style>
+  </defs>
+
+  <text x="480" y="36" text-anchor="middle" class="text-strong" font-size="22">La red alucina documentos de internet</text>
+  <text x="480" y="58" text-anchor="middle" class="text-xs">Ninguno existe; los tres son inventados con formato y estilo plausibles.</text>
+
+  <!-- Card 1: Java code -->
+  <g transform="translate(40,90)">
+    <rect x="0" y="0" width="280" height="320" rx="8" class="stroke" fill="#FFFFFF"/>
+    <rect x="0" y="0" width="280" height="28" class="bg-soft"/>
+    <line x1="0" y1="28" x2="280" y2="28" class="stroke-thin"/>
+    <text x="14" y="19" class="label-card">código Java</text>
+
+    <g transform="translate(14,48)" class="text-mono">
+      <text y="0">package lecture06;</text>
+      <text y="20">import java.util.*;</text>
+      <text y="48">public class Field {</text>
+      <text y="68">  static Map&lt;String,Card&gt; idx</text>
+      <text y="84">    = new HashMap&lt;&gt;();</text>
+      <text y="112">  public void addCard(Card c){</text>
+      <text y="128">    idx.put(c.id(), c);</text>
+      <text y="144">  }</text>
+      <text y="172">  public Card get(String id){</text>
+      <text y="188">    return idx.get(id);</text>
+      <text y="204">  }</text>
+      <text y="232">  public int count(){</text>
+      <text y="248">    return idx.size();</text>
+      <text y="264">  }</text>
+      <text y="284">}</text>
+    </g>
+  </g>
+
+  <!-- Card 2: Amazon product -->
+  <g transform="translate(340,90)">
+    <rect x="0" y="0" width="280" height="320" rx="8" class="stroke" fill="#FFFFFF"/>
+    <rect x="0" y="0" width="280" height="28" class="bg-soft"/>
+    <line x1="0" y1="28" x2="280" y2="28" class="stroke-thin"/>
+    <text x="14" y="19" class="label-card">ficha de producto</text>
+
+    <g transform="translate(14,48)">
+      <text class="text" y="0" font-weight="600">Hades Heroes</text>
+      <text class="text-xs" y="22">Author: Maureen Fergus</text>
+      <text class="text-xs" y="42">ISBN: 9780545946767</text>
+      <text class="text-xs" y="62">Format: Hardback</text>
+      <text class="text-xs" y="82">Pages: 176</text>
+      <text class="text-xs" y="102">Dims: 140 × 223 mm</text>
+      <text class="text-xs" y="122">Pub Date: 01-05-16</text>
+      <text class="text-xs" y="142">Pub Country: United States</text>
+      <text class="text-xs" y="162">Condition: NEW</text>
+
+      <text class="text-xs" y="194" font-weight="600">Description:</text>
+      <text class="text-xs" y="212">Work hard. Love. Make your</text>
+      <text class="text-xs" y="226">own luck. These are the keys</text>
+      <text class="text-xs" y="240">to success in life and school.</text>
+      <text class="text-xs" y="254">But when a student named</text>
+      <text class="text-xs" y="268">Hercules wanders in and…</text>
+    </g>
+  </g>
+
+  <!-- Card 3: Wikipedia article -->
+  <g transform="translate(640,90)">
+    <rect x="0" y="0" width="280" height="320" rx="8" class="stroke" fill="#FFFFFF"/>
+    <rect x="0" y="0" width="280" height="28" class="bg-soft"/>
+    <line x1="0" y1="28" x2="280" y2="28" class="stroke-thin"/>
+    <text x="14" y="19" class="label-card">artículo Wikipedia</text>
+
+    <g transform="translate(14,48)">
+      <text class="text" y="0" font-weight="600">Blacknose dace</text>
+      <text class="text-xs" y="22">El blacknose dace (Rhinichthys</text>
+      <text class="text-xs" y="36">atratulus) es un pequeño pez</text>
+      <text class="text-xs" y="50">de agua dulce que se encuentra</text>
+      <text class="text-xs" y="64">en Norteamérica.</text>
+
+      <text class="text-xs" y="94">Tienen un cuerpo esbelto con</text>
+      <text class="text-xs" y="108">una franja negra horizontal</text>
+      <text class="text-xs" y="122">que les da su apariencia</text>
+      <text class="text-xs" y="136">distintiva.</text>
+
+      <text class="text-xs" y="168">Son omnívoros: insectos</text>
+      <text class="text-xs" y="182">acuáticos, crustáceos y materia</text>
+      <text class="text-xs" y="196">vegetal. Importantes como</text>
+      <text class="text-xs" y="210">presa de peces más grandes…</text>
+    </g>
+  </g>
+
+  <!-- bottom takeaway -->
+  <text x="480" y="445" text-anchor="middle" class="text" fill="#7F77DD" font-weight="600">→ Esto es la alucinación: el modelo siempre está generando un documento plausible.</text>
+</svg>

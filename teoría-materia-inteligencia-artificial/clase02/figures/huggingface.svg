@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 460" font-family="Inter, system-ui, -apple-system, sans-serif">
+  <defs>
+    <style>
+      .stroke { stroke: #222222; stroke-width: 1.4; fill: none; }
+      .stroke-thin { stroke: #222222; stroke-width: 1; fill: none; }
+      .text { fill: #222222; font-size: 13px; }
+      .text-strong { fill: #222222; font-size: 16px; font-weight: 600; }
+      .text-xs { fill: #666666; font-size: 11px; }
+      .bg-soft { fill: #F4F2FF; }
+      .pillar-name { font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; fill: #7F77DD; }
+      .text-mono { font-family: 'JetBrains Mono', monospace; font-size: 11px; fill: #222222; }
+    </style>
+  </defs>
+
+  <text x="480" y="36" text-anchor="middle" class="text-strong" font-size="22">HuggingFace: el "GitHub" de los modelos open weight</text>
+  <text x="480" y="58" text-anchor="middle" class="text-xs">Una plataforma con tres pilares. Cuando bajamos un modelo en este curso, lo bajamos de acá.</text>
+
+  <!-- Pillar 1: Hub -->
+  <g transform="translate(40,90)">
+    <rect x="0" y="0" width="280" height="280" rx="10" class="stroke bg-soft"/>
+    <text x="140" y="36" text-anchor="middle" class="pillar-name">🤗 Hub</text>
+    <text x="140" y="56" text-anchor="middle" class="text-xs" fill="#666">repositorio de modelos y datasets</text>
+
+    <g transform="translate(20,86)">
+      <text class="text-xs" y="0">~1M+ modelos publicados</text>
+      <text class="text-xs" y="16">~200K datasets</text>
+      <text class="text-xs" y="32">cards con métricas y licencia</text>
+
+      <text class="text-mono" y="80">huggingface.co/</text>
+      <text class="text-mono" y="98" fill="#7F77DD">  Qwen/Qwen3-32B</text>
+      <text class="text-mono" y="116" fill="#7F77DD">  meta-llama/Llama-3.1-8B</text>
+      <text class="text-mono" y="134" fill="#7F77DD">  deepseek-ai/DeepSeek-R1</text>
+
+      <text class="text-xs" y="172" fill="#666">Cada modelo trae:</text>
+      <text class="text-xs" y="188" fill="#666">pesos · tokenizer · config · README</text>
+    </g>
+  </g>
+
+  <!-- Pillar 2: Libraries -->
+  <g transform="translate(340,90)">
+    <rect x="0" y="0" width="280" height="280" rx="10" class="stroke bg-soft"/>
+    <text x="140" y="36" text-anchor="middle" class="pillar-name">📚 Librerías</text>
+    <text x="140" y="56" text-anchor="middle" class="text-xs" fill="#666">para usar los modelos en Python</text>
+
+    <g transform="translate(20,86)">
+      <text class="text-mono" y="0" font-weight="700">transformers</text>
+      <text class="text-xs" y="16">cargar y correr cualquier modelo</text>
+      <text class="text-xs" y="30">del Hub con 3 líneas.</text>
+
+      <text class="text-mono" y="62" font-weight="700">datasets</text>
+      <text class="text-xs" y="78">cargar datasets sin descargar todo</text>
+      <text class="text-xs" y="92">a disco (streaming).</text>
+
+      <text class="text-mono" y="124" font-weight="700">trl, peft, accelerate</text>
+      <text class="text-xs" y="140">fine-tuning, LoRA, training</text>
+      <text class="text-xs" y="154">distribuido.</text>
+    </g>
+  </g>
+
+  <!-- Pillar 3: Spaces / Inference -->
+  <g transform="translate(640,90)">
+    <rect x="0" y="0" width="280" height="280" rx="10" class="stroke bg-soft"/>
+    <text x="140" y="36" text-anchor="middle" class="pillar-name">🚀 Spaces / Inference</text>
+    <text x="140" y="56" text-anchor="middle" class="text-xs" fill="#666">demos y APIs de inferencia</text>
+
+    <g transform="translate(20,86)">
+      <text class="text-xs" y="0" font-weight="600">Spaces:</text>
+      <text class="text-xs" y="16">apps Gradio/Streamlit que</text>
+      <text class="text-xs" y="30">cualquiera puede publicar.</text>
+      <text class="text-xs" y="46">Útiles para probar un modelo</text>
+      <text class="text-xs" y="60">sin instalar nada.</text>
+
+      <text class="text-xs" y="92" font-weight="600">Inference Endpoints:</text>
+      <text class="text-xs" y="108">deployar un modelo como API</text>
+      <text class="text-xs" y="122">en segundos.</text>
+
+      <text class="text-xs" y="160" fill="#666">Alternativa pago a Groq/OpenAI</text>
+      <text class="text-xs" y="174" fill="#666">si querés un modelo open weight</text>
+      <text class="text-xs" y="188" fill="#666">corriendo "en la nube".</text>
+    </g>
+  </g>
+
+  <!-- bottom -->
+  <text x="480" y="410" text-anchor="middle" class="text" font-weight="600" fill="#7F77DD">→ Cuando alguien dice "bajé Qwen3-Instruct", casi siempre lo bajó del Hub.</text>
+  <text x="480" y="432" text-anchor="middle" class="text-xs" fill="#666">Cuenta gratuita: límites generosos. La mayoría de modelos open son acá donde primero se publican.</text>
+</svg>

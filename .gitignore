@@ -25,7 +25,6 @@ replay_pid*
 
 # Environment variables and secrets
 .env
-.env.*
 *.key
 *.pem
 secrets/

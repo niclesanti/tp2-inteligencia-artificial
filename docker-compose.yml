@@ -1,5 +1,3 @@
-
-
 services:
   db:
     image: postgres:14
@@ -57,9 +55,63 @@ services:
     networks:
       - campito-net
 
+  agente:
+    build: ./agente
+    container_name: python-agente-ia
+    depends_on:
+      - backend
+      - qdrant
+      - redis
+    environment:
+      GROQ_API_KEY: ${GROQ_API_KEY}
+      QDRANT_HOST: ${QDRANT_HOST:-qdrant}
+      QDRANT_PORT: ${QDRANT_PORT:-6333}
+      REDIS_HOST: ${REDIS_HOST:-redis}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+      REDIS_SESSION_TTL: ${REDIS_SESSION_TTL:-1800}
+      BACKEND_URL: ${BACKEND_URL:-http://backend:8080}
+      # Observabilidad: Langfuse (trazas estructuradas vía OpenTelemetry)
+      LANGFUSE_PUBLIC_KEY: ${LANGFUSE_PUBLIC_KEY:-}
+      LANGFUSE_SECRET_KEY: ${LANGFUSE_SECRET_KEY:-}
+      LANGFUSE_BASE_URL: ${LANGFUSE_BASE_URL:-https://cloud.langfuse.com}
+    networks:
+      - campito-net
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: qdrant-vector-db
+    restart: always
+    volumes:
+      - qdrant_data:/qdrant/storage
+    networks:
+      - campito-net
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis-session-store
+    restart: always
+    volumes:
+      - redis_data:/data
+    networks:
+      - campito-net
+
+  redisinsight:
+    image: redis/redisinsight:latest
+    container_name: redisinsight
+    restart: always
+    volumes:
+      - redisinsight_data:/data
+    depends_on:
+      - redis
+    networks:
+      - campito-net
+
 volumes:
   postgres_data:
   pgadmin_data:
+  qdrant_data:
+  redis_data:
+  redisinsight_data:
 
 networks:
   campito-net:

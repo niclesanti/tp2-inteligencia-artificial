@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 74 960 406" font-family="Inter, system-ui, -apple-system, sans-serif">
+  <defs>
+    <style>
+      .stroke { stroke: #222222; stroke-width: 1.4; fill: none; }
+      .stroke-thin { stroke: #222222; stroke-width: 1; fill: none; }
+      .accent { stroke: #7F77DD; stroke-width: 1.6; fill: none; }
+      .text { fill: #222222; font-size: 13px; }
+      .text-strong { fill: #222222; font-size: 16px; font-weight: 600; }
+      .text-xs { fill: #666666; font-size: 11px; }
+      .bg-soft { fill: #F4F2FF; }
+      .bg-block { fill: #FFFFFF; }
+      .bg-good { fill: #F0FBF6; }
+      .step-num { font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; fill: #7F77DD; }
+      .arrow-fill { fill: #7F77DD; }
+    </style>
+    <marker id="arrow-al" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="10" markerHeight="10" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" class="arrow-fill"/>
+    </marker>
+    <marker id="arrow-al-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="10" markerHeight="10" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#1D9E75"/>
+    </marker>
+  </defs>
+
+
+  <!-- 4 nodes around center (480, 280) -->
+  <!-- Node 1: Percibir (top) -->
+  <g transform="translate(360,92)">
+    <rect x="0" y="0" width="240" height="60" rx="8" class="stroke bg-soft"/>
+    <text x="120" y="24" text-anchor="middle" class="step-num" font-size="12">① Percibir</text>
+    <text x="120" y="44" text-anchor="middle" class="text-xs" fill="#666">recibe objetivo y contexto</text>
+  </g>
+
+  <!-- Node 2: Razonar (right) -->
+  <g transform="translate(680,250)">
+    <rect x="0" y="0" width="240" height="60" rx="8" class="stroke bg-soft"/>
+    <text x="120" y="24" text-anchor="middle" class="step-num" font-size="12">② Razonar</text>
+    <text x="120" y="44" text-anchor="middle" class="text-xs" fill="#666">el LLM decide el próximo paso</text>
+  </g>
+
+  <!-- Node 3: Actuar (bottom) -->
+  <g transform="translate(360,408)">
+    <rect x="0" y="0" width="240" height="60" rx="8" class="stroke bg-soft"/>
+    <text x="120" y="24" text-anchor="middle" class="step-num" font-size="12">③ Actuar</text>
+    <text x="120" y="44" text-anchor="middle" class="text-xs" fill="#666">ejecuta una herramienta</text>
+  </g>
+
+  <!-- Node 4: Observar (left) -->
+  <g transform="translate(40,250)">
+    <rect x="0" y="0" width="240" height="60" rx="8" class="stroke bg-soft"/>
+    <text x="120" y="24" text-anchor="middle" class="step-num" font-size="12">④ Observar</text>
+    <text x="120" y="44" text-anchor="middle" class="text-xs" fill="#666">incorpora el resultado</text>
+  </g>
+
+  <!-- Curved arrows clockwise -->
+  <g class="accent" fill="none">
+    <!-- 1 Percibir -> 2 Razonar -->
+    <path d="M600 132 Q 720 160 790 246" marker-end="url(#arrow-al)"/>
+    <!-- 2 Razonar -> 3 Actuar -->
+    <path d="M730 312 Q 700 400 602 432" marker-end="url(#arrow-al)"/>
+    <!-- 3 Actuar -> 4 Observar -->
+    <path d="M358 432 Q 240 400 200 314" marker-end="url(#arrow-al)"/>
+    <!-- 4 Observar -> 2 Razonar (back into reasoning) -->
+    <path d="M240 268 Q 480 220 678 272" marker-end="url(#arrow-al)"/>
+  </g>
+
+  <!-- Center label -->
+  <text x="480" y="282" text-anchor="middle" class="text" font-weight="700" fill="#7F77DD">AGENTE</text>
+  <text x="480" y="300" text-anchor="middle" class="text-xs" fill="#666">repite ②→③→④</text>
+
+  <!-- Objetivo entering at Percibir -->
+  <text x="300" y="86" text-anchor="end" class="text-xs">🎯 objetivo</text>
+  <path d="M300 100 L 355 116" class="accent" marker-end="url(#arrow-al)"/>
+
+  <!-- Respuesta exiting from Razonar -->
+  <text x="930" y="156" text-anchor="end" class="text-xs" fill="#1D9E75">✅ respuesta (cuando termina)</text>
+  <path d="M885 250 L 885 172" stroke="#1D9E75" stroke-width="2" fill="none" marker-end="url(#arrow-al-g)"/>
+
+</svg>

@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 520" font-family="Inter, system-ui, -apple-system, sans-serif">
+  <defs>
+    <style>
+      .stroke { stroke: #222222; stroke-width: 1.4; fill: none; }
+      .stroke-thin { stroke: #222222; stroke-width: 1; fill: none; }
+      .text { fill: #222222; font-size: 13px; }
+      .text-strong { fill: #222222; font-size: 16px; font-weight: 600; }
+      .text-xs { fill: #666666; font-size: 11px; }
+      .bg-soft { fill: #F4F2FF; }
+      .bg-block { fill: #FFFFFF; }
+      .bg-code { fill: #FAFAFA; }
+      .text-mono { font-family: 'JetBrains Mono', monospace; font-size: 11px; fill: #222222; }
+      .ok { fill: #1D9E75; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+      .err { fill: #D14B4B; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+      .arrow-fill { fill: #222222; }
+      .step-num { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; fill: #7F77DD; }
+    </style>
+    <marker id="arrow-pe" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="9" markerHeight="9" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" class="arrow-fill"/>
+    </marker>
+  </defs>
+
+  <text x="480" y="36" text-anchor="middle" class="text-strong" font-size="22">Iteración: ¿cómo sé si mi prompt mejoró?</text>
+  <text x="480" y="58" text-anchor="middle" class="text-xs">"Lo probé una vez y anduvo" no es ingeniería. Necesitás un dataset chico de tests.</text>
+
+  <!-- Step 1: Build dataset -->
+  <g transform="translate(40,90)">
+    <rect x="0" y="0" width="280" height="190" rx="10" class="stroke bg-soft"/>
+    <text x="14" y="28" class="step-num">Paso 1</text>
+    <text x="14" y="48" class="text" font-weight="600">Armá un dataset de tests</text>
+
+    <g transform="translate(14,68)">
+      <rect x="0" y="0" width="252" height="100" rx="4" class="bg-code" stroke="#E0E0E0"/>
+      <g transform="translate(8,14)" class="text-mono">
+        <text y="0" fill="#666"># tests.jsonl</text>
+        <text y="14">{"input": "...", "expected": "POSITIVA"}</text>
+        <text y="28">{"input": "...", "expected": "NEGATIVA"}</text>
+        <text y="42">{"input": "...", "expected": "NEUTRAL"}</text>
+        <text y="56">{"input": "...", "expected": "NEUTRAL"}</text>
+        <text y="76" fill="#666">20-50 casos alcanza para empezar.</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- arrow -->
+  <line x1="328" y1="184" x2="352" y2="184" class="stroke" marker-end="url(#arrow-pe)"/>
+
+  <!-- Step 2: Run both prompts -->
+  <g transform="translate(360,90)">
+    <rect x="0" y="0" width="280" height="190" rx="10" class="stroke bg-soft"/>
+    <text x="14" y="28" class="step-num">Paso 2</text>
+    <text x="14" y="48" class="text" font-weight="600">Corré los dos prompts</text>
+
+    <g transform="translate(14,72)" class="text-mono">
+      <text y="0">prompt_v1 → run_all(tests)</text>
+      <text y="16">prompt_v2 → run_all(tests)</text>
+
+      <text y="44">para cada caso:</text>
+      <text y="60" fill="#666">  ¿el output coincide con</text>
+      <text y="74" fill="#666">  el expected?</text>
+
+      <text y="102">accuracy = aciertos / total</text>
+    </g>
+  </g>
+
+  <!-- arrow -->
+  <line x1="648" y1="184" x2="672" y2="184" class="stroke" marker-end="url(#arrow-pe)"/>
+
+  <!-- Step 3: Compare -->
+  <g transform="translate(680,90)">
+    <rect x="0" y="0" width="240" height="190" rx="10" class="stroke bg-soft"/>
+    <text x="14" y="28" class="step-num">Paso 3</text>
+    <text x="14" y="48" class="text" font-weight="600">Compará y decidí</text>
+
+    <g transform="translate(14,72)">
+      <text class="text-mono" y="0">v1: <tspan class="err">68% ✗</tspan></text>
+      <text class="text-mono" y="16">v2: <tspan class="ok">82% ✓</tspan></text>
+
+      <text class="text-xs" y="44" fill="#222">→ v2 es mejor</text>
+      <text class="text-xs" y="60" fill="#666">→ commit y deploy</text>
+
+      <text class="text-xs" y="92" fill="#666">Si los números empatan,</text>
+      <text class="text-xs" y="106" fill="#666">elegí el más simple/barato.</text>
+    </g>
+  </g>
+
+  <!-- Bottom: types of metrics -->
+  <g transform="translate(40,310)">
+    <rect x="0" y="0" width="880" height="160" rx="10" class="stroke bg-soft"/>
+    <text x="14" y="26" class="text" font-weight="600">Cómo medir según la tarea</text>
+
+    <g transform="translate(20,46)">
+      <text class="text-xs" y="0"><tspan font-weight="600">Clasificación / extracción:</tspan> accuracy, precision, recall, F1. Compará output vs expected directamente.</text>
+
+      <text class="text-xs" y="22"><tspan font-weight="600">Generación libre (resumen, traducción):</tspan> usá un LLM-as-judge — otro modelo evalúa los outputs con</text>
+      <text class="text-xs" y="36">una rúbrica clara. O comparaciones humanas tipo RLHF, pero a chiquito (10 personas, 50 casos).</text>
+
+      <text class="text-xs" y="64"><tspan font-weight="600">Código:</tspan> tests automáticos. ¿El output compila, pasa los tests unitarios?</text>
+
+      <text class="text-xs" y="92"><tspan font-weight="600">Latencia y costo:</tspan> tokens generados × precio del modelo. A veces v2 es 1% mejor pero 3× más caro.</text>
+
+      <text class="text-xs" y="120" fill="#7F77DD" font-weight="600">→ Frameworks: Promptfoo, OpenAI Evals, Braintrust, LangSmith, Inspect AI.</text>
+    </g>
+  </g>
+
+  <text x="480" y="500" text-anchor="middle" class="text-xs" fill="#666">Sin un dataset de tests, "iterar el prompt" es supersticioso. Con dataset, es ingeniería.</text>
+</svg>

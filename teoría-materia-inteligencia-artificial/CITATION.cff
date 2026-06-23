@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+title: "IA · UTN-FRSF — Material de la asignatura Inteligencia Artificial de la Universidad Tecnológica Nacional — Facultad Regional Santa Fe"
+message: "Si usás este material, por favor citalo como se indica."
+type: dataset
+authors:
+  - family-names: Roa
+    given-names: Jorge
+    affiliation: "Universidad Tecnológica Nacional — Facultad Regional Santa Fe"
+  - family-names: Gutiérrez
+    given-names: Milagros
+    affiliation: "Universidad Tecnológica Nacional — Facultad Regional Santa Fe"
+date-released: 2026-04-27
+license: CC-BY-4.0
+repository-code: "https://github.com/jorgeroa/ia-utn-frsf"
+keywords:
+  - nlp
+  - llm
+  - embeddings
+  - tokenization
+  - rag
+  - course-materials
+  - utn
+  - spanish

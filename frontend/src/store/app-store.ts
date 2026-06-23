@@ -78,6 +78,7 @@ interface AppState {
   invalidateNotificaciones: () => void
   
   // Agente IA actions
+  getSessionId: (workspaceId: string) => string
   loadConversacionAgente: (workspaceId: string) => AgenteIAMensaje[]
   agregarMensajeUsuario: (workspaceId: string, mensaje: string) => string
   iniciarRespuestaAgente: (workspaceId: string) => string
@@ -381,6 +382,10 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
   
   // Agente IA actions
+  getSessionId: (workspaceId: string) => {
+    return get().conversacionesAgente.get(workspaceId)?.sessionId ?? ''
+  },
+
   loadConversacionAgente: (workspaceId: string) => {
     const conversacion = get().conversacionesAgente.get(workspaceId)
     return conversacion?.mensajes || []
@@ -398,9 +403,11 @@ export const useAppStore = create<AppState>((set, get) => ({
     set((state) => {
       const conversacion = state.conversacionesAgente.get(workspaceId)
       const mensajes = conversacion ? [...conversacion.mensajes, nuevoMensaje] : [nuevoMensaje]
+      const sessionId = conversacion?.sessionId ?? crypto.randomUUID()
       
       const nuevaConversacion: AgenteIAConversacion = {
         workspaceId,
+        sessionId,
         mensajes,
         ultimaActualizacion: Date.now(),
       }
@@ -425,9 +432,11 @@ export const useAppStore = create<AppState>((set, get) => ({
     set((state) => {
       const conversacion = state.conversacionesAgente.get(workspaceId)
       const mensajes = conversacion ? [...conversacion.mensajes, nuevoMensaje] : [nuevoMensaje]
+      const sessionId = conversacion?.sessionId ?? crypto.randomUUID()
       
       const nuevaConversacion: AgenteIAConversacion = {
         workspaceId,
+        sessionId,
         mensajes,
         ultimaActualizacion: Date.now(),
       }

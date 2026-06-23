@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 460" font-family="Inter, system-ui, -apple-system, sans-serif">
+  <defs>
+    <style>
+      .stroke { stroke: #222222; stroke-width: 1.4; fill: none; }
+      .stroke-thin { stroke: #222222; stroke-width: 1; fill: none; }
+      .bg-soft { fill: #F4F2FF; }
+      .text { fill: #222222; font-size: 12px; }
+      .text-strong { fill: #222222; font-size: 16px; font-weight: 600; }
+      .text-xs { fill: #666666; font-size: 11px; }
+      .label { fill: #7F77DD; font-size: 13px; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+      .role { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700; fill: #7F77DD; }
+      .text-content { fill: #222222; font-size: 11px; }
+    </style>
+  </defs>
+
+  <text x="480" y="40" text-anchor="middle" class="text-strong" font-size="22">Zero / one / few-shot — el espectro de "ejemplos en el prompt"</text>
+
+  <!-- Zero-shot -->
+  <g transform="translate(40,90)">
+    <rect x="0" y="0" width="280" height="320" rx="10" class="stroke bg-soft"/>
+    <text x="140" y="32" text-anchor="middle" class="label">zero-shot</text>
+    <text x="140" y="50" text-anchor="middle" class="text-xs" fill="#666">describí la tarea, sin ejemplos</text>
+
+    <g transform="translate(20,68)">
+      <rect x="0" y="0" width="240" height="220" rx="4" class="stroke" fill="#FFFFFF"/>
+      <g transform="translate(10,20)">
+        <text class="role" y="0">USER</text>
+        <text class="text-content" y="18">Clasificá el sentimiento de</text>
+        <text class="text-content" y="32">esta reseña como POSITIVA,</text>
+        <text class="text-content" y="46">NEUTRAL o NEGATIVA.</text>
+
+        <text class="text-content" y="74" font-style="italic">"El servicio fue lento pero</text>
+        <text class="text-content" y="88" font-style="italic">la comida estuvo buena."</text>
+
+        <text class="role" y="120">ASSISTANT</text>
+        <text class="text-content" y="138" fill="#7F77DD" font-weight="600">NEUTRAL</text>
+      </g>
+    </g>
+
+    <text x="140" y="306" text-anchor="middle" class="text-xs">Mínimo costo en tokens.</text>
+  </g>
+
+  <!-- One-shot -->
+  <g transform="translate(340,90)">
+    <rect x="0" y="0" width="280" height="320" rx="10" class="stroke bg-soft"/>
+    <text x="140" y="32" text-anchor="middle" class="label">one-shot</text>
+    <text x="140" y="50" text-anchor="middle" class="text-xs" fill="#666">un ejemplo para fijar el formato</text>
+
+    <g transform="translate(20,68)">
+      <rect x="0" y="0" width="240" height="220" rx="4" class="stroke" fill="#FFFFFF"/>
+      <g transform="translate(10,20)">
+        <text class="role" y="0">USER</text>
+        <text class="text-content" y="18">Reseña: "Excelente, vuelvo!"</text>
+        <text class="text-content" y="32">Sentimiento: POSITIVA</text>
+
+        <text class="text-content" y="56" fill="#666">— — —</text>
+
+        <text class="text-content" y="78">Reseña: "El servicio fue lento</text>
+        <text class="text-content" y="92">pero la comida estuvo buena."</text>
+        <text class="text-content" y="108">Sentimiento:</text>
+
+        <text class="role" y="138">ASSISTANT</text>
+        <text class="text-content" y="156" fill="#7F77DD" font-weight="600">NEUTRAL</text>
+      </g>
+    </g>
+
+    <text x="140" y="306" text-anchor="middle" class="text-xs">El ejemplo "ancla" el formato.</text>
+  </g>
+
+  <!-- Few-shot -->
+  <g transform="translate(640,90)">
+    <rect x="0" y="0" width="280" height="320" rx="10" class="stroke bg-soft"/>
+    <text x="140" y="32" text-anchor="middle" class="label">few-shot</text>
+    <text x="140" y="50" text-anchor="middle" class="text-xs" fill="#666">3-5 ejemplos: muestra el patrón</text>
+
+    <g transform="translate(20,68)">
+      <rect x="0" y="0" width="240" height="220" rx="4" class="stroke" fill="#FFFFFF"/>
+      <g transform="translate(10,16)">
+        <text class="text-content" y="0">"Excelente!" → POSITIVA</text>
+        <text class="text-content" y="14">"Pésimo." → NEGATIVA</text>
+        <text class="text-content" y="28">"Está ok." → NEUTRAL</text>
+        <text class="text-content" y="42">"Volvería." → POSITIVA</text>
+
+        <text class="text-content" y="60" fill="#666">— — —</text>
+
+        <text class="text-content" y="80">"El servicio fue lento pero</text>
+        <text class="text-content" y="94">la comida estuvo buena." →</text>
+
+        <text class="role" y="126">ASSISTANT</text>
+        <text class="text-content" y="144" fill="#7F77DD" font-weight="600">NEUTRAL</text>
+
+        <text class="text-content" y="174" fill="#666" font-style="italic">El modelo aprende el patrón</text>
+        <text class="text-content" y="188" fill="#666" font-style="italic">solo en el contexto.</text>
+      </g>
+    </g>
+
+    <text x="140" y="306" text-anchor="middle" class="text-xs">Mejor cuando la tarea es nueva.</text>
+  </g>
+
+  <!-- bottom: spectrum line -->
+  <g transform="translate(60,438)">
+    <line x1="0" y1="0" x2="840" y2="0" stroke="#7F77DD" stroke-width="1.6"/>
+    <text x="0" y="-8" class="text-xs" fill="#666">menos contexto, más rápido</text>
+    <text x="840" y="-8" text-anchor="end" class="text-xs" fill="#666">más contexto, más confiable</text>
+  </g>
+</svg>

@@ -25,6 +25,7 @@ export const useAgenteIA = () => {
   const agenteEstado = useAppStore(state => state.agenteEstado)
   const {
     loadConversacionAgente,
+    getSessionId,
     agregarMensajeUsuario,
     iniciarRespuestaAgente,
     appendTokenRespuesta,
@@ -85,8 +86,11 @@ export const useAgenteIA = () => {
       const mensajeIdAgente = iniciarRespuestaAgente(currentWorkspace.id)
       mensajeIdStreamingRef.current = mensajeIdAgente
       
+      // Obtener sessionId (se generó en agregarMensajeUsuario)
+      const sessionId = getSessionId(currentWorkspace.id)
+      
       // Crear conexión SSE
-      const eventSource = agenteIAService.crearConexionSSE(mensaje, currentWorkspace.id)
+      const eventSource = agenteIAService.crearConexionSSE(mensaje, sessionId, currentWorkspace.id)
       eventSourceRef.current = eventSource
       isConnectingRef.current = true
       

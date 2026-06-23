@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 420" font-family="Inter, system-ui, -apple-system, sans-serif">
+  <defs>
+    <style>
+      .stroke { stroke: #222222; stroke-width: 1.4; fill: none; }
+      .stroke-thin { stroke: #222222; stroke-width: 1; fill: none; }
+      .accent { stroke: #7F77DD; stroke-width: 1.6; fill: none; }
+      .bg-soft { fill: #F4F2FF; }
+      .text { fill: #222222; font-size: 14px; }
+      .text-strong { fill: #222222; font-size: 16px; font-weight: 600; }
+      .text-xs { fill: #666666; font-size: 11px; }
+      .label-num { fill: #7F77DD; font-size: 18px; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+      .accent-fill { fill: #7F77DD; }
+    </style>
+  </defs>
+
+  <text x="480" y="40" text-anchor="middle" class="text-strong" font-size="22">Entrenar = comprimir un trozo de internet</text>
+
+  <!-- Stage 1: Internet -->
+  <g transform="translate(60,110)">
+    <rect x="0" y="0" width="200" height="200" rx="10" class="stroke bg-soft"/>
+    <text x="100" y="34" text-anchor="middle" class="text-strong">Internet</text>
+    <!-- abstract pages icon -->
+    <g transform="translate(40,60)">
+      <rect x="0" y="0" width="50" height="60" rx="3" class="stroke" fill="#FFFFFF"/>
+      <rect x="10" y="10" width="50" height="60" rx="3" class="stroke" fill="#FFFFFF"/>
+      <rect x="20" y="20" width="50" height="60" rx="3" class="stroke" fill="#FFFFFF"/>
+      <line x1="28" y1="34" x2="60" y2="34" class="stroke-thin"/>
+      <line x1="28" y1="46" x2="60" y2="46" class="stroke-thin"/>
+      <line x1="28" y1="58" x2="60" y2="58" class="stroke-thin"/>
+      <line x1="28" y1="70" x2="56" y2="70" class="stroke-thin"/>
+      <line x1="28" y1="82" x2="60" y2="82" class="stroke-thin"/>
+      <line x1="28" y1="94" x2="50" y2="94" class="stroke-thin"/>
+    </g>
+    <text x="100" y="170" text-anchor="middle" class="label-num">~10 TB</text>
+    <text x="100" y="188" text-anchor="middle" class="text-xs">de texto crudo</text>
+  </g>
+
+  <!-- Arrow 1 -->
+  <g transform="translate(280,210)">
+    <line x1="0" y1="0" x2="60" y2="0" class="stroke"/>
+    <polygon points="60,0 52,-5 52,5" fill="#222222"/>
+  </g>
+
+  <!-- Stage 2: GPU cluster -->
+  <g transform="translate(360,110)">
+    <rect x="0" y="0" width="240" height="200" rx="10" class="stroke bg-soft"/>
+    <text x="120" y="34" text-anchor="middle" class="text-strong">Cluster de GPUs</text>
+    <!-- GPU racks -->
+    <g transform="translate(40,60)">
+      <rect x="0" y="0" width="36" height="100" rx="3" class="stroke" fill="#FFFFFF"/>
+      <rect x="44" y="0" width="36" height="100" rx="3" class="stroke" fill="#FFFFFF"/>
+      <rect x="88" y="0" width="36" height="100" rx="3" class="stroke" fill="#FFFFFF"/>
+      <rect x="132" y="0" width="36" height="100" rx="3" class="stroke" fill="#FFFFFF"/>
+      <!-- LED dots -->
+      <g fill="#7F77DD">
+        <circle cx="18" cy="14" r="2"/><circle cx="18" cy="26" r="2"/><circle cx="18" cy="38" r="2"/><circle cx="18" cy="50" r="2"/>
+        <circle cx="62" cy="14" r="2"/><circle cx="62" cy="26" r="2"/><circle cx="62" cy="38" r="2"/><circle cx="62" cy="50" r="2"/>
+        <circle cx="106" cy="14" r="2"/><circle cx="106" cy="26" r="2"/><circle cx="106" cy="38" r="2"/><circle cx="106" cy="50" r="2"/>
+        <circle cx="150" cy="14" r="2"/><circle cx="150" cy="26" r="2"/><circle cx="150" cy="38" r="2"/><circle cx="150" cy="50" r="2"/>
+      </g>
+    </g>
+    <text x="120" y="186" text-anchor="middle" class="text-xs">~6.000 GPUs · ~12 días · ~2 M USD</text>
+  </g>
+
+  <!-- Arrow 2 -->
+  <g transform="translate(620,210)">
+    <line x1="0" y1="0" x2="60" y2="0" class="stroke"/>
+    <polygon points="60,0 52,-5 52,5" fill="#222222"/>
+  </g>
+
+  <!-- Stage 3: ZIP file -->
+  <g transform="translate(700,110)">
+    <rect x="0" y="0" width="200" height="200" rx="10" class="stroke bg-soft"/>
+    <text x="100" y="34" text-anchor="middle" class="text-strong">Modelo base</text>
+    <!-- zip file icon -->
+    <g transform="translate(60,60)">
+      <path d="M0 0 L60 0 L80 20 L80 110 L0 110 Z" class="stroke" fill="#FFFFFF"/>
+      <path d="M60 0 L60 20 L80 20" class="stroke-thin"/>
+      <text x="40" y="60" text-anchor="middle" class="text-xs" font-family="'JetBrains Mono', monospace">ZIP</text>
+      <text x="40" y="78" text-anchor="middle" class="text-xs" font-family="'JetBrains Mono', monospace">params</text>
+    </g>
+    <text x="100" y="190" text-anchor="middle" class="label-num">~140 GB</text>
+  </g>
+
+  <!-- Bottom note -->
+  <text x="480" y="380" text-anchor="middle" class="text-xs" fill="#444">Compresión con pérdida: 10 TB de texto → 140 GB de pesos. Ratio ≈ 70×.</text>
+</svg>

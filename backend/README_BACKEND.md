@@ -37,7 +37,6 @@ Sistema backend RESTful desarrollado con Spring Boot que proporciona una soluci�
 - ✅ **Gestión de Descuentos**: Registro de descuentos bancarios y comerciales por día de la semana
 - ✅ **Observabilidad y Métricas**: Instrumentación completa con Micrometer y Prometheus para monitoreo en producción
 - ✅ **CI/CD Automatizado**: Pipeline completo de integración y despliegue continuo con GitHub Actions
-- **Agente IA Financiero**: Asistente conversacional con LLM (Llama 3.3 70B via Groq), function calling, selección dinámica de tools y retry automático ante rate limits
 - ✅ **Validaciones Robustas**: Bean Validation con validadores personalizados
 - ✅ **Documentación Automática**: API documentada con Swagger/OpenAPI
 - ✅ **Manejo de Errores**: Sistema centralizado de gestión de excepciones
@@ -142,28 +141,7 @@ Este backend proporciona una API REST completa que permite:
 - Cálculo incremental de estadísticas
 - Limpieza automática de notificaciones
 
-### 9. Agente IA Financiero
-- **Asistente Conversacional**: Consultas en lenguaje natural sobre finanzas personales
-- **LLM**: Llama 3.3 70B Versatile vía API de Groq (compatible con OpenAI)
-- **Function Calling con selección dinámica**: El agente elige automáticamente el subconjunto de tools relevantes según el mensaje (2-6 tools en lugar de las 11 siempre), reduciendo el consumo de tokens por request
-  - `obtenerDashboardFinanciero`: Balance total, gastos mensuales, deuda pendiente
-  - `buscarTransacciones`: Búsqueda filtrada por mes, año, motivo/categoría y contacto
-  - `listarTarjetasCredito`: Consulta de tarjetas registradas
-  - `listarResumenesTarjetas`: Estado de resúmenes mensuales por espacio de trabajo
-  - `listarResumenesPorTarjeta`: Historial de resúmenes de una tarjeta específica
-  - `listarCuotasPorTarjeta`: Cuotas del período actual de una tarjeta específica
-  - `buscarTodasComprasCredito`: Historial completo de compras en cuotas
-  - `listarComprasCreditoPendientes`: Compras con cuotas aún pendientes de pago
-  - `listarCuentasBancarias`: Saldos de cuentas
-  - `listarMotivosTransacciones`: Categorías disponibles
-  - `listarContactosTransaccion`: Contactos de transferencia registrados
-- **Rate Limiting**: 60 mensajes/minuto por usuario con burst capacity de 10
-- **Auditoría Completa**: Registro de todas las interacciones en `agente_audit_log`
-- **Streaming SSE**: Respuestas en tiempo real token por token
-- **Multi-tenant**: Respeta permisos de espacios de trabajo
-- **Gratuito**: API de Groq sin necesidad de facturación
-
-### 10. Observabilidad y Métricas
+### 9. Observabilidad y Métricas
 - **Instrumentación de Negocio**: Métricas sobre transacciones, compras a crédito, resúmenes y notificaciones
 - **Micrometer + Prometheus**: Formato estándar de métricas exportables
 - **Spring Boot Actuator**: Endpoints de salud y métricas (/actuator/health, /actuator/prometheus)
@@ -203,13 +181,6 @@ Este backend proporciona una API REST completa que permite:
 - **Bean Validation**: Validación declarativa de datos
 - **Hibernate Validator**: Implementación de JSR-380
 - **Validadores Personalizados**: Lógica de validación específica del dominio
-
-### Inteligencia Artificial
-- **Spring AI 1.0.0-M5**: Framework para integración de LLMs
-- **Groq API**: Proveedor de inferencia ultra-rápida (compatible con OpenAI)
-- **Llama 3.3 70B Versatile**: Modelo de lenguaje de Meta optimizado
-- **Function Calling**: Ejecución de herramientas desde el LLM
-- **Bucket4j**: Rate limiting con token bucket algorithm
 
 ### Documentación
 - **SpringDoc OpenAPI 2.8.8**: Generación automática de documentación API
@@ -416,7 +387,8 @@ backend/
 │   │       │   ├── V13__convert_real_to_numeric.sql
 │   │       │   ├── V14__create_notificaciones_table.sql # Sistema de notificaciones
 │   │       │   ├── V15__add_indexes_notificaciones.sql  # Índices optimizados
-│   │       │   ├── V16__create_agente_audit_log.sql     # Auditoría Agente IA
+│   │       │   ├── V16__create_agente_audit_log.sql
+│   │       │   └── V20__drop_agente_audit_log.sql
 │   │       │   └── V17__add_credito_columns_gastos_ingresos_mensuales.sql # Tracking crédito dashboard
 │   │       ├── application.properties      # Configuración común
 │   │       ├── application-dev.properties  # Perfil desarrollo
@@ -509,14 +481,6 @@ Notificaciones en tiempo real para eventos del sistema.
 - **Atributos**: id, tipo, mensaje, leida, fechaCreacion, usuario, espacioTrabajo
 - **Tipos**: CIERRE_TARJETA, VENCIMIENTO_RESUMEN, INVITACION_ESPACIO, MIEMBRO_AGREGADO, SISTEMA
 - **Delivery**: SSE (Server-Sent Events)
-
-#### AgenteAuditLog
-Auditoría completa de interacciones con el Agente IA.
-- **Atributos**: id, userId, workspaceId, userMessage, agentResponse, functionsCalled, timestamp, tokensUsed, success, errorMessage
-- **Propósito**: Compliance, análisis de uso, debugging y control de costos
-- **Relaciones**:
-  - Pertenece a un Usuario
-  - Asociada a un EspacioTrabajo
 
 ### Diagrama de Clases
 
@@ -745,10 +709,6 @@ SPRING_DATASOURCE_PASSWORD=postgres123
 GOOGLE_CLIENT_ID=tu_client_id_google
 GOOGLE_CLIENT_SECRET=tu_client_secret_google
 
-# Agente IA (Opcional)
-AGENTE_IA_ENABLED=true
-GROQ_API_KEY=tu_groq_api_key
-
 # Frontend URL
 FRONTEND_URL=http://localhost:3100
 
@@ -769,27 +729,6 @@ SPRING_PROFILES_ACTIVE=dev
    - Desarrollo: `http://localhost:8080/login/oauth2/code/google`
    - Producción: `https://tu-dominio.com/login/oauth2/code/google`
 7. Copiar Client ID y Client Secret
-
-#### Groq API (Agente IA)
-
-**Nota**: El Agente IA es **opcional**. Si no lo activas, el resto del sistema funciona normalmente.
-
-1. Acceder a [Groq Console](https://console.groq.com/)
-2. Crear una cuenta gratuita (no requiere tarjeta de crédito)
-3. Ir a "API Keys" → "Create API Key"
-4. Copiar la API Key generada
-5. Configurar variables de entorno:
-   ```bash
-   AGENTE_IA_ENABLED=true
-   GROQ_API_KEY=gsk_tu_api_key_aqui
-   ```
-
-**Características de Groq:**
-- ✅ **Gratuito**: Sin necesidad de facturación ni tarjeta de crédito
-- ✅ **Ultra-rápido**: Inferencia optimizada con LPUs (Language Processing Units)
-- ✅ **Compatible**: API 100% compatible con OpenAI
-- ✅ **Modelo**: Llama 3.3 70B Versatile (Meta)
-- ✅ **Rate Limits**: 30 req/min, 7000 tokens/min (Tier gratuito)
 
 ---
 
@@ -812,18 +751,12 @@ export SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/campito_db
 export SPRING_DATASOURCE_USERNAME=campito_user
 export SPRING_DATASOURCE_PASSWORD=campito_pass
 
-# Agente IA (Opcional)
-export AGENTE_IA_ENABLED=true
-export GROQ_API_KEY=gsk_tu_groq_api_key
-
 # Windows (CMD)
 set GOOGLE_CLIENT_ID=tu_client_id
 set GOOGLE_CLIENT_SECRET=tu_client_secret
 set SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/campito_db
 set SPRING_DATASOURCE_USERNAME=campito_user
 set SPRING_DATASOURCE_PASSWORD=campito_pass
-set AGENTE_IA_ENABLED=true
-set GROQ_API_KEY=gsk_tu_groq_api_key
 
 # Windows (PowerShell)
 $env:GOOGLE_CLIENT_ID="tu_client_id"
@@ -831,8 +764,6 @@ $env:GOOGLE_CLIENT_SECRET="tu_client_secret"
 $env:SPRING_DATASOURCE_URL="jdbc:postgresql://localhost:5432/campito_db"
 $env:SPRING_DATASOURCE_USERNAME="campito_user"
 $env:SPRING_DATASOURCE_PASSWORD="campito_pass"
-$env:AGENTE_IA_ENABLED="true"
-$env:GROQ_API_KEY="gsk_tu_groq_api_key"
 ```
 
 #### 3. Compilar el proyecto
@@ -970,39 +901,6 @@ docker-compose down -v
 | GET | `/api/notificaciones/stream` | **SSE Stream** para notificaciones en tiempo real (requiere token como query param) | ✅ |
 
 **Nota SSE**: El endpoint SSE acepta el token JWT como query parameter (`?token=xxx`) para compatibilidad con EventSource nativo del navegador.
-
-### Agente IA
-
-| Método | Endpoint | Descripción | Auth |
-|--------|----------|-------------|------|
-| POST | `/api/agente/chat` | Enviar mensaje al agente IA y recibir respuesta completa | ✅ |
-| GET | `/api/agente/chat/stream` | Chat con streaming SSE (respuesta token por token) | ✅ |
-| GET | `/api/agente/rate-limit/status` | Consultar tokens restantes de rate limit | ✅ |
-
-**Características del Agente:**
-- **LLM**: Llama 3.3 70B Versatile vía Groq API
-- **Function Calling**: Puede ejecutar herramientas para obtener datos reales del workspace
-- **Rate Limit**: 60 mensajes/minuto con burst capacity de 10
-- **Auditoría**: Todas las interacciones se registran en `agente_audit_log`
-- **Activación**: Requiere `AGENTE_IA_ENABLED=true` y `GROQ_API_KEY`
-
-**Ejemplo de Request:**
-```json
-{
-  "message": "¿Cuál es mi saldo actual?",
-  "workspaceId": "uuid-del-workspace",
-  "conversationHistory": []
-}
-```
-
-**Ejemplo de Response:**
-```json
-{
-  "response": "Tu saldo total es de $3,234.27",
-  "functionsCalled": ["obtenerDashboardFinanciero"],
-  "tokensUsed": 4351
-}
-```
 
 ### Documentación API
 
@@ -1952,12 +1850,6 @@ El proyecto utiliza Flyway para gestionar el versionado y evolución del esquema
 - Índices optimizados en usuario_id, workspace_id, fecha
 - Mejora de rendimiento en consultas de notificaciones
 
-#### V16: Auditoría del Agente IA
-- Tabla: agente_audit_log
-- Registro completo de interacciones con el LLM
-- Tracking de funciones llamadas, tokens consumidos y errores
-- Compliance y análisis de uso
-
 ### Ejecución de Migraciones
 
 ```bash
@@ -2204,7 +2096,6 @@ El proyecto utiliza un Dockerfile optimizado con dos etapas:
 **Ventajas de Alpine:**
 - ✅ **Tamaño reducido**: ~150MB menos que Debian
 - ✅ **Seguridad**: Superficie de ataque mínima, menos vulnerabilidades
-- ✅ **Compatible**: Spring AI con Groq usa solo HTTP REST (sin librerías nativas)
 - ✅ **Producción**: Óptima para despliegue en la nube
 
 ### Construcción de Imagen
@@ -2319,323 +2210,6 @@ docker-compose down -v
 - ✅ **Health checks**: Actuator para monitoring
 
 ---
-
-## 🤖 Agente IA Conversacional
-
-### Descripción
-
-Sistema de asistente inteligente integrado mediante **Spring AI + Groq API** que permite a los usuarios consultar y analizar sus datos financieros mediante lenguaje natural.
-
-**LLM Utilizado**: **Llama 3.3 70B Versatile** (Meta) vía Groq - inferencia ultra-rápida y gratuita.
-
-### Características
-
-#### 🎯 Capacidades del Agente
-
-- **Consultas Financieras**: Responde preguntas sobre saldos, gastos, ingresos y deuda
-- **Análisis de Datos**: Genera reportes y análisis de patrones de gastos
-- **Function Calling**: Accede a datos actualizados en tiempo real llamando a servicios del backend
-- **Streaming (SSE)**: Respuestas token por token para mejor UX
-- **Multi-tenant Seguro**: Todas las herramientas validan permisos del workspace
-- **Contexto Argentino**: Comprende terminología y modelos financieros locales
-
-#### 🔐 Seguridad y Estabilidad
-
-- **Rate Limiting**: 60 mensajes/minuto por usuario (burst capacity: 10)
-- **Autenticación**: Requiere JWT válido en todas las requests
-- **Audit Log**: Registro completo de interacciones para compliance
-- **Validación Multi-tenant**: Cada herramienta verifica acceso al workspace
-- **Retry automático 429**: Backoff exponencial (2s → 4s, máx 2 reintentos) en caso de rate limit de Groq
-- **Validación de entrada**: Máximo 400 caracteres por mensaje
-
-#### 📊 Audit Log
-
-Todas las interacciones se registran en la tabla `agente_audit_log`:
-- Usuario, workspace, mensaje, respuesta
-- Funciones llamadas, tokens consumidos
-- Timestamp, éxito/error
-
-### Endpoints
-
-#### POST /api/agente/chat
-Envía un mensaje al agente y recibe respuesta completa.
-
-**Request:**
-```json
-{
-  "message": "¿Cuánto gasté este mes en supermercado?",
-  "workspaceId": "uuid-del-workspace",
-  "conversationHistory": [
-    {
-      "role": "user",
-      "content": "mensaje anterior"
-    },
-    {
-      "role": "assistant",
-      "content": "respuesta anterior"
-    }
-  ]
-}
-```
-
-> **`message`**: Máximo **400 caracteres**. El campo acepta lenguaje natural en español.
-
-**Response:**
-```json
-{
-  "response": "📊 Este mes gastaste $4,500 en Supermercado...",
-  "functionsCalled": ["buscarTransacciones"],
-  "tokensUsed": 450
-}
-```
-
-**Códigos de Respuesta:**
-- `200 OK`: Respuesta exitosa
-- `400 BAD_REQUEST`: Validación fallida
-- `401 UNAUTHORIZED`: Token inválido o expirado
-- `403 FORBIDDEN`: Sin acceso al workspace
-- `429 TOO_MANY_REQUESTS`: Rate limit excedido
-
-#### GET /api/agente/chat/stream
-Streaming SSE para respuestas token por token.
-
-**Parámetros:**
-- `message` (query): Mensaje del usuario
-- `workspaceId` (query): UUID del workspace
-
-**Response:** `text/event-stream`
-
-#### GET /api/agente/rate-limit/status
-Consulta tokens restantes para el usuario actual.
-
-**Response:**
-```json
-{
-  "tokensRemaining": 45
-}
-```
-
-### Herramientas (Tools) Disponibles
-
-El agente puede llamar automáticamente a estas funciones cuando necesita datos:
-
-| Función | Descripción | Cuándo se usa | Límite |
-|---------|-------------|---------------|--------|
-| `obtenerDashboardFinanciero` | Estado financiero completo | "¿cuál es mi saldo?", "¿cuánto debo?" | — |
-| `buscarTransacciones` | Buscar transacciones con filtros | "gastos de enero", "pagos a Juan Pérez", "supermercado 2025" | 20 items |
-| `listarTarjetasCredito` | Lista de tarjetas de crédito | "¿qué tarjetas tengo?" | — |
-| `listarResumenesTarjetas` | Resúmenes mensuales por espacio de trabajo | "¿cuánto debo en tarjetas este mes?" | — |
-| `listarResumenesPorTarjeta` | Historial de resúmenes de una tarjeta | "¿cómo evolucionaron los gastos de mi Visa?" | 6 items |
-| `listarCuotasPorTarjeta` | Cuotas del período de una tarjeta | "¿qué cuotas vencen en mi Mastercard?" | 24 items |
-| `buscarTodasComprasCredito` | Historial completo de compras en cuotas | "¿qué compré en cuotas?" | 20 items |
-| `listarComprasCreditoPendientes` | Compras con cuotas pendientes | "¿qué cuotas me faltan pagar?" | 20 items |
-| `listarCuentasBancarias` | Cuentas con saldos actuales | "saldo de cuenta bancaria" | — |
-| `listarMotivosTransacciones` | Categorías de gastos/ingresos | "¿qué categorías hay?" | — |
-| `listarContactosTransaccion` | Contactos de transferencia | "¿a quién le transferí dinero?" | — |
-
-### Configuración
-
-#### Variables de Entorno Requeridas
-
-```bash
-# Groq API (LLM - Opcional)
-AGENTE_IA_ENABLED=true
-GROQ_API_KEY=gsk_tu_groq_api_key
-
-# Rate Limiting (opcional, valores por defecto)
-AGENTE_RATE_LIMIT_REQUESTS_PER_MINUTE=60
-AGENTE_RATE_LIMIT_BURST_CAPACITY=10
-```
-
-#### application.properties
-
-```properties
-# Habilitar Agente IA (opcional)
-agente.ia.enabled=${AGENTE_IA_ENABLED:false}
-
-# Groq API (Compatible con OpenAI)
-spring.ai.openai.api-key=${GROQ_API_KEY:dummy-key}
-spring.ai.openai.base-url=https://api.groq.com/openai
-spring.ai.openai.chat.options.model=llama-3.3-70b-versatile
-spring.ai.openai.chat.options.temperature=0.3
-spring.ai.openai.chat.options.max-tokens=2048
-spring.ai.openai.chat.options.top-p=0.95
-
-# Rate Limiting
-agente.rate-limit.requests-per-minute=60
-agente.rate-limit.burst-capacity=10
-```
-
-**Características de Groq:**
-- ✅ **Gratuito**: Sin tarjeta de crédito, sin facturación
-- ✅ **Ultra-rápido**: LPUs (Language Processing Units) 
-- ✅ **Compatible**: API 100% compatible con OpenAI
-- ✅ **Sin Setup**: No requiere configuración de cloud ni service accounts
-- ✅ **Modelo**: Llama 3.3 70B Versatile (Meta)
-
-### Arquitectura Técnica
-
-```
-┌─────────────────────────────────────────────┐
-│          AgenteIAController                 │
-│     (REST API + Rate Limiting)              │
-└──────────────────┬──────────────────────────┘
-                   │
-┌──────────────────▼──────────────────────────┐
-│         AgenteIAService                     │
-│  (Orquestación LLM + Audit Log)            │
-└──────────────────┬──────────────────────────┘
-                   │
-                   ├──────────────┬────────────────┐
-                   │              │                │
-           ┌───────▼─────┐  ┌────▼──────┐  ┌─────▼──────┐
-           │ ChatClient  │  │   Audit   │  │  Security  │
-           │  (Spring AI)│  │ Repository│  │   Service  │
-           └───────┬─────┘  └───────────┘  └────────────┘
-                   │
-           ┌───────▼─────────────────────────┐
-           │    Groq API (HTTPS REST)        │
-           │ Llama 3.3 70B Versatile (Meta)  │
-           └───────┬─────────────────────────┘
-                   │
-           ┌───────▼─────────────────────┐
-           │   Function Calling          │
-           │   (AgenteToolsService)      │
-           └─────────────────────────────┘
-                   │
-         ┌─────────┼─────────┬──────────┐
-         │         │         │          │
-    ┌────▼───┐ ┌──▼────┐ ┌──▼─────┐ ┌──▼────────┐
-    │Dashboard│ │Transac│ │Compras│ │CuentaBanc │
-    │ Service │ │Service│ │Service│ │  Service  │
-    └─────────┘ └───────┘ └────────┘ └───────────┘
-```
-
-### Flujo de Ejecución
-
-1. **Request del Usuario**: Frontend envía mensaje + workspaceId
-2. **Rate Limiting**: Valida que el usuario no exceda 60 req/min
-3. **Validación de Seguridad**: SecurityService verifica acceso al workspace
-4. **Construcción del Prompt**: Sistema prompt + historial + mensaje actual
-5. **Llamada al LLM**: ChatClient envía prompt a Groq con funciones habilitadas
-6. **Function Calling**: Si el LLM necesita datos, llama a AgenteToolsService
-7. **Validación de Tools**: Cada tool valida permisos multi-tenant nuevamente
-8. **Generación de Respuesta**: LLM procesa resultados y genera respuesta natural
-9. **Audit Log**: Se registra toda la interacción (mensaje, respuesta, funciones, tokens)
-10. **Response al Usuario**: Respuesta formateada con emojis y contexto argentino
-
-### System Prompt
-
-El agente opera bajo las siguientes instrucciones:
-
-- **Identidad**: FinanceAgent AI, asistente financiero experto
-- **Dominio**: Solo finanzas del workspace actual (no temas generales)
-- **Limitaciones**: Solo lectura (no crea transacciones ni transfiere dinero)
-- **Estilo**: Formal pero cercano, con emojis, formatos de moneda
-- **Contexto**: Comprende modelo argentino de tarjetas de crédito
-- **Ética**: Nunca inventa datos, siempre usa funciones para información real
-
-### Ejemplo de Interacción
-
-**Usuario:** *"¿Cuánto gasté este mes y en qué?"*
-
-**Agente (internamente):**
-1. Detecta que necesita datos actualizados
-2. Llama a `obtenerDashboardFinanciero(workspaceId)`
-3. Llama a `buscarTransacciones(workspaceId, mes=2, anio=2026)`
-4. Analiza los resultados
-
-**Agente (responde):**
-```
-📊 En febrero gastaste $12,400 en total. Aquí está el desglose:
-
-💳 Principales categorías:
-• Supermercado: $4,500 (36%)
-• Transporte: $2,300 (19%)
-• Alquiler: $3,500 (28%)
-• Otros: $2,100 (17%)
-
-⚠️ Nota: Tus gastos aumentaron 15% respecto a enero. 
-Te recomendaría revisar los gastos en Transporte para el próximo mes.
-```
-
-### Testing
-
-#### Test Manual con cURL
-
-```bash
-# Obtener token JWT
-TOKEN="tu-jwt-token"
-
-# Enviar mensaje
-curl -X POST http://localhost:8080/api/agente/chat \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "message": "¿Cuánto debo en total?",
-    "workspaceId": "uuid-del-workspace"
-  }'
-
-# Streaming
-curl -N http://localhost:8080/api/agente/chat/stream?message=Hola&workspaceId=uuid \
-  -H "Authorization: Bearer $TOKEN"
-
-# Verificar rate limit
-curl http://localhost:8080/api/agente/rate-limit/status \
-  -H "Authorization: Bearer $TOKEN"
-```
-
-#### Verificar Logs de Auditoría
-
-```sql
-SELECT user_id, user_message, functions_called, tokens_used, success
-FROM agente_audit_log
-ORDER BY timestamp DESC
-LIMIT 10;
-```
-
-### Troubleshooting
-
-#### Error: "Google Cloud credentials not found"
-```bash
-# Configurar credenciales
-export GOOGLE_APPLICATION_CREDENTIALS="/path/to/service-account.json"
-export GOOGLE_CLOUD_PROJECT_ID="tu-proyecto-id"
-```
-
-#### Error: Rate limit excedido (429)
-- Espera 1 minuto para que se recarguen los tokens
-- O aumenta el límite en `application.properties`:
-  ```properties
-  agente.rate-limit.requests-per-minute=120
-  ```
-
-#### El agente no llama a funciones
-- Verifica que las funciones estén registradas como beans
-- Revisa logs: `grep "Agente llamando tool" logs/spring-boot.log`
-- Asegúrate de que el system prompt esté configurado
-
-#### Respuestas lentas
-- Gemini Flash es rápido (~2-3 segundos)
-- Si es más lento, verifica latencia de red con Google Cloud
-- Considera usar streaming para mejor percepción de velocidad
-
-### Roadmap Futuro
-
-**Fase 2 - Operaciones de Escritura** (Próxima versión):
-- Crear transacciones con confirmación explícita
-- Registrar compras a crédito
-- Transferir entre cuentas
-- Dry-run mode para simular operaciones
-
-**Fase 3 - Análisis Predictivo**:
-- Proyecciones de saldo futuro
-- Detección de anomalías en gastos
-- Recomendaciones personalizadas de ahorro
-
-**Fase 4 - Multimodal**:
-- Foto de ticket → extracción automática
-- Gráficos generados por el agente
 
 ---
 

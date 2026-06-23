@@ -29,12 +29,11 @@ export const agenteIAService = {
    * El EventSource debe ser cerrado manualmente cuando ya no se necesite.
    * 
    * Eventos esperados:
-   * - 'message': Token individual de texto
+   * - 'token': Token individual de texto (JSON-encoded string)
    * - 'done': Metadata final (functionsCalled, tokensUsed)
-   * - 'error': Error durante procesamiento
+   * - 'error-message': Error durante procesamiento
    */
-  crearConexionSSE(message: string, workspaceId: string): EventSource {
-    const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:8080'
+  crearConexionSSE(message: string, sessionId: string, workspaceId: string): EventSource {
     const token = localStorage.getItem('auth_token')
     
     if (!token) {
@@ -44,14 +43,16 @@ export const agenteIAService = {
       return dummySource
     }
     
-    // Construir URL con parámetros
+    // URL relativa al origen actual — pasa por el API Gateway (Vite/Nginx)
+    // que rutea /api/agente/* al microservicio Python
     const params = new URLSearchParams({
       message: message,
-      workspaceId: workspaceId,
+      session_id: sessionId,
+      workspace_id: workspaceId,
       token: token
     })
     
-    const url = `${baseURL}/api/agente/chat/stream?${params.toString()}`
+    const url = `/api/agente/chat/stream?${params.toString()}`
     
     devLog('🔗 Agente IA SSE: Creando conexión para mensaje:', message.substring(0, 50) + '...')
     

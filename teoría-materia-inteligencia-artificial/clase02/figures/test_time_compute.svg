@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 510" font-family="Inter, system-ui, -apple-system, sans-serif">
+  <defs>
+    <style>
+      .stroke { stroke: #222222; stroke-width: 1.4; fill: none; }
+      .stroke-thin { stroke: #222222; stroke-width: 1; fill: none; }
+      .text { fill: #222222; font-size: 13px; }
+      .text-strong { fill: #222222; font-size: 16px; font-weight: 600; }
+      .text-xs { fill: #666666; font-size: 11px; }
+      .bg-soft { fill: #F4F2FF; }
+      .bg-thinking { fill: #FFF7E6; }
+      .role { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; fill: #7F77DD; }
+      .role-think { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; fill: #9E6516; }
+      .text-content { fill: #222222; font-size: 12px; }
+      .text-mono { font-family: 'JetBrains Mono', monospace; font-size: 11px; fill: #222222; }
+    </style>
+  </defs>
+
+  <text x="480" y="36" text-anchor="middle" class="text-strong" font-size="22">Test-time compute: el modelo "piensa más" en inferencia</text>
+  <text x="480" y="58" text-anchor="middle" class="text-xs">Misma red entrenada. Pero le damos miles de tokens para "pensar" antes de responder.</text>
+
+  <!-- LEFT: classic model -->
+  <g transform="translate(40,90)">
+    <rect x="0" y="0" width="420" height="350" rx="10" class="stroke bg-soft"/>
+    <text x="210" y="28" text-anchor="middle" class="text" font-weight="600">Modelo clásico</text>
+    <text x="210" y="44" text-anchor="middle" class="text-xs" fill="#666">prompt → respuesta directa</text>
+
+    <g transform="translate(20,70)">
+      <text class="role" y="0">USER</text>
+      <text class="text-content" y="18">¿Cuántos primos hay entre 100 y 200?</text>
+
+      <text class="role" y="64">ASSISTANT</text>
+      <text class="text-content" y="84" fill="#D14B4B">21 primos.</text>
+
+      <text class="text-xs" y="120" fill="#666">Tiempo de inferencia: ~1 segundo</text>
+      <text class="text-xs" y="138" fill="#666">Tokens generados: ~5</text>
+
+      <text class="text-xs" y="176" fill="#D14B4B" font-weight="600">El modelo no se da el "permiso"</text>
+      <text class="text-xs" y="190" fill="#D14B4B" font-weight="600">de chequear, comete errores</text>
+      <text class="text-xs" y="204" fill="#D14B4B" font-weight="600">en problemas con muchos pasos.</text>
+    </g>
+  </g>
+
+  <!-- RIGHT: reasoning model -->
+  <g transform="translate(500,90)">
+    <rect x="0" y="0" width="420" height="350" rx="10" stroke="#1D9E75" stroke-width="2" fill="#F0FBF6"/>
+    <text x="210" y="28" text-anchor="middle" class="text" font-weight="600">Modelo de razonamiento</text>
+    <text x="210" y="44" text-anchor="middle" class="text-xs" fill="#666">prompt → "pensar" → respuesta</text>
+
+    <g transform="translate(20,70)">
+      <text class="role" y="0">USER</text>
+      <text class="text-content" y="18">¿Cuántos primos hay entre 100 y 200?</text>
+
+      <!-- thinking block -->
+      <g transform="translate(0,40)">
+        <rect x="0" y="0" width="380" height="170" rx="6" fill="#FFF7E6" stroke="#E0A45C" stroke-width="1"/>
+        <text class="role-think" x="10" y="16">&lt;thinking&gt;</text>
+        <g transform="translate(10,30)" class="text-mono" fill="#9E6516">
+          <text y="0">Voy a chequear cada número impar...</text>
+          <text y="14">101: no divisible por 3,5,7 → primo ✓</text>
+          <text y="28">103: primo ✓</text>
+          <text y="42">105 = 3×35, no.   107: primo ✓</text>
+          <text y="56">...</text>
+          <text y="70">Lista: 101, 103, 107, 109, 113, 127,</text>
+          <text y="84">  131, 137, 139, 149, 151, 157, 163,</text>
+          <text y="98">  167, 173, 179, 181, 191, 193, 197, 199.</text>
+          <text y="114">Cuento: 21. Verifico... sí, son 21.</text>
+        </g>
+        <text class="role-think" x="10" y="164">&lt;/thinking&gt;</text>
+      </g>
+
+      <text class="role" y="226">ASSISTANT</text>
+      <text class="text-content" y="246" fill="#1D9E75" font-weight="600">21 primos.</text>
+
+      <text class="text-xs" y="272" fill="#666">Inferencia: ~30s · Tokens: ~3.000</text>
+    </g>
+  </g>
+
+  <!-- Bottom -->
+  <text x="480" y="472" text-anchor="middle" class="text" font-weight="600" fill="#7F77DD">→ Más cómputo en inferencia = mejor performance, sin reentrenar el modelo.</text>
+  <text x="480" y="494" text-anchor="middle" class="text-xs" fill="#666">Modelos: o3 (OpenAI), Claude extended thinking (Anthropic), DeepSeek-R1, Qwen QwQ. Cobran por los tokens de "thinking".</text>
+</svg>

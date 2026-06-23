@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 460" font-family="Inter, system-ui, -apple-system, sans-serif">
+  <defs>
+    <style>
+      .stroke { stroke: #222222; stroke-width: 1.4; fill: none; }
+      .stroke-thin { stroke: #222222; stroke-width: 1; fill: none; }
+      .bg-soft { fill: #F4F2FF; }
+      .text { fill: #222222; font-size: 13px; }
+      .text-strong { fill: #222222; font-size: 16px; font-weight: 600; }
+      .text-xs { fill: #666666; font-size: 11px; }
+      .pill { font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; fill: #7F77DD; }
+    </style>
+  </defs>
+
+  <text x="480" y="36" text-anchor="middle" class="text-strong" font-size="22">Las instrucciones que siguen los etiquetadores humanos</text>
+  <text x="480" y="58" text-anchor="middle" class="text-xs">Tres ejes simples (InstructGPT, OpenAI). Esto es lo que define el "carácter" del assistant.</text>
+
+  <!-- helpful -->
+  <g transform="translate(40,90)">
+    <rect x="0" y="0" width="280" height="320" rx="10" class="stroke bg-soft"/>
+    <text x="140" y="40" text-anchor="middle" class="pill">helpful</text>
+    <text x="140" y="62" text-anchor="middle" class="text-xs" fill="#7F77DD">útil</text>
+
+    <text x="20" y="100" class="text">El output sigue la intención del usuario y lo ayuda a resolver su tarea.</text>
+
+    <text x="20" y="146" class="text-xs" font-weight="600">Algunas reglas:</text>
+    <text x="20" y="166" class="text-xs">• Lenguaje claro y directo.</text>
+    <text x="20" y="184" class="text-xs">• Responder lo que <tspan font-style="italic">querían</tspan> preguntar,</text>
+    <text x="34" y="200" class="text-xs">aunque lo hayan formulado mal.</text>
+    <text x="20" y="218" class="text-xs">• Sensibilidad a internacionalización</text>
+    <text x="34" y="234" class="text-xs">("football" no es siempre NFL).</text>
+    <text x="20" y="252" class="text-xs">• Si la instrucción es ambigua,</text>
+    <text x="34" y="268" class="text-xs">pedir aclaración.</text>
+    <text x="20" y="286" class="text-xs">• No inventar contexto extra.</text>
+  </g>
+
+  <!-- truthful -->
+  <g transform="translate(340,90)">
+    <rect x="0" y="0" width="280" height="320" rx="10" class="stroke bg-soft"/>
+    <text x="140" y="40" text-anchor="middle" class="pill">truthful</text>
+    <text x="140" y="62" text-anchor="middle" class="text-xs" fill="#7F77DD">veraz</text>
+
+    <text x="20" y="100" class="text">El output contiene información precisa y no induce a error.</text>
+
+    <text x="20" y="146" class="text-xs" font-weight="600">Algunas reglas:</text>
+    <text x="20" y="166" class="text-xs">• En tareas de resumen, no agregar</text>
+    <text x="34" y="182" class="text-xs">datos que no están en la fuente.</text>
+    <text x="20" y="200" class="text-xs">• No producir afirmaciones falsas</text>
+    <text x="34" y="216" class="text-xs">sobre el mundo.</text>
+    <text x="20" y="234" class="text-xs">• Refutar premisas falsas en lugar</text>
+    <text x="34" y="250" class="text-xs">de aceptarlas implícitamente.</text>
+    <text x="20" y="268" class="text-xs">• Evitar afirmaciones con</text>
+    <text x="34" y="284" class="text-xs">autenticidad cuestionable.</text>
+  </g>
+
+  <!-- harmless -->
+  <g transform="translate(640,90)">
+    <rect x="0" y="0" width="280" height="320" rx="10" class="stroke bg-soft"/>
+    <text x="140" y="40" text-anchor="middle" class="pill">harmless</text>
+    <text x="140" y="62" text-anchor="middle" class="text-xs" fill="#7F77DD">no dañino</text>
+
+    <text x="20" y="100" class="text">El output no debe causar daño físico, psicológico o social.</text>
+
+    <text x="20" y="146" class="text-xs" font-weight="600">Algunas reglas:</text>
+    <text x="20" y="166" class="text-xs">• Tratar con respeto; no usar</text>
+    <text x="34" y="182" class="text-xs">lenguaje sesgado contra grupos.</text>
+    <text x="20" y="200" class="text-xs">• No contenido abusivo, violento</text>
+    <text x="34" y="216" class="text-xs">o sexual no solicitado.</text>
+    <text x="20" y="234" class="text-xs">• No promover actividades</text>
+    <text x="34" y="250" class="text-xs">ilegales.</text>
+    <text x="20" y="268" class="text-xs">• En conflicto entre criterios:</text>
+    <text x="34" y="284" class="text-xs">priorizar harmless &gt; truthful.</text>
+  </g>
+
+  <text x="480" y="446" text-anchor="middle" class="text-xs" fill="#7F77DD" font-weight="600">→ Tu system prompt es esto mismo, pero a escala de una conversación.</text>
+</svg>
