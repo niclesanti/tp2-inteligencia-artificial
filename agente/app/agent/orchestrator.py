@@ -20,10 +20,7 @@ from pydantic_ai.providers.groq import GroqProvider
 from app.agent.dependencies import Deps
 from app.agent.prompts import SYSTEM_PROMPT
 from app.tools.calculator import calcular
-from app.tools.finance_api import (
-    filtrar_compras_credito,
-    filtrar_transacciones,
-)
+from app.tools import finance_api
 
 logger = logging.getLogger(__name__)
 
@@ -56,20 +53,42 @@ agent: Agent[Deps] = Agent(
 
 # ── Tools de consulta al backend ─────────────────────────────────
 
+# NOTA: No usar `int | None = None` ni `Optional[int]` como parámetros
+# de tool. Pydantic AI 2.0.0 tiene un bug que impide ejecutar la tool
+# cuando el parámetro usa type union con None. Usar `int = 0` como
+# default para parámetros opcionales (0 no es un valor válido para
+# mes/anio/page/size).
+
+
+def _filtrar_por_tipo(items: list[dict], filtro_tipo: str) -> list[dict]:
+    if not filtro_tipo:
+        return items
+    ft = filtro_tipo.upper()
+    return [it for it in items if it.get("tipo", "").upper() == ft]
+
+
+def _filtrar_por_categoria(items: list[dict], filtro_categoria: str) -> list[dict]:
+    if not filtro_categoria:
+        return items
+    fc = filtro_categoria.lower()
+    return [it for it in items if fc in (it.get("nombreMotivo") or "").lower()]
+
+
 @agent.tool
-async def tool_filtrar_transacciones(
+async def filtro_transacciones(
     ctx: RunContext[Deps],
-    mes: int | None = None,
-    anio: int | None = None,
-    motivo: str | None = None,
-    contacto: str | None = None,
-    page: int | None = None,
-    size: int | None = None,
+    mes: int = 0,
+    anio: int = 0,
+    motivo: str = "",
+    contacto: str = "",
+    page: int = 0,
+    size: int = 0,
+    filtro_tipo: str = "",
+    filtro_categoria: str = "",
 ) -> str:
     """Filtra y recupera transacciones (ingresos/gastos en efectivo o débito) del usuario.
 
-    Aplica filtros opcionales como mes, año, motivo o contacto.
-    Los resultados se devuelven paginados (10 elementos por página por defecto).
+    Aplica filtros opcionales como mes, año, motivo, contacto, tipo o categoría.
 
     Args:
         mes: Número de mes (1=enero, ..., 12=diciembre). Si se usa, el año es OBLIGATORIO.
@@ -78,22 +97,21 @@ async def tool_filtrar_transacciones(
         contacto: Texto para filtrar por nombre del contacto.
         page: Número de página (0-based). Omite para usar la primera página.
         size: Cantidad de resultados por página. Omite para usar el valor por defecto.
+        filtro_tipo: Opcional. Filtra por tipo de transacción. Valores: "INGRESO" o "GASTO".
+        filtro_categoria: Opcional. Filtra por nombre de categoría/motivo.
 
     Returns:
         JSON string con la lista paginada de transacciones.
     """
-    # Validación: mes requiere año
-    if mes is not None and anio is None:
-        logger.warning("tool_filtrar_transacciones llamada con mes=%s pero sin año", mes)
+    if mes and not anio:
+        logger.warning("filtro_transacciones llamada con mes=%s pero sin año", mes)
         return (
             "Error: Si especificas el mes, el año también es obligatorio. "
             "Por favor, indica también el año (ej: 2025) para poder realizar la búsqueda."
         )
 
-
-
     try:
-        data = await filtrar_transacciones(
+        data = await finance_api.filtrar_transacciones(
             workspace_id=ctx.deps.workspace_id,
             mes=mes,
             anio=anio,
@@ -102,21 +120,28 @@ async def tool_filtrar_transacciones(
             page=page,
             size=size,
         )
+        items = data.get("content", [])
+        items = _filtrar_por_tipo(items, filtro_tipo)
+        items = _filtrar_por_categoria(items, filtro_categoria)
+        data["content"] = items
+        data["totalElements"] = len(items)
         return json.dumps(data, default=str, ensure_ascii=False)
     except ValueError as e:
-        logger.error("tool_filtrar_transacciones | error: %s", str(e))
+        logger.error("filtro_transacciones | error: %s", str(e))
         return f"Error al consultar transacciones: {e}"
 
 
 @agent.tool
-async def tool_filtrar_compras_credito(
+async def filtro_compras_credito(
     ctx: RunContext[Deps],
-    mes: int | None = None,
-    anio: int | None = None,
-    motivo: str | None = None,
-    contacto: str | None = None,
-    page: int | None = None,
-    size: int | None = None,
+    mes: int = 0,
+    anio: int = 0,
+    motivo: str = "",
+    contacto: str = "",
+    page: int = 0,
+    size: int = 0,
+    filtro_tipo: str = "",
+    filtro_categoria: str = "",
 ) -> str:
     """Filtra y recupera compras realizadas con tarjeta de crédito del usuario.
 
@@ -130,22 +155,21 @@ async def tool_filtrar_compras_credito(
         contacto: Texto para filtrar por nombre del contacto/comercio.
         page: Número de página (0-based). Omite para usar la primera página.
         size: Cantidad de resultados por página. Omite para usar el valor por defecto.
+        filtro_tipo: Opcional. Filtra por tipo. Solo aplica si la data tiene campo tipo.
+        filtro_categoria: Opcional. Filtra por nombre de categoría/motivo.
 
     Returns:
         JSON string con la lista paginada de compras a crédito.
     """
-    # Validación: mes requiere año
-    if mes is not None and anio is None:
-        logger.warning("tool_filtrar_compras_credito llamada con mes=%s pero sin año", mes)
+    if mes and not anio:
+        logger.warning("filtro_compras_credito llamada con mes=%s pero sin año", mes)
         return (
             "Error: Si especificas el mes, el año también es obligatorio. "
             "Por favor, indica también el año (ej: 2025) para poder realizar la búsqueda."
         )
 
-
-
     try:
-        data = await filtrar_compras_credito(
+        data = await finance_api.filtrar_compras_credito(
             workspace_id=ctx.deps.workspace_id,
             mes=mes,
             anio=anio,
@@ -154,98 +178,27 @@ async def tool_filtrar_compras_credito(
             page=page,
             size=size,
         )
+        items = data.get("content", [])
+        items = _filtrar_por_tipo(items, filtro_tipo)
+        items = _filtrar_por_categoria(items, filtro_categoria)
+        data["content"] = items
+        data["totalElements"] = len(items)
         return json.dumps(data, default=str, ensure_ascii=False)
     except ValueError as e:
-        logger.error("tool_filtrar_compras_credito | error: %s", str(e))
+        logger.error("filtro_compras_credito | error: %s", str(e))
         return f"Error al consultar compras a crédito: {e}"
-
-
-# ── Tool de recuperación RAG ─────────────────────────────────────
-
-
-@agent.tool
-async def tool_recuperacion_RAG(
-    ctx: RunContext[Deps],
-    consulta: str,
-) -> str:
-    """Recupera información de la base de conocimiento de educación financiera.
-
-    Usá esta herramienta SOLO cuando el usuario pida:
-    - Consejos de ahorro o educación financiera personal
-    - Información sobre el contexto macroeconómico argentino
-      (inflación, IPC, salarios, INDEC)
-    - Explicaciones sobre productos financieros
-      (plazos fijos, cuentas remuneradas, FCI Money Market, Dólar MEP, CEDEARs)
-    - Marco regulatorio y derechos del consumidor financiero
-      (BCRA, CNV, Ley de Tarjetas de Crédito 25.065, Transferencias 3.0)
-    - Estrategias de cobertura contra la inflación
-    - Capacidad de endeudamiento y gestión de deudas
-    - Cualquier tema de finanzas personales que requiera fundamentos teóricos
-
-    NO uses esta herramienta para consultas sobre transacciones, gastos,
-    ingresos o balances del usuario — esas van a las tools de filtrado.
-
-    Args:
-        consulta: La pregunta o tema sobre el cual se necesita
-                  información financiera detallada.
-
-    Returns:
-        Texto con los fragmentos más relevantes de la base de conocimiento,
-        incluyendo fuente y sección de origen para que el usuario pueda
-        identificar el origen de la información.
-    """
-    logger.info("tool_recuperacion_RAG | consulta='%s'", consulta)
-
-    # ── Validación temprana: rechazar consultas triviales/no financieras ──
-    consulta_stripped = consulta.strip().lower()
-    saludos = {"hola", "hola como estas", "como estas", "buenos dias",
-               "buenas tardes", "buenas noches", "que tal", "hello",
-               "hi", "hey", "gracias", "muchas gracias", "chau", "adios",
-               "bye", "nos vemos", "saludos"}
-    if consulta_stripped in saludos or len(consulta_stripped) < 5:
-        logger.info(
-            "tool_recuperacion_RAG | consulta trivial ignorada: '%s'",
-            consulta[:60],
-        )
-        return (
-            "Esta herramienta es solo para consultas de educación "
-            "financiera. Para saludos o conversación general, "
-            "respondé directamente sin usar herramientas."
-        )
-
-    try:
-        contexto = await ctx.deps.retriever.retrieve(consulta)
-        if not contexto:
-            logger.info(
-                "tool_recuperacion_RAG | sin resultados para: %s",
-                consulta[:80],
-            )
-            return (
-                "No se encontró información relevante en la base de "
-                "conocimiento financiera para esa consulta."
-            )
-        logger.info(
-            "tool_recuperacion_RAG | OK (%d caracteres)",
-            len(contexto),
-        )
-        return contexto
-    except Exception as e:
-        logger.error(
-            "tool_recuperacion_RAG | error: %s", str(e), exc_info=True
-        )
-        return f"Error al recuperar información financiera: {e}"
 
 
 # ── Tool de cálculo determinístico ───────────────────────────────
 
 
 @agent.tool
-async def tool_calculadora_estadistica(
+async def calculadora_estadistica(
     ctx: RunContext[Deps],
     data_json: str,
     operacion: str,
-    filtro_categoria: str | None = None,
-    filtro_tipo: str | None = None,
+    filtro_categoria: str = "",
+    filtro_tipo: str = "",
 ) -> str:
     """Ejecuta cálculos matemáticos y estadísticos determinísticos sobre datos financieros.
 
@@ -254,8 +207,8 @@ async def tool_calculadora_estadistica(
     Solo suma montos de un mismo tipo de dato.
 
     Args:
-        data_json: JSON string obtenido de ``tool_filtrar_transacciones``
-                   o ``tool_filtrar_compras_credito``. Debe contener el campo
+        data_json: JSON string obtenido de ``filtro_transacciones``
+                   o ``filtro_compras_credito``. Debe contener el campo
                    ``content`` con la lista de transacciones o compras.
         operacion: Operación a realizar. Valores válidos:
                    - "sumar": suma todos los montos.
@@ -283,14 +236,14 @@ async def tool_calculadora_estadistica(
         resultado = calcular(
             data_json=data_json,
             operacion=operacion,
-            filtro_categoria=filtro_categoria,
-            filtro_tipo=filtro_tipo,
+            filtro_categoria=filtro_categoria or None,
+            filtro_tipo=filtro_tipo or None,
         )
 
         return resultado
     except Exception as e:
         logger.error(
-            "tool_calculadora_estadistica | error: %s", str(e), exc_info=True
+            "calculadora_estadistica | error: %s", str(e), exc_info=True
         )
         return json.dumps(
             {
