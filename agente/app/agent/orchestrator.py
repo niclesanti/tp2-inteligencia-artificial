@@ -8,7 +8,6 @@ el loop ReAct (Reasoning and Acting).
 
 import json
 import logging
-import os
 
 import httpx
 from groq import AsyncGroq
@@ -19,6 +18,7 @@ from pydantic_ai.providers.groq import GroqProvider
 
 from app.agent.dependencies import Deps
 from app.agent.prompts import SYSTEM_PROMPT
+from app.core.config import settings
 from app.tools.calculator import calcular
 from app.tools import finance_api
 
@@ -34,14 +34,14 @@ _groq_http_client = httpx.AsyncClient(
     timeout=httpx.Timeout(180.0, connect=30.0),
 )
 _groq_client = AsyncGroq(
-    api_key=os.getenv("GROQ_API_KEY"),
+    api_key=settings.groq_api_key,
     http_client=_groq_http_client,
     max_retries=0,
     timeout=httpx.Timeout(180.0),
 )
 _groq_provider = GroqProvider(groq_client=_groq_client)
 
-model = GroqModel("llama-3.3-70b-versatile", provider=_groq_provider)
+model = GroqModel(settings.groq_model, provider=_groq_provider)
 
 agent: Agent[Deps] = Agent(
     model,

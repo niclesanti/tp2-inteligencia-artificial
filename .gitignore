@@ -38,5 +38,10 @@ GuiaFrontend.md
 prompt.md
 PLANTILLA_COPILOT_CLI.md
 
+# Python
+__pycache__/
+*.py[cod]
+*.so
+
 # VS Code
 .vscode/
