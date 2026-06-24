@@ -465,8 +465,8 @@ def calcular(
 
     Args:
         data_json: JSON string con datos de transacciones o compras a crédito
-                   (devuelto por ``tool_filtrar_transacciones`` o
-                   ``tool_filtrar_compras_credito``).
+                   (devuelto por ``filtrar_transacciones`` o
+                   ``filtrar_compras_credito``).
         operacion: Operación a realizar.
                    Valores válidos: sumar, promedio, contar, minimo, maximo,
                    agrupar_por_categoria, balance, porcentaje, proyeccion_credito.

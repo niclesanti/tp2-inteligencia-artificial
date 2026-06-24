@@ -72,7 +72,7 @@ class PaginatedResponse(BaseModel):
 # ─── Inputs para las tools del agente ───
 
 class FiltrarTransaccionesInput(BaseModel):
-    """Parámetros que acepta tool_filtrar_transacciones.
+    """Parámetros que acepta filtrar_transacciones.
     
     NOTA: mes solo puede usarse si también se proporciona anio.
     """
@@ -86,7 +86,7 @@ class FiltrarTransaccionesInput(BaseModel):
 
 
 class FiltrarComprasCreditoInput(BaseModel):
-    """Parámetros que acepta tool_filtrar_compras_credito.
+    """Parámetros que acepta filtrar_compras_credito.
     
     NOTA: mes solo puede usarse si también se proporciona anio.
     """
