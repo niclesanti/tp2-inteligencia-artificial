@@ -75,6 +75,15 @@ def _filtrar_por_categoria(items: list[dict], filtro_categoria: str) -> list[dic
     return [it for it in items if fc in (it.get("nombreMotivo") or "").lower()]
 
 
+_TRANSACCIONES_FIELDS = {"fecha", "monto", "tipo", "nombreMotivo", "nombreContacto", "descripcion"}
+_COMPRAS_CREDITO_FIELDS = {"fechaCompra", "montoTotal", "cantidadCuotas", "cuotasPagadas", "nombreMotivo", "nombreComercio", "numeroTarjeta", "descripcion"}
+
+
+def _minimal_items(items: list[dict], tipo: str) -> list[dict]:
+    whitelist = _TRANSACCIONES_FIELDS if tipo == "transacciones" else _COMPRAS_CREDITO_FIELDS
+    return [{k: v for k, v in it.items() if k in whitelist} for it in items]
+
+
 @agent.tool
 async def filtro_transacciones(
     ctx: RunContext[Deps],
@@ -124,6 +133,7 @@ async def filtro_transacciones(
         items = data.get("content", [])
         items = _filtrar_por_tipo(items, filtro_tipo)
         items = _filtrar_por_categoria(items, filtro_categoria)
+        items = _minimal_items(items, "transacciones")
         data["content"] = items
         data["totalElements"] = len(items)
         return json.dumps(data, default=str, ensure_ascii=False)
@@ -182,6 +192,7 @@ async def filtro_compras_credito(
         items = data.get("content", [])
         items = _filtrar_por_tipo(items, filtro_tipo)
         items = _filtrar_por_categoria(items, filtro_categoria)
+        items = _minimal_items(items, "compras_credito")
         data["content"] = items
         data["totalElements"] = len(items)
         return json.dumps(data, default=str, ensure_ascii=False)
