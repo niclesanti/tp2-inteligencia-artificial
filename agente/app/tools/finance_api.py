@@ -21,12 +21,12 @@ _TIMEOUT_SECONDS = 30
 
 async def filtrar_transacciones(
     workspace_id: str,
-    mes: int | None = None,
-    anio: int | None = None,
-    motivo: str | None = None,
-    contacto: str | None = None,
-    page: int | None = None,
-    size: int | None = None,
+    mes: int = 0,
+    anio: int = 0,
+    motivo: str = "",
+    contacto: str = "",
+    page: int = 0,
+    size: int = 0,
 ) -> dict:
     """Llama a POST /api/internal/transaccion/buscar en el backend.
 
@@ -45,19 +45,18 @@ async def filtrar_transacciones(
     """
     url = f"{settings.backend_url}/api/internal/transaccion/buscar"
 
-    # Construir payload solo con campos no-None
     payload: dict = {"idEspacioTrabajo": workspace_id}
-    if mes is not None:
+    if mes:
         payload["mes"] = mes
-    if anio is not None:
+    if anio:
         payload["anio"] = anio
-    if motivo is not None:
+    if motivo:
         payload["motivo"] = motivo
-    if contacto is not None:
+    if contacto:
         payload["contacto"] = contacto
-    if page is not None:
+    if page:
         payload["page"] = page
-    if size is not None:
+    if size:
         payload["size"] = size
 
 
@@ -84,12 +83,12 @@ async def filtrar_transacciones(
 
 async def filtrar_compras_credito(
     workspace_id: str,
-    mes: int | None = None,
-    anio: int | None = None,
-    motivo: str | None = None,
-    contacto: str | None = None,
-    page: int | None = None,
-    size: int | None = None,
+    mes: int = 0,
+    anio: int = 0,
+    motivo: str = "",
+    contacto: str = "",
+    page: int = 0,
+    size: int = 0,
 ) -> dict:
     """Llama a POST /api/internal/comprascredito/buscar en el backend.
 
@@ -109,17 +108,17 @@ async def filtrar_compras_credito(
     url = f"{settings.backend_url}/api/internal/comprascredito/buscar"
 
     payload: dict = {"idEspacioTrabajo": workspace_id}
-    if mes is not None:
+    if mes:
         payload["mes"] = mes
-    if anio is not None:
+    if anio:
         payload["anio"] = anio
-    if motivo is not None:
+    if motivo:
         payload["motivo"] = motivo
-    if contacto is not None:
+    if contacto:
         payload["contacto"] = contacto
-    if page is not None:
+    if page:
         payload["page"] = page
-    if size is not None:
+    if size:
         payload["size"] = size
 
 
