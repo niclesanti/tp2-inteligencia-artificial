@@ -29,6 +29,14 @@ async def lifespan(app: FastAPI):
     redis_client = Redis(host=settings.redis_host, port=settings.redis_port)
     app.state.redis_store = RedisModelMessageStore(redis_client)
 
+    # ── RAG: indexar si no existe ────────────────────────────
+    try:
+        from app.rag.ingester import ensure_indexed
+        ensure_indexed()
+    except Exception as exc:
+        logger = logging.getLogger(__name__)
+        logger.warning("Error en indexación RAG inicial: %s", exc)
+
     yield
 
     await redis_client.close()

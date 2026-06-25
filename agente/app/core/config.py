@@ -12,6 +12,12 @@ class Settings(BaseSettings):
     langfuse_secret_key: str = ""
     langfuse_base_url: str = "https://cloud.langfuse.com"
 
+    qdrant_host: str = "qdrant"
+    qdrant_port: int = 6333
+    qdrant_collection_name: str = "guias_financieras"
+    embedding_model_name: str = "paraphrase-multilingual-MiniLM-L12-v2"
+    rag_top_k: int = 2
+
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
 
 
