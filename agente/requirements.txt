@@ -1,7 +1,6 @@
 pydantic-ai-slim[groq]
 fastapi
 uvicorn
-qdrant-client
 redis
 pydantic-settings
 httpx
@@ -10,4 +9,5 @@ langfuse
 opentelemetry-api
 opentelemetry-sdk
 opentelemetry-exporter-otlp
-sentence-transformers
+qdrant-client>=1.12,<2.0
+sentence-transformers>=3.0,<4.0

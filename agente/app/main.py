@@ -21,8 +21,6 @@ from app.agent.dependencies import Deps
 from app.agent.orchestrator import agent
 from app.core.config import settings
 from app.memory.redis_store import RedisModelMessageStore
-from app.rag.connection import ensure_collection_async, get_async_client
-from app.rag.retriever import Retriever
 
 
 @asynccontextmanager
@@ -31,44 +29,17 @@ async def lifespan(app: FastAPI):
     redis_client = Redis(host=settings.redis_host, port=settings.redis_port)
     app.state.redis_store = RedisModelMessageStore(redis_client)
 
-    # ── RAG: asegurar colección en Qdrant ────────────────────
-    qdrant_client = get_async_client()
+    # ── RAG: indexar si no existe ────────────────────────────
     try:
-        await ensure_collection_async(qdrant_client)
-        logger = logging.getLogger("rag")
-        logger.info(
-            "Colección '%s' lista en Qdrant",
-            settings.qdrant_collection_name,
-        )
-    except ConnectionError:
-        logger = logging.getLogger("rag")
-        logger.warning(
-            "Qdrant no está disponible en este momento. "
-            "El RAG se activará cuando Qdrant responda."
-        )
-    finally:
-        await qdrant_client.close()
-
-    # ── Retriever ──────────────────────────────────────────────
-    retriever = Retriever()
-    app.state.retriever = retriever
-
-    # ── Precargar modelo de embeddings (eager) ────────────────
-    # para evitar el lag de ~60s en la primera consulta RAG
-    logger = logging.getLogger("rag")
-    try:
-        await retriever.ensure_model()
-        logger.info("Modelo de embeddings precargado correctamente.")
-    except Exception:
-        logger.warning(
-            "No se pudo precargar el modelo de embeddings. "
-            "Se cargará lazy en la primera consulta RAG."
-        )
+        from app.rag.ingester import ensure_indexed
+        ensure_indexed()
+    except Exception as exc:
+        logger = logging.getLogger(__name__)
+        logger.warning("Error en indexación RAG inicial: %s", exc)
 
     yield
 
     await redis_client.close()
-    await app.state.retriever.close()
     # Flush de trazas pendientes en Langfuse antes de cerrar
     try:
         from langfuse import get_client
@@ -130,7 +101,6 @@ async def chat(body: ChatRequest, request: Request) -> ChatResponse:
         session_id=body.session_id,
         workspace_id=body.workspace_id,
         user_id=body.user_id,
-        retriever=request.app.state.retriever,
     )
 
     try:
@@ -195,7 +165,6 @@ async def chat_stream(
         session_id=session_id,
         workspace_id=workspace_id,
         user_id=user_id,
-        retriever=request.app.state.retriever,
     )
 
     async def event_stream():
