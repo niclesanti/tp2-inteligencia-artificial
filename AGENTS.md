@@ -17,6 +17,7 @@ Full-stack personal finance manager: `backend/` (Java 21, Spring Boot 3.5.3, Mav
 | Frontend coverage | `cd frontend && npm run test:coverage` | |
 | Full Docker | `docker-compose up -d --build` | Uses `.env` for secrets; frontend at `:3100`, backend at `:8080` |
 | Rebuild single service | `docker-compose up -d --build backend` | Hot-reload frontend via volume mount in dev |
+| RAG ingester (auto en startup) | `docker compose up -d --build` (automático) | Indexa `agente/docs RAG/` en Qdrant al primer inicio. Re-ejecutar manualmente si cambia el contenido: `docker compose exec agente python -m app.rag.ingester` |
 
 ## Monorepo Boundaries
 
