@@ -61,12 +61,15 @@ cp .env.example .env
 # Editar .env completando:
 #   - GROQ_API_KEY (requerido para el agente)
 #   - GOOGLE_CLIENT_ID y GOOGLE_CLIENT_SECRET (requerido para login)
+#     (No sabíamos si agregar nuestras API key de Google por temas de seguridad,
+#     en el .enc.example pero si tienen problemas para la obtención de estas 
+#     credenciales, les proporcionamos las nuestras).
 #   - Opcional: LANGFUSE_PUBLIC_KEY y LANGFUSE_SECRET_KEY
 
-# 3. Construir e iniciar todos los servicios
+# 3. Construir e iniciar todos los servicios, la base de conocimiento RAG debería indexarse
 docker-compose up -d --build
 
-# 4. (Primera vez) Indexar la base de conocimiento RAG
+# 4. De no indexar la base de conocimiento RAG automáticamente, ejecutar el siguiente comando
 docker exec python-agente-ia python -m app.rag.ingester
 
 # 5. Acceder a la aplicación
